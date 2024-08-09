@@ -2,10 +2,11 @@ package database
 
 import (
 	"OnlineExams/src/core/appConfig"
-	"database/sql"
+	"context"
 	"fmt"
+	"os"
 
-	_ "github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5"
 )
 
 // StartDatabase connects to the database and sets the DefaultContainer
@@ -23,12 +24,12 @@ func StartDatabase() error {
 
 // New connects to the given PostgreSQL database and returns a DatabaseContainer.
 func New(dialect, address string) (*DatabaseContainer, error) {
-	db, err := sql.Open(dialect, address)
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	container := NewWithDB(db, dialect)
+	container := NewWithDB(conn, dialect)
 	err = container.DoMigrations()
 	if err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
@@ -37,7 +38,7 @@ func New(dialect, address string) (*DatabaseContainer, error) {
 	return container, nil
 }
 
-func NewWithDB(db *sql.DB, dialect string) *DatabaseContainer {
+func NewWithDB(db *pgx.Conn, dialect string) *DatabaseContainer {
 	return &DatabaseContainer{
 		db:      db,
 		dialect: dialect,

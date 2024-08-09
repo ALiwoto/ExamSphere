@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS "user_info" (
-    user_id INTEGER PRIMARY KEY,
+    user_id VARCHAR(16) PRIMARY KEY,
     full_name VARCHAR(127) NOT NULL,
     email VARCHAR(127) UNIQUE NOT NULL CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-    password VARCHAR(127) NOT NULL,
+    password VARCHAR(511) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_banned BOOLEAN DEFAULT FALSE,
     ban_reason TEXT,
@@ -21,14 +21,14 @@ COMMENT ON COLUMN "user_info".role IS 'Role of the user in the system (admin, st
 
 -- Create user function
 CREATE OR REPLACE FUNCTION create_user_info(
-    p_user_id INTEGER,
+    p_user_id VARCHAR(16),
     p_full_name VARCHAR(127),
     p_email VARCHAR(127),
-    p_password VARCHAR(127),
+    p_password VARCHAR(511),
     p_role VARCHAR(10) DEFAULT 'student'
-) RETURNS INTEGER AS $$
+) RETURNS VARCHAR(16) AS $$
 DECLARE
-    new_user_id INTEGER;
+    new_user_id VARCHAR(16);
 BEGIN
     INSERT INTO "user_info" (user_id, full_name, email, password, role)
     VALUES (p_user_id, p_full_name, p_email, p_password, p_role)
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS "exam_info" (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     exam_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     duration INTEGER NOT NULL DEFAULT 60, -- Duration in minutes (e.g. 120)
-    created_by INTEGER NOT NULL,
+    created_by VARCHAR(16) NOT NULL,
     is_public BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -266,11 +266,11 @@ $$ LANGUAGE plpgsql;
 
 ---------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS "given_exam" (
-    user_id INTEGER NOT NULL,
+    user_id VARCHAR(16) NOT NULL,
     exam_id INTEGER NOT NULL,
     price NUMERIC(10, 2),
-    added_by INTEGER DEFAULT NULL,
-    scored_by INTEGER DEFAULT NULL,
+    added_by VARCHAR(16) DEFAULT NULL,
+    scored_by VARCHAR(16) DEFAULT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     final_score VARCHAR(63) DEFAULT NULL,
     PRIMARY KEY (user_id, exam_id),
@@ -293,7 +293,7 @@ COMMENT ON COLUMN given_exam.final_score IS 'Final score of the user in the exam
 -- Returns true if the user has participated in the exam, false otherwise
 -- Please note that if the user has been forcefully added by someone else to the exam,
 -- this function will still return true.
-CREATE OR REPLACE FUNCTION has_participated_in_exam(p_exam_id INTEGER, p_user_id INTEGER)
+CREATE OR REPLACE FUNCTION has_participated_in_exam(p_exam_id INTEGER, p_user_id VARCHAR(16))
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
@@ -305,7 +305,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Returns true if the user can participate in the exam, false otherwise
-CREATE OR REPLACE FUNCTION can_participate_in_exam(p_exam_id INTEGER, p_user_id INTEGER)
+CREATE OR REPLACE FUNCTION can_participate_in_exam(p_exam_id INTEGER, p_user_id VARCHAR(16))
 RETURNS BOOLEAN AS $$
 DECLARE
     is_public BOOLEAN;
@@ -331,7 +331,7 @@ $$ LANGUAGE plpgsql;
 -- Sets final_score and scored_by for a user in a given_exam.
 CREATE OR REPLACE FUNCTION set_score_for_user_in_exam(
     p_exam_id INTEGER,
-    p_user_id INTEGER,
+    p_user_id VARCHAR(16),
     p_final_score VARCHAR(63),
     p_scored_by INTEGER
 ) RETURNS VOID AS $$
@@ -362,7 +362,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS "given_answer" (
     exam_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
-    answered_by INTEGER NOT NULL,
+    answered_by VARCHAR(16) NOT NULL,
     chosen_option TEXT DEFAULT NULL,
     answer_text TEXT,
     answered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

@@ -1,8 +1,19 @@
 package main
 
-import "OnlineExams/src/database/dbScripts"
+import (
+	"OnlineExams/src/core/appConfig"
+	"OnlineExams/src/core/utils/logging"
+)
 
 func main() {
-	myText := dbScripts.Migration1Str
-	print(myText)
+	f := logging.LoadLogger(true)
+	if f != nil {
+		defer f()
+	}
+
+	err := appConfig.LoadConfig()
+	if err != nil {
+		logging.Fatal("Error in loading config:", err)
+		return
+	}
 }

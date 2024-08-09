@@ -1,6 +1,6 @@
 package database
 
-import "database/sql"
+import "github.com/jackc/pgx/v5"
 
 // Scannable is an interface that represents a type that is
 // capable of scanning values from a database query result,
@@ -12,7 +12,7 @@ type Scannable interface {
 // DatabaseContainer is a struct that holds a database connection
 // and the dialect of the database.
 type DatabaseContainer struct {
-	db      *sql.DB
+	db      *pgx.Conn
 	dialect string
 
 	DatabaseErrorHandler func(action string, attemptIndex int, err error) (retry bool)
