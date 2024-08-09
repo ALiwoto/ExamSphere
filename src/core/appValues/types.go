@@ -1,5 +1,8 @@
 package appValues
 
+// UserRole is the role of a user.
+type UserRole string
+
 // JWTClaimsInfo is a general structure that can be filled by jwt
 // claims fields.
 type JWTClaimsInfo struct {

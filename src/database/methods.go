@@ -39,6 +39,24 @@ func (c *DatabaseContainer) setVersion(tx pgx.Tx, version int) error {
 	return err
 }
 
+func (d *DatabaseContainer) ExecuteQuery(query string, args ...interface{}) (pgx.Rows, error) {
+	tx, err := d.db.Begin(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := d.db.Query(context.Background(), query, args...)
+	if err != nil {
+		_ = tx.Rollback(context.Background())
+		return nil, err
+	}
+
+	if err = tx.Commit(context.Background()); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (d *DatabaseContainer) DoMigrations() error {
 	version, err := d.getVersion()
 	if err != nil {

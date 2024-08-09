@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // StartDatabase connects to the database and sets the DefaultContainer
@@ -24,7 +24,7 @@ func StartDatabase() error {
 
 // New connects to the given PostgreSQL database and returns a DatabaseContainer.
 func New(dialect, address string) (*DatabaseContainer, error) {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	conn, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
@@ -38,7 +38,7 @@ func New(dialect, address string) (*DatabaseContainer, error) {
 	return container, nil
 }
 
-func NewWithDB(db *pgx.Conn, dialect string) *DatabaseContainer {
+func NewWithDB(db underlyingDbType, dialect string) *DatabaseContainer {
 	return &DatabaseContainer{
 		db:      db,
 		dialect: dialect,
