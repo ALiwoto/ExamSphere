@@ -1,6 +1,10 @@
 package userHandlers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"OnlineExams/src/apiHandlers"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func IsInvalidPassword(value string) bool {
 	return len(value) < MinPasswordLength ||

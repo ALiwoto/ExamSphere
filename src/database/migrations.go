@@ -17,6 +17,26 @@ func migrateV1(tx pgx.Tx, container *DatabaseContainer) error {
 	return nil
 }
 
+func migrateV2(tx pgx.Tx, container *DatabaseContainer) error {
+	_, err := tx.Exec(context.Background(),
+		dbScripts.Migration2Str)
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
+
+func migrateV3(tx pgx.Tx, container *DatabaseContainer) error {
+	_, err := tx.Exec(context.Background(),
+		dbScripts.Migration3Str)
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
+
 // func migrateV2(pgx.Tx, *DatabaseContainer) error {
 // 	return nil
 // }

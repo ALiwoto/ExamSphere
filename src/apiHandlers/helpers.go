@@ -58,7 +58,6 @@ func GetJWTClaimsInfoStr(token string, key []byte) *appValues.JWTClaimsInfo {
 	}
 
 	return &appValues.JWTClaimsInfo{
-		Username: username,
 		UserId:   int64(userId),
 		Refresh:  isRefresh,
 		AuthHash: authHash,
@@ -113,7 +112,6 @@ func GetJWTClaimsInfo(c *fiber.Ctx) *appValues.JWTClaimsInfo {
 	}
 
 	return &appValues.JWTClaimsInfo{
-		Username: username,
 		UserId:   int64(userId),
 		Refresh:  isRefresh,
 		AuthHash: authHash,
