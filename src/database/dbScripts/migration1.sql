@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS "user_info" (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_banned BOOLEAN DEFAULT FALSE,
     ban_reason TEXT,
-    role VARCHAR(10) DEFAULT 'user'
+    role VARCHAR(10) DEFAULT 'student' CHECK (role IN ('admin', 'student', 'teacher'))
 );
 
 -- Comments to describe the fields, these can be easily viewed from PgAdmin
@@ -20,7 +20,7 @@ COMMENT ON COLUMN "user_info".ban_reason IS 'Reason for banning the user, if app
 COMMENT ON COLUMN "user_info".role IS 'Role of the user in the system (admin, student, teacher)';
 
 -- Create user function
-CREATE OR REPLACE FUNCTION create_user(
+CREATE OR REPLACE FUNCTION create_user_info(
     p_user_id INTEGER,
     p_full_name VARCHAR(127),
     p_email VARCHAR(127),
@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS "exam_info" (
     created_by INTEGER NOT NULL,
     is_public BOOLEAN DEFAULT FALSE,
 
-    CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES "user_info"(user_id),
-    CONSTRAINT fk_course_id FOREIGN KEY (course_id) REFERENCES "course_info"(course_id)
+    CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_course_id FOREIGN KEY (course_id) REFERENCES "course_info"(course_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Add comments to describe the fields
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS exam_question (
     option4 TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_exam_info FOREIGN KEY (exam_id) REFERENCES exam_info(exam_id)
+    CONSTRAINT fk_exam_info FOREIGN KEY (exam_id) REFERENCES exam_info(exam_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE exam_question IS 'Stores information about exam questions';
@@ -265,6 +265,99 @@ END;
 $$ LANGUAGE plpgsql;
 
 ---------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "given_exam" (
+    user_id INTEGER NOT NULL,
+    exam_id INTEGER NOT NULL,
+    price NUMERIC(10, 2),
+    added_by INTEGER DEFAULT NULL,
+    scored_by INTEGER DEFAULT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    final_score VARCHAR(63) DEFAULT NULL,
+    PRIMARY KEY (user_id, exam_id),
+
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_exam FOREIGN KEY (exam_id) REFERENCES "exam_info"(exam_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_added_by FOREIGN KEY (added_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_scored_by FOREIGN KEY (scored_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE given_exam IS 'Stores information about exams taken by users';
+COMMENT ON COLUMN given_exam.user_id IS 'ID of the user taking the exam';
+COMMENT ON COLUMN given_exam.exam_id IS 'ID of the exam being taken';
+COMMENT ON COLUMN given_exam.price IS 'Price paid for the exam';
+COMMENT ON COLUMN given_exam.added_by IS 'ID of the user who added this exam entry (can be null)';
+COMMENT ON COLUMN given_exam.scored_by IS 'ID of the user (teacher) who scored this exam entry (can be null)';
+COMMENT ON COLUMN given_exam.created_at IS 'Timestamp when the exam entry was created';
+COMMENT ON COLUMN given_exam.final_score IS 'Final score of the user in the exam; has to be decided by teacher';
+
+-- Returns true if the user has participated in the exam, false otherwise
+-- Please note that if the user has been forcefully added by someone else to the exam,
+-- this function will still return true.
+CREATE OR REPLACE FUNCTION has_participated_in_exam(p_exam_id INTEGER, p_user_id INTEGER)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1
+        FROM given_exam
+        WHERE exam_id = p_exam_id AND user_id = p_user_id
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Returns true if the user can participate in the exam, false otherwise
+CREATE OR REPLACE FUNCTION can_participate_in_exam(p_exam_id INTEGER, p_user_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    is_public BOOLEAN;
+BEGIN
+    -- Just return true if the user already participated inside of this exam
+    IF has_participated_in(p_exam_id, p_user_id) THEN
+        RETURN TRUE;
+    END IF;
+
+    -- Check if the exam is public (later on we can add more conditions here)
+    SELECT is_public INTO is_public
+    FROM exam_info
+    WHERE exam_id = p_exam_id;
+
+    IF is_public IS NULL THEN
+        RAISE EXCEPTION 'Exam with ID % not found', p_exam_id;
+    END IF;
+
+    RETURN is_public;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Sets final_score and scored_by for a user in a given_exam.
+CREATE OR REPLACE FUNCTION set_score_for_user_in_exam(
+    p_exam_id INTEGER,
+    p_user_id INTEGER,
+    p_final_score VARCHAR(63),
+    p_scored_by INTEGER
+) RETURNS VOID AS $$
+BEGIN
+    -- Check if the exam entry exists
+    IF NOT EXISTS (
+        SELECT 1 FROM given_exam
+        WHERE exam_id = p_exam_id AND user_id = p_user_id
+    ) THEN
+        RAISE EXCEPTION 'No exam entry found for user % in exam %', p_user_id, p_exam_id;
+    END IF;
+
+    -- Update the final_score and added_by
+    UPDATE given_exam
+    SET final_score = p_final_score,
+        scored_by = p_added_by
+    WHERE exam_id = p_exam_id AND user_id = p_user_id;
+
+    -- Check if any rows were affected
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Failed to update score for user % in exam %', p_user_id, p_exam_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+---------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS "given_answer" (
     exam_id INTEGER NOT NULL,
@@ -276,9 +369,9 @@ CREATE TABLE IF NOT EXISTS "given_answer" (
     
     PRIMARY KEY (exam_id, question_id, answered_by),
 
-    CONSTRAINT fk_exam FOREIGN KEY (exam_id) REFERENCES "exam_info"(exam_id),
-    CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES "exam_question"(question_id),
-    CONSTRAINT fk_user FOREIGN KEY (answered_by) REFERENCES "user_info"(user_id)
+    CONSTRAINT fk_exam FOREIGN KEY (exam_id) REFERENCES "exam_info"(exam_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES "exam_question"(question_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (answered_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON TABLE given_answer IS 'Stores answers given by users to exam questions';
@@ -289,7 +382,7 @@ COMMENT ON COLUMN given_answer.chosen_option IS 'The title of option chosen by t
 COMMENT ON COLUMN given_answer.answer_text IS 'Text answer provided by the user, if applicable';
 COMMENT ON COLUMN given_answer.answered_at IS 'Timestamp when the answer was submitted';
 
-CREATE OR REPLACE FUNCTION give_answer_to_exam(
+CREATE OR REPLACE FUNCTION give_answer_to_exam_question(
     p_exam_id INTEGER,
     p_question_id INTEGER,
     p_answered_by INTEGER,
@@ -297,9 +390,9 @@ CREATE OR REPLACE FUNCTION give_answer_to_exam(
     p_answer_text TEXT DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
-    -- Check if the exam has started
-    IF NOT has_exam_started(p_exam_id) THEN
-        RAISE EXCEPTION 'Exam % has not started yet', p_exam_id;
+    -- Check if the user has participated in the exam
+    IF NOT has_participated_in_exam(p_exam_id, p_answered_by) THEN
+        RAISE EXCEPTION 'User has not participated in exam % yet', p_exam_id;
     END IF;
 
     -- Check if the exam has finished
@@ -318,3 +411,5 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+---------------------------------------------------------------
