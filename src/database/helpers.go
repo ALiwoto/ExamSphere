@@ -4,7 +4,6 @@ import (
 	"OnlineExams/src/core/appConfig"
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -24,7 +23,7 @@ func StartDatabase() error {
 
 // New connects to the given PostgreSQL database and returns a DatabaseContainer.
 func New(dialect, address string) (*DatabaseContainer, error) {
-	conn, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	conn, err := pgxpool.New(context.Background(), address)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}

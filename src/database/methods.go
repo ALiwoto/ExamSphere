@@ -9,14 +9,14 @@ import (
 
 func (c *DatabaseContainer) getVersion() (int, error) {
 	_, err := c.db.Exec(context.Background(),
-		"CREATE TABLE IF NOT EXISTS online_exam_platform_version (version INTEGER)")
+		"CREATE TABLE IF NOT EXISTS ExamSphere_version (version INTEGER)")
 	if err != nil {
 		return -1, err
 	}
 
 	version := 0
 	err = c.db.QueryRow(context.Background(),
-		"SELECT version FROM online_exam_platform_version LIMIT 1").Scan(&version)
+		"SELECT version FROM ExamSphere_version LIMIT 1").Scan(&version)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return 0, nil
@@ -29,13 +29,13 @@ func (c *DatabaseContainer) getVersion() (int, error) {
 
 func (c *DatabaseContainer) setVersion(tx pgx.Tx, version int) error {
 	_, err := tx.Exec(context.Background(),
-		"DELETE FROM online_exam_platform_version")
+		"DELETE FROM ExamSphere_version")
 	if err != nil {
 		return err
 	}
 
 	_, err = tx.Exec(context.Background(),
-		"INSERT INTO online_exam_platform_version (version) VALUES ($1)", version)
+		"INSERT INTO ExamSphere_version (version) VALUES ($1)", version)
 	return err
 }
 

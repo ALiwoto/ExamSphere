@@ -1,6 +1,7 @@
 package masterServer
 
 import (
+	"OnlineExams/src/apiHandlers/swaggerHandlers"
 	"OnlineExams/src/apiHandlers/userHandlers"
 	"OnlineExams/src/core/appConfig"
 	"OnlineExams/src/core/appValues"
@@ -55,6 +56,8 @@ func LoadHandlersV1(app *fiber.App) {
 }
 
 func LoadSwaggerHandler(app *fiber.App) {
+	app.Get("/swagger/swagger.*", swaggerHandlers.GetSwagger)
+
 	app.Get("/swagger/*", swagger.New(
 		swagger.Config{
 			InstanceName:    appConfig.GetSwaggerInstanceName(),

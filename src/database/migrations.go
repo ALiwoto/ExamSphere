@@ -1,6 +1,7 @@
 package database
 
 import (
+	"OnlineExams/src/core/utils/logging"
 	"OnlineExams/src/database/dbScripts"
 	"context"
 
@@ -11,7 +12,8 @@ func migrateV1(tx pgx.Tx, container *DatabaseContainer) error {
 	_, err := tx.Exec(context.Background(),
 		dbScripts.Migration1Str)
 	if err != nil {
-		return nil
+		logging.Error("migrateV1: Failed to execute migration 1: ", err)
+		return err
 	}
 
 	return nil
@@ -21,7 +23,7 @@ func migrateV2(tx pgx.Tx, container *DatabaseContainer) error {
 	_, err := tx.Exec(context.Background(),
 		dbScripts.Migration2Str)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil

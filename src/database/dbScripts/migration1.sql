@@ -82,6 +82,7 @@ BEFORE INSERT ON "user_info"
 FOR EACH ROW
 EXECUTE FUNCTION update_created_at();
 
+-- Checks if the password and auth hash are the same
 CREATE OR REPLACE FUNCTION check_password_auth_hash()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -92,8 +93,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Then, create the trigger
-CREATE TRIGGER prevent_same_password_auth_hash
+-- Prevents from the password and auth hash being the same
+CREATE  OR REPLACE TRIGGER prevent_same_password_auth_hash
 BEFORE INSERT ON user_info
 FOR EACH ROW
 EXECUTE FUNCTION check_password_auth_hash();

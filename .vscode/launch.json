@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Online-Exam-Platform Server",
+            "name": "ExamSphere Server",
             "type": "go",
             "request": "launch",
             "mode": "auto",
