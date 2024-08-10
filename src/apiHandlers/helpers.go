@@ -31,12 +31,7 @@ func GetJWTClaimsInfoStr(token string, key []byte) *appValues.JWTClaimsInfo {
 		return nil
 	}
 
-	username, ok := claims["username"].(string)
-	if !ok || username == "" {
-		return nil
-	}
-
-	userId, ok := claims["user_id"].(float64)
+	userId, ok := claims["user_id"].(string)
 	if !ok {
 		return nil
 	}
@@ -58,7 +53,7 @@ func GetJWTClaimsInfoStr(token string, key []byte) *appValues.JWTClaimsInfo {
 	}
 
 	return &appValues.JWTClaimsInfo{
-		UserId:   int64(userId),
+		UserId:   userId,
 		Refresh:  isRefresh,
 		AuthHash: authHash,
 		Exp:      exp,
@@ -85,12 +80,7 @@ func GetJWTClaimsInfo(c *fiber.Ctx) *appValues.JWTClaimsInfo {
 		return nil
 	}
 
-	username, ok := claims["username"].(string)
-	if !ok || username == "" {
-		return nil
-	}
-
-	userId, ok := claims["user_id"].(float64)
+	userId, ok := claims["user_id"].(string)
 	if !ok {
 		return nil
 	}
@@ -112,7 +102,7 @@ func GetJWTClaimsInfo(c *fiber.Ctx) *appValues.JWTClaimsInfo {
 	}
 
 	return &appValues.JWTClaimsInfo{
-		UserId:   int64(userId),
+		UserId:   userId,
 		Refresh:  isRefresh,
 		AuthHash: authHash,
 		Exp:      exp,

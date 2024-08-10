@@ -1,4 +1,4 @@
-package httpServer
+package masterServer
 
 var (
 	// If you are behind a load-balancer such as cloudflare or

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/ALiwoto/ssg/ssg"
 )
@@ -103,4 +104,28 @@ func IsSudoToken(value string) bool {
 	}
 
 	return TheConfig.SudoToken == value
+}
+
+func GetMaxRequestTillRateLimit() int {
+	if TheConfig == nil {
+		return 5
+	}
+
+	return TheConfig.MaxRequestTillRateLimit
+}
+
+func GetMaxRateLimitDuration() time.Duration {
+	if TheConfig == nil {
+		return 3 * time.Minute
+	}
+
+	return TheConfig.MaxRateLimitDuration * time.Minute
+}
+
+func GetRateLimitPunishmentDuration() time.Duration {
+	if TheConfig == nil {
+		return 5 * time.Minute
+	}
+
+	return TheConfig.RateLimitPunishmentDuration * time.Minute
 }

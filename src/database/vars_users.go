@@ -16,3 +16,7 @@ var (
 		return m
 	}()
 )
+
+var (
+	valueUserNotFound = &UserInfo{}
+)

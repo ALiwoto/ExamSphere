@@ -1,12 +1,14 @@
-package httpServer
+package masterServer
 
 import (
+	"OnlineExams/src/core/appConfig"
 	"OnlineExams/src/core/appValues"
 	"OnlineExams/src/core/utils/logging"
 	"OnlineExams/src/database"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	_ "github.com/gofiber/swagger"
 )
 
 func RunServer() error {
@@ -24,7 +26,15 @@ func RunServer() error {
 	LoadMiddlewares(appValues.ServerEngine)
 	LoadHandlersV1(appValues.ServerEngine)
 
-	return nil
+	if appConfig.TheConfig.CertFile != "" {
+		return appValues.ServerEngine.ListenTLS(
+			appConfig.TheConfig.BindAddress,
+			appConfig.GetCertFile(),
+			appConfig.GetCertKeyFile(),
+		)
+	}
+
+	return appValues.ServerEngine.Listen(appConfig.TheConfig.BindAddress)
 }
 
 func LoadHandlersV1(app *fiber.App) {

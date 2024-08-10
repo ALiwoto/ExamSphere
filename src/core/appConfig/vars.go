@@ -1,8 +1,19 @@
 package appConfig
 
+import "time"
+
 var TheConfig *PlatformConfig
 
-// signing keys
+// expirations variables. these are declared as variables
+// so we can change them at runtime (e.g. from config file, env, etc)
+var (
+	AccessTokenExpiration  = (time.Hour * 24) * 3
+	RefreshTokenExpiration = (time.Hour * 24) * 30
+)
+
+// signing keys, these values are just the default values
+// it's strongly recommended to set them inside of the config file
+// so they get filled out in the config loader function on startup.
 var (
 	AccessTokenSigningKey = []byte{
 		0x4e, 0xbf, 0xb4, 0x2d, 0x41, 0x20, 0x52, 0x65,
