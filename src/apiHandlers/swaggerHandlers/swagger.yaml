@@ -1,0 +1,81 @@
+definitions:
+  userHandlers.AuthResult:
+    properties:
+      access_token:
+        type: string
+      expiration:
+        type: integer
+      full_name:
+        type: string
+      refresh_token:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  userHandlers.LoginData:
+    properties:
+      password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  userHandlers.LoginResult:
+    properties:
+      access_token:
+        type: string
+      expiration:
+        type: integer
+      full_name:
+        type: string
+      refresh_token:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  userHandlers.MeResult:
+    properties:
+      full_name:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/user/login:
+    post:
+      description: Allows a user to refresh the access token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/userHandlers.AuthResult'
+      security:
+      - Bearer: []
+      summary: Refresh the access token
+      tags:
+      - User
+  /api/v1/user/me:
+    get:
+      description: Allows a user to get their own information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/userHandlers.MeResult'
+      security:
+      - Bearer: []
+      summary: Get the user's information
+      tags:
+      - User
+swagger: "2.0"

@@ -8,4 +8,4 @@ if (!(Get-Command swag -ErrorAction SilentlyContinue)) {
 
 # generate swagger api docs
 Write-Host "Generating swagger api docs"
-& swag init --output src/apiHandlers/docs
+& swag init --output src/apiHandlers/swaggerHandlers

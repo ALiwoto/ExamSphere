@@ -9,7 +9,17 @@ type PlatformConfig struct {
 	OwnerPassword string `key:"owner_password"`
 	SudoToken     string `key:"sudo_token"`
 	BindAddress   string `key:"bind_address" default:":8080"`
-	Debug         bool   `key:"debug"`
+
+	// If you are behind a load-balancer such as cloudflare or
+	// nginx, you should enable this option to get the real client IP,
+	// for nginx, it's usually "X-Real-IP" and for cloudflare, it's
+	// "CF-Connecting-IP".
+	// Otherwise, just set it to an empty string.
+	IPProxyHeader       string `key:"ip_proxy_header"`
+	Debug               bool   `key:"debug"`
+	SwaggerInstanceName string `key:"swagger_instance_name"`
+	SwaggerTitle        string `key:"swagger_title"`
+	SwaggerBaseURL      string `key:"swagger_base_url"`
 
 	CertFile    string `key:"cert_file"`
 	CertKeyFile string `key:"cert_key_file"`

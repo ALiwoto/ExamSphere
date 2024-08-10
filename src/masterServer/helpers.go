@@ -1,6 +1,7 @@
 package masterServer
 
 import (
+	"OnlineExams/src/apiHandlers/userHandlers"
 	"OnlineExams/src/core/appConfig"
 	"OnlineExams/src/core/appValues"
 	"OnlineExams/src/core/utils/logging"
@@ -8,7 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	_ "github.com/gofiber/swagger"
+	"github.com/gofiber/swagger"
 )
 
 func RunServer() error {
@@ -19,12 +20,16 @@ func RunServer() error {
 	}
 
 	appValues.ServerEngine = fiber.New(fiber.Config{
-		ProxyHeader:   ProxyHeader,
+		ProxyHeader:   appConfig.GetIPProxyHeader(),
 		CaseSensitive: CaseSensitive,
 	})
 
 	LoadMiddlewares(appValues.ServerEngine)
 	LoadHandlersV1(appValues.ServerEngine)
+
+	if appConfig.IsDebug() {
+		LoadSwaggerHandler(appValues.ServerEngine)
+	}
 
 	if appConfig.TheConfig.CertFile != "" {
 		return appValues.ServerEngine.ListenTLS(
@@ -38,6 +43,26 @@ func RunServer() error {
 }
 
 func LoadHandlersV1(app *fiber.App) {
+	authProtection := userHandlers.AuthProtection()
+	refreshAuthProtection := userHandlers.RefreshAuthProtection()
+
+	v1 := app.Group("/api/v1")
+
+	// user handlers
+	v1.Post("/user/login", userHandlers.LoginV1)
+	v1.Post("/user/auth", refreshAuthProtection, userHandlers.AuthV1)
+	v1.Get("/user/me", authProtection, userHandlers.GetMeV1)
+}
+
+func LoadSwaggerHandler(app *fiber.App) {
+	app.Get("/swagger/*", swagger.New(
+		swagger.Config{
+			InstanceName:    appConfig.GetSwaggerInstanceName(),
+			Title:           appConfig.GetSwaggerTitle(),
+			URL:             appConfig.GetSwaggerBaseURL() + "/swagger/swagger.json",
+			TryItOutEnabled: true,
+		},
+	))
 }
 
 func LoadMiddlewares(app *fiber.App) {

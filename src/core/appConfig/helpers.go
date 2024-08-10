@@ -98,6 +98,38 @@ func IsDebug() bool {
 	return TheConfig.Debug
 }
 
+func GetIPProxyHeader() string {
+	if TheConfig == nil {
+		return ""
+	}
+
+	return TheConfig.IPProxyHeader
+}
+
+func GetSwaggerInstanceName() string {
+	if TheConfig == nil || TheConfig.SwaggerInstanceName == "" {
+		return "ExamSphere Swagger Documentation"
+	}
+
+	return TheConfig.SwaggerInstanceName
+}
+
+func GetSwaggerTitle() string {
+	if TheConfig == nil || TheConfig.SwaggerTitle == "" {
+		return "ExamSphere Swagger Documentation"
+	}
+
+	return TheConfig.SwaggerTitle
+}
+
+func GetSwaggerBaseURL() string {
+	if TheConfig == nil {
+		return ""
+	}
+
+	return TheConfig.SwaggerBaseURL
+}
+
 func IsSudoToken(value string) bool {
 	if TheConfig == nil || TheConfig.SudoToken == "" {
 		return false

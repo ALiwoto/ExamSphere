@@ -31,9 +31,9 @@ type AuthResult struct {
 }
 
 type MeResult struct {
-	UserId      int64  `json:"user_id"`
-	AccountName string `json:"account_name"`
-	Role        string `json:"role"`
+	UserId   string `json:"user_id"`
+	FullName string `json:"full_name"`
+	Role     string `json:"role"`
 }
 
 type userRequestEntry struct {

@@ -30,6 +30,8 @@ func RefreshAuthProtection() fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param loginData body LoginData true "Login data"
+// @Success 200 {object} LoginResult
+// @Router /api/v1/user/login [post]
 func LoginV1(c *fiber.Ctx) error {
 	if isRateLimited(c) {
 		return apiHandlers.SendErrPermissionDenied(c)
@@ -59,6 +61,14 @@ func LoginV1(c *fiber.Ctx) error {
 	})
 }
 
+// AuthV1 godoc
+// @Summary Refresh the access token
+// @Description Allows a user to refresh the access token
+// @Tags User
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} AuthResult
+// @Router /api/v1/user/login [post]
 func AuthV1(c *fiber.Ctx) error {
 	if isRateLimited(c) {
 		return apiHandlers.SendErrPermissionDenied(c)
@@ -87,5 +97,33 @@ func AuthV1(c *fiber.Ctx) error {
 		AccessToken:  GenerateAccessToken(userInfo),
 		RefreshToken: GenerateRefreshToken(userInfo),
 		Expiration:   getLoginExpiration(),
+	})
+}
+
+// GetMeV1 godoc
+// @Summary Get the user's information
+// @Description Allows a user to get their own information
+// @Tags User
+// @Produce json
+// @Security Bearer
+// @Success 200 {object} MeResult
+// @Router /api/v1/user/me [get]
+func GetMeV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	return apiHandlers.SendResult(c, &MeResult{
+		UserId:   userInfo.UserId,
+		FullName: userInfo.FullName,
+		Role:     userInfo.Role.ToString(),
 	})
 }
