@@ -1,6 +1,7 @@
 package userHandlers
 
 import (
+	"OnlineExams/src/database"
 	"sync"
 	"time"
 )
@@ -32,6 +33,16 @@ type AuthResult struct {
 
 type MeResult struct {
 	UserId   string `json:"user_id"`
+	FullName string `json:"full_name"`
+	Role     string `json:"role"`
+}
+
+type CreateUserData = database.NewUserData
+
+// CreateUserResult is the result of creating a new user.
+type CreateUserResult struct {
+	UserId   string `json:"user_id"`
+	Email    string `json:"email"`
 	FullName string `json:"full_name"`
 	Role     string `json:"role"`
 }

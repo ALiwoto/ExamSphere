@@ -1,4 +1,23 @@
 definitions:
+  apiHandlers.EndpointError:
+    properties:
+      code:
+        type: integer
+      date:
+        type: string
+      message:
+        type: string
+      origin:
+        type: string
+    type: object
+  apiHandlers.EndpointResponse:
+    properties:
+      error:
+        $ref: '#/definitions/apiHandlers.EndpointError'
+      result: {}
+      success:
+        type: boolean
+    type: object
   userHandlers.AuthResult:
     properties:
       access_token:
@@ -8,6 +27,30 @@ definitions:
       full_name:
         type: string
       refresh_token:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  userHandlers.CreateUserData:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  userHandlers.CreateUserResult:
+    properties:
+      email:
+        type: string
+      full_name:
         type: string
       role:
         type: string
@@ -48,34 +91,112 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/user/login:
+  /api/v1/user/create:
     post:
-      description: Allows a user to refresh the access token
+      consumes:
+      - application/json
+      description: Allows a user to create a new user
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Create user data
+        in: body
+        name: createUserData
+        required: true
+        schema:
+          $ref: '#/definitions/userHandlers.CreateUserData'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/userHandlers.AuthResult'
-      security:
-      - Bearer: []
-      summary: Refresh the access token
+            allOf:
+            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/userHandlers.CreateUserResult'
+              type: object
+      summary: Create a new user
+      tags:
+      - User
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to login to the system and obtain access/refresh
+        tokens
+      parameters:
+      - description: Login data
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/userHandlers.LoginData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/userHandlers.LoginResult'
+              type: object
+      summary: Login to the system
       tags:
       - User
   /api/v1/user/me:
     get:
       description: Allows a user to get their own information
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/userHandlers.MeResult'
-      security:
-      - Bearer: []
+            allOf:
+            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/userHandlers.MeResult'
+              type: object
       summary: Get the user's information
+      tags:
+      - User
+  /api/v1/user/reAuth:
+    post:
+      description: Allows a user to refresh their access token
+      parameters:
+      - description: Refresh token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/userHandlers.AuthResult'
+              type: object
+      summary: Refresh the access token
       tags:
       - User
 swagger: "2.0"

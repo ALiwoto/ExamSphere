@@ -53,24 +53,15 @@ func GetUserInfoByPass(userId, password string) *UserInfo {
 			return user
 		}
 
-		// add an artificial user
-		user = &UserInfo{
-			UserId:   userId,
-			Password: password,
-			FullName: "Administrator",
-			Role:     appValues.UserRoleOwner,
-			AuthHash: hashing.GenerateAuthHash(),
-		}
-		usersInfoMap.Add(userId, user)
-
-		return user
+		return createArtificialOwnerUser(userId)
 	}
 
 	info := usersInfoMap.Get(userId)
+	var err error
 	if info == valueUserNotFound {
 		return nil
 	} else if info == nil {
-		info, err := getUserFromDB(userId)
+		info, err = getUserFromDB(userId)
 		if err != nil {
 			if err == ErrUserNotFound {
 				usersInfoMap.Add(userId, valueUserNotFound)
@@ -85,6 +76,55 @@ func GetUserInfoByPass(userId, password string) *UserInfo {
 		return nil
 	}
 
+	return info
+}
+
+// GetUserByUserId returns a user by their user-id.
+// If the user is not found (e.g. the id does not exist), the error will always be
+// ErrUserNotFound; anything other than that should be treated as an internal error.
+func GetUserByUserId(userId string) (*UserInfo, error) {
+	userId = appValues.NormalizeUserId(userId)
+	if userId == "" {
+		return nil, ErrUserNotFound
+	}
+
+	info := usersInfoMap.Get(userId)
+	var err error
+	if info == valueUserNotFound {
+		return nil, ErrUserNotFound
+	} else if info == nil {
+		if appConfig.IsOwnerUsername(userId) {
+			return createArtificialOwnerUser(userId), nil
+		}
+
+		info, err = getUserFromDB(userId)
+		if err != nil {
+			if err == ErrUserNotFound {
+				usersInfoMap.Add(userId, valueUserNotFound)
+			}
+
+			return nil, err
+		}
+
+		if info == nil || info.UserId != userId {
+			return nil, ErrInternalDatabaseError
+		}
+
+		usersInfoMap.Add(userId, info)
+	}
+
+	return info, nil
+}
+
+func createArtificialOwnerUser(userId string) *UserInfo {
+	info := &UserInfo{
+		UserId:   userId,
+		FullName: "Administrator",
+		Role:     appValues.UserRoleOwner,
+		AuthHash: hashing.GenerateAuthHash(),
+	}
+
+	usersInfoMap.Add(userId, info)
 	return info
 }
 
@@ -108,13 +148,14 @@ func getUserFromDB(userId string) (*UserInfo, error) {
 	return info, nil
 }
 
-func CreateNewUser(data *NewUserData) error {
+func CreateNewUser(data *NewUserData) (*UserInfo, error) {
 	data.UserId = strings.TrimSpace(strings.ToLower(data.UserId))
-	if usersInfoMap.Exists(data.UserId) {
-		return ErrUserAlreadyExists
+	info := usersInfoMap.Get(data.UserId)
+	if info != nil && info != valueUserNotFound && info.UserId == data.UserId {
+		return nil, ErrUserAlreadyExists
 	}
 
-	info := &UserInfo{
+	info = &UserInfo{
 		UserId:   data.UserId,
 		FullName: data.FullName,
 		Email:    data.Email,
@@ -141,12 +182,12 @@ func CreateNewUser(data *NewUserData) error {
 		info.Role,
 	).Scan(&newUserId)
 	if err != nil {
-		return err
+		return nil, err
 	} else if newUserId != info.UserId {
 		logging.Error("CreateNewUser: failed to create user: ", newUserId, " != ", info.UserId)
-		return ErrInternalDatabaseError
+		return nil, ErrInternalDatabaseError
 	}
 
 	usersInfoMap.Add(newUserId, info)
-	return nil
+	return info, nil
 }

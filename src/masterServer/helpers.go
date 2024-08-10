@@ -51,10 +51,12 @@ func LoadHandlersV1(app *fiber.App) {
 
 	// user handlers
 	v1.Post("/user/login", userHandlers.LoginV1)
-	v1.Post("/user/auth", refreshAuthProtection, userHandlers.AuthV1)
+	v1.Post("/user/reAuth", refreshAuthProtection, userHandlers.ReAuthV1)
 	v1.Get("/user/me", authProtection, userHandlers.GetMeV1)
+	v1.Post("/user/create", authProtection, userHandlers.CreateUserV1)
 }
 
+// @securityDefinitions.basic BasicAuth
 func LoadSwaggerHandler(app *fiber.App) {
 	app.Get("/swagger/swagger.*", swaggerHandlers.GetSwagger)
 

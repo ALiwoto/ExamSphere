@@ -32,17 +32,11 @@ CREATE OR REPLACE FUNCTION create_user_info(
 DECLARE
     new_user_id VARCHAR(16);
 BEGIN
-    BEGIN
-        INSERT INTO "user_info" (user_id, full_name, email, auth_hash, password, role)
-        VALUES (p_user_id, p_full_name, p_email, p_auth_hash, p_password, p_role)
-        RETURNING user_id INTO new_user_id;
-        
-        RETURN new_user_id;
-    EXCEPTION
-        WHEN OTHERS THEN
-            ROLLBACK;
-            RAISE;
-    END;
+    INSERT INTO "user_info" (user_id, full_name, email, auth_hash, password, role)
+    VALUES (p_user_id, p_full_name, p_email, p_auth_hash, p_password, p_role)
+    RETURNING user_id INTO new_user_id;
+    
+    RETURN new_user_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -56,16 +50,10 @@ BEGIN
         RAISE EXCEPTION 'Password and auth_hash cannot be the same';
     END IF;
 
-    BEGIN
-        UPDATE "user_info"
-        SET password = p_new_password,
-            auth_hash = p_auth_hash
-        WHERE user_id = p_user_id;
-    EXCEPTION
-        WHEN OTHERS THEN
-            ROLLBACK;
-            RAISE;
-    END;
+    UPDATE "user_info"
+    SET password = p_new_password,
+        auth_hash = p_auth_hash
+    WHERE user_id = p_user_id;
 END;
 $$ LANGUAGE plpgsql;
 

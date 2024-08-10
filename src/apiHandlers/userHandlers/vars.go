@@ -1,6 +1,7 @@
 package userHandlers
 
 import (
+	"sync"
 	"time"
 
 	"github.com/ALiwoto/ssg/ssg"
@@ -15,4 +16,8 @@ var (
 
 		return m
 	}()
+)
+
+var (
+	createUserMutex = &sync.Mutex{}
 )

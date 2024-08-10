@@ -31,5 +31,6 @@ type NewUserData struct {
 	FullName    string             `json:"full_name"`
 	Email       string             `json:"email"`
 	RawPassword string             `json:"password"`
-	Role        appValues.UserRole `json:"role"`
+	Role        appValues.UserRole `json:"-"`
+	RoleStr     string             `json:"role"`
 }
