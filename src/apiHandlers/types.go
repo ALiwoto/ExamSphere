@@ -1,5 +1,7 @@
 package apiHandlers
 
+type APIErrorCode int
+
 type EndpointResponse struct {
 	Success bool           `json:"success"`
 	Result  any            `json:"result"`
@@ -7,8 +9,8 @@ type EndpointResponse struct {
 }
 
 type EndpointError struct {
-	ErrorCode int    `json:"code"`
-	Message   string `json:"message"`
-	Origin    string `json:"origin"`
-	Date      string `json:"date"`
+	ErrorCode APIErrorCode `json:"code"`
+	Message   string       `json:"message"`
+	Origin    string       `json:"origin"`
+	Date      string       `json:"date"`
 }

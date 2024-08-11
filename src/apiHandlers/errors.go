@@ -45,43 +45,43 @@ const (
 
 // error codes
 const (
-	ErrCodeMalformedJWT               = 2100
-	ErrCodeInvalidJWT                 = 2101
-	ErrCodeInvalidBodyData            = 2102
-	ErrCodeInvalidUsernamePass        = 2103
-	ErrCodeInvalidAuth                = 2104
-	ErrCodePermissionDenied           = 2105
-	ErrCodeInvalidInputPass           = 2106
-	ErrCodeUsernameExists             = 2107
-	ErrCodeInternalServerError        = 2108
-	ErrCodeInvalidFileData            = 2109
-	ErrCodeInvalidPhoneNumber         = 2110
-	ErrCodePhoneNumberAlreadyImported = 2111
-	ErrCodeInvalidUsername            = 2112
-	ErrCodeNoPhonesDonated            = 2113
-	ErrCodeAgentNotConnected          = 2114
-	ErrCodeInvalidPagination          = 2115
-	ErrCodeMaxContactImportLimit      = 2116
-	ErrCodePhoneNumberNotFound        = 2117
-	ErrCodeParameterRequired          = 2118
-	ErrCodeUserBanned                 = 2119
-	ErrCodeLabelInfoNotFound          = 2120
-	ErrCodeLabelAlreadyApplied        = 2121
-	ErrCodeLabelAlreadyExistsByName   = 2122
-	ErrCodeTooManyChatLabelInfo       = 2123
-	ErrCodeLabelNameTooLong           = 2124
-	ErrCodeLabelDescriptionTooLong    = 2125
-	ErrCodeInvalidColor               = 2126
-	ErrCodeLabelNotApplied            = 2127
-	ErrCodeCannotDeleteBuiltInLabel   = 2128
-	ErrCodeDuplicatePhoneNumber       = 2129
-	ErrCodePhoneNotWorking            = 2130
-	ErrCodeInvalidPmsPass             = 2131
-	ErrCodeInvalidAgentId             = 2132
-	ErrCodeInvalidAppSettingName      = 2133
-	ErrCodeAppSettingNotFound         = 2134
-	ErrCodeTextEmpty                  = 2135
-	ErrCodeTextTooLong                = 2136
-	ErrCodeInvalidClientRId           = 2137
-	ErrCodeInvalidCaptcha             = 2138
+	ErrCodeMalformedJWT APIErrorCode = 2100 + iota
+	ErrCodeInvalidJWT
+	ErrCodeInvalidBodyData
+	ErrCodeInvalidUsernamePass
+	ErrCodeInvalidAuth
+	ErrCodePermissionDenied
+	ErrCodeInvalidInputPass
+	ErrCodeUsernameExists
+	ErrCodeInternalServerError
+	ErrCodeInvalidFileData
+	ErrCodeInvalidPhoneNumber
+	ErrCodePhoneNumberAlreadyImported
+	ErrCodeInvalidUsername
+	ErrCodeNoPhonesDonated
+	ErrCodeAgentNotConnected
+	ErrCodeInvalidPagination
+	ErrCodeMaxContactImportLimit
+	ErrCodePhoneNumberNotFound
+	ErrCodeParameterRequired
+	ErrCodeUserBanned
+	ErrCodeLabelInfoNotFound
+	ErrCodeLabelAlreadyApplied
+	ErrCodeLabelAlreadyExistsByName
+	ErrCodeTooManyChatLabelInfo
+	ErrCodeLabelNameTooLong
+	ErrCodeLabelDescriptionTooLong
+	ErrCodeInvalidColor
+	ErrCodeLabelNotApplied
+	ErrCodeCannotDeleteBuiltInLabel
+	ErrCodeDuplicatePhoneNumber
+	ErrCodePhoneNotWorking
+	ErrCodeInvalidPmsPass
+	ErrCodeInvalidAgentId
+	ErrCodeInvalidAppSettingName
+	ErrCodeAppSettingNotFound
+	ErrCodeTextEmpty
+	ErrCodeTextTooLong
+	ErrCodeInvalidClientRId
+	ErrCodeInvalidCaptcha
 )

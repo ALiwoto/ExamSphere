@@ -48,12 +48,13 @@ func GenerateCaptchaV1(c *fiber.Ctx) error {
 			&color.RGBA{0, 0, 0, 0},
 			nil, []string{},
 		)
+	case "digit", "int":
+		fallthrough
 	default:
 		driver = base64Captcha.NewDriverDigit(
 			CaptchaSizeHeight, CaptchaSizeWidth,
 			CaptchaCharsLength,
-			0,
-			6,
+			2, 6,
 		)
 	}
 

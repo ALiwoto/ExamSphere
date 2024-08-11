@@ -11,7 +11,7 @@ const (
 
 	// captchaType is the type of captcha sent to users.
 	// Add this to config later (maybe).
-	captchaType = "string"
+	captchaType = "digit"
 
 	// StringCaptchaValues is the set of characters that can be used in the captcha.
 	StringCaptchaValues = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
