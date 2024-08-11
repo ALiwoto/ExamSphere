@@ -39,6 +39,8 @@ const (
 	ErrAppSettingNotFound         = "App setting with name '%s' not found"
 	ErrTextEmpty                  = "Text is empty"
 	ErrTextTooLong                = "The provided text is too long"
+	ErrInvalidClientRId           = "Invalid client rId provided: %s"
+	ErrInvalidCaptcha             = "Invalid captcha id/answer provided"
 )
 
 // error codes
@@ -80,4 +82,6 @@ const (
 	ErrCodeAppSettingNotFound         = 2134
 	ErrCodeTextEmpty                  = 2135
 	ErrCodeTextTooLong                = 2136
+	ErrCodeInvalidClientRId           = 2137
+	ErrCodeInvalidCaptcha             = 2138
 )

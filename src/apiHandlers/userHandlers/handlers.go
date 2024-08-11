@@ -29,6 +29,7 @@ func RefreshAuthProtection() fiber.Handler {
 // LoginV1 godoc
 // @Summary Login to the system
 // @Description Allows a user to login to the system and obtain access/refresh tokens
+// @ID loginV1
 // @Tags User
 // @Accept json
 // @Produce json
@@ -54,6 +55,16 @@ func LoginV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrUserBanned(c)
 	}
 
+	if appValues.VerifyCaptchaHandler != nil {
+		// check captcha if and only if the captcha verifier is dependency-injected
+		if !appValues.VerifyCaptchaHandler(
+			loginInput.ClientRId,
+			loginInput.CaptchaId, loginInput.CaptchaAnswer,
+		) {
+			return apiHandlers.SendErrInvalidCaptcha(c)
+		}
+	}
+
 	return apiHandlers.SendResult(c, &LoginResult{
 		UserId:       userInfo.UserId,
 		FullName:     userInfo.FullName,
@@ -67,6 +78,7 @@ func LoginV1(c *fiber.Ctx) error {
 // ReAuthV1 godoc
 // @Summary Refresh the access token
 // @Description Allows a user to refresh their access token
+// @ID reAuthV1
 // @Tags User
 // @Produce json
 // @Param Authorization header string true "Refresh token"
@@ -106,6 +118,7 @@ func ReAuthV1(c *fiber.Ctx) error {
 // GetMeV1 godoc
 // @Summary Get the user's information
 // @Description Allows a user to get their own information
+// @ID getMeV1
 // @Tags User
 // @Produce json
 // @Param Authorization header string true "Authorization token"
@@ -134,6 +147,7 @@ func GetMeV1(c *fiber.Ctx) error {
 // CreateUserV1 godoc
 // @Summary Create a new user
 // @Description Allows a user to create a new user
+// @ID createUserV1
 // @Tags User
 // @Accept json
 // @Produce json

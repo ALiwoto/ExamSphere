@@ -1,6 +1,7 @@
 package masterServer
 
 import (
+	"OnlineExams/src/apiHandlers/captchaHandlers"
 	"OnlineExams/src/apiHandlers/swaggerHandlers"
 	"OnlineExams/src/apiHandlers/userHandlers"
 	"OnlineExams/src/core/appConfig"
@@ -54,6 +55,9 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/user/reAuth", refreshAuthProtection, userHandlers.ReAuthV1)
 	v1.Get("/user/me", authProtection, userHandlers.GetMeV1)
 	v1.Post("/user/create", authProtection, userHandlers.CreateUserV1)
+
+	// captcha handlers
+	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)
 }
 
 // @securityDefinitions.basic BasicAuth

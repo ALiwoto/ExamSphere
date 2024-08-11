@@ -117,6 +117,7 @@ func SendResult(c *fiber.Ctx, data any) error {
 }
 
 func SendError(status int, c *fiber.Ctx, err *EndpointError) error {
+	err.Date = time.Now().Format(time.RFC3339)
 	return c.Status(status).JSON(&EndpointResponse{
 		Success: false,
 		Error:   err,
@@ -415,6 +416,22 @@ func SendErrTextTooLong(c *fiber.Ctx) error {
 	return SendError(fiber.StatusBadRequest, c, &EndpointError{
 		ErrorCode: ErrCodeTextTooLong,
 		Message:   ErrTextTooLong,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrInvalidClientRId(c *fiber.Ctx, rId string) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeInvalidClientRId,
+		Message:   fmt.Sprintf(ErrInvalidClientRId, rId),
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrInvalidCaptcha(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeInvalidCaptcha,
+		Message:   ErrInvalidCaptcha,
 		Origin:    c.Path(),
 	})
 }

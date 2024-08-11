@@ -7,8 +7,11 @@ import (
 )
 
 type LoginData struct {
-	UserId   string `json:"user_id"`
-	Password string `json:"password"`
+	UserId        string `json:"user_id"`
+	Password      string `json:"password"`
+	ClientRId     string `json:"client_rid"`
+	CaptchaId     string `json:"captcha_id"`
+	CaptchaAnswer string `json:"captcha_answer"`
 }
 
 type LoginResult struct {

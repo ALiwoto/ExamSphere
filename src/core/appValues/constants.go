@@ -11,4 +11,7 @@ const (
 const (
 	MinUserIdLength = 2
 	MaxUserIdLength = 16
+
+	MinClientRIDLength = 8
+	MaxClientRIDLength = 16
 )

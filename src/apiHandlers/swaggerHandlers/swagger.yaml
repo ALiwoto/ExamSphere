@@ -18,6 +18,15 @@ definitions:
       success:
         type: boolean
     type: object
+  captchaHandlers.GetCaptchaResult:
+    properties:
+      captcha:
+        type: string
+      captcha_id:
+        type: string
+      client_r_id:
+        type: string
+    type: object
   userHandlers.AuthResult:
     properties:
       access_token:
@@ -59,6 +68,12 @@ definitions:
     type: object
   userHandlers.LoginData:
     properties:
+      captcha_answer:
+        type: string
+      captcha_id:
+        type: string
+      client_rid:
+        type: string
       password:
         type: string
       user_id:
@@ -90,12 +105,41 @@ definitions:
     type: object
 info:
   contact: {}
+  description: This is the API for the ExamSphere system
+  title: ExamSphere API
+  version: "1.0"
 paths:
+  /api/v1/captcha/generate:
+    get:
+      description: Allows a client (with Client-R-ID) to generate a captcha
+      operationId: GenerateCaptchaV1
+      parameters:
+      - description: Client-R-ID
+        in: query
+        name: Client-R-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/captchaHandlers.GetCaptchaResult'
+              type: object
+      summary: Get a captcha
+      tags:
+      - User
   /api/v1/user/create:
     post:
       consumes:
       - application/json
       description: Allows a user to create a new user
+      operationId: createUserV1
       parameters:
       - description: Authorization token
         in: header
@@ -129,6 +173,7 @@ paths:
       - application/json
       description: Allows a user to login to the system and obtain access/refresh
         tokens
+      operationId: loginV1
       parameters:
       - description: Login data
         in: body
@@ -154,6 +199,7 @@ paths:
   /api/v1/user/me:
     get:
       description: Allows a user to get their own information
+      operationId: getMeV1
       parameters:
       - description: Authorization token
         in: header
@@ -178,6 +224,7 @@ paths:
   /api/v1/user/reAuth:
     post:
       description: Allows a user to refresh their access token
+      operationId: reAuthV1
       parameters:
       - description: Refresh token
         in: header

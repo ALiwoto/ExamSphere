@@ -31,3 +31,13 @@ func IsUserIdValid(userId string) bool {
 	return len(userId) >= MinUserIdLength &&
 		len(userId) <= MaxUserIdLength
 }
+
+func IsClientRIDValid(clientRID string) bool {
+	clientRID = strings.ToLower(strings.TrimSpace(clientRID))
+	if strings.Contains(clientRID, " ") {
+		return false
+	}
+
+	return len(clientRID) >= MinClientRIDLength &&
+		len(clientRID) <= MaxClientRIDLength
+}

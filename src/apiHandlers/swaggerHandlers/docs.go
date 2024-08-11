@@ -15,6 +15,48 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/captcha/generate": {
+            "get": {
+                "description": "Allows a client (with Client-R-ID) to generate a captcha",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get a captcha",
+                "operationId": "GenerateCaptchaV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client-R-ID",
+                        "name": "Client-R-ID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/captchaHandlers.GetCaptchaResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/create": {
             "post": {
                 "description": "Allows a user to create a new user",
@@ -28,6 +70,7 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Create a new user",
+                "operationId": "createUserV1",
                 "parameters": [
                     {
                         "type": "string",
@@ -81,6 +124,7 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Login to the system",
+                "operationId": "loginV1",
                 "parameters": [
                     {
                         "description": "Login data",
@@ -124,6 +168,7 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Get the user's information",
+                "operationId": "getMeV1",
                 "parameters": [
                     {
                         "type": "string",
@@ -165,6 +210,7 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Refresh the access token",
+                "operationId": "reAuthV1",
                 "parameters": [
                     {
                         "type": "string",
@@ -224,6 +270,20 @@ const docTemplate = `{
                 "result": {},
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "captchaHandlers.GetCaptchaResult": {
+            "type": "object",
+            "properties": {
+                "captcha": {
+                    "type": "string"
+                },
+                "captcha_id": {
+                    "type": "string"
+                },
+                "client_r_id": {
+                    "type": "string"
                 }
             }
         },
@@ -290,6 +350,15 @@ const docTemplate = `{
         "userHandlers.LoginData": {
             "type": "object",
             "properties": {
+                "captcha_answer": {
+                    "type": "string"
+                },
+                "captcha_id": {
+                    "type": "string"
+                },
+                "client_rid": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 },
@@ -340,12 +409,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "ExamSphere API",
+	Description:      "This is the API for the ExamSphere system",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
