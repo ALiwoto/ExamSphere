@@ -46,15 +46,6 @@ func LoginV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	userInfo := database.GetUserInfoByPass(
-		loginInput.UserId, loginInput.Password,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidUsernamePass(c)
-	} else if userInfo.IsBanned {
-		return apiHandlers.SendErrUserBanned(c)
-	}
-
 	if appValues.VerifyCaptchaHandler != nil {
 		// check captcha if and only if the captcha verifier is dependency-injected
 		if !appValues.VerifyCaptchaHandler(
@@ -63,6 +54,15 @@ func LoginV1(c *fiber.Ctx) error {
 		) {
 			return apiHandlers.SendErrInvalidCaptcha(c)
 		}
+	}
+
+	userInfo := database.GetUserInfoByPass(
+		loginInput.UserId, loginInput.Password,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidUsernamePass(c)
+	} else if userInfo.IsBanned {
+		return apiHandlers.SendErrUserBanned(c)
 	}
 
 	return apiHandlers.SendResult(c, &LoginResult{
