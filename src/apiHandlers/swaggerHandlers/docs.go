@@ -31,7 +31,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Client-R-ID",
                         "name": "Client-R-ID",
-                        "in": "query",
+                        "in": "header",
                         "required": true
                     }
                 ],

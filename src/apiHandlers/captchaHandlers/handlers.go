@@ -17,13 +17,24 @@ import (
 // @Description Allows a client (with Client-R-ID) to generate a captcha
 // @Tags User
 // @Produce json
-// @Param Client-R-ID query string true "Client-R-ID"
+// @Param Client-R-ID header string true "Client-R-ID"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetCaptchaResult}
 // @Router /api/v1/captcha/generate [get]
 func GenerateCaptchaV1(c *fiber.Ctx) error {
-	clientRId := fUtils.CopyString(c.Query("Client-R-ID"))
+	clientRId := fUtils.CopyString(c.Get("Client-R-ID"))
 	if !appValues.IsClientRIDValid(clientRId) {
 		return apiHandlers.SendErrInvalidClientRId(c, clientRId)
+	}
+
+	stored := clientRIDMap.Get(clientRId)
+	if stored != nil {
+		// clear the previously generated captcha
+		_ = captchaStore.Get(stored.CaptchaID, true)
+	} else {
+		stored = &storedCaptchaInfo{
+			ClientRID: clientRId,
+		}
+		clientRIDMap.Add(stored.ClientRID, stored)
 	}
 
 	// add rate-limiting here later in future...
@@ -53,6 +64,7 @@ func GenerateCaptchaV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
+	stored.CaptchaID = id
 	return apiHandlers.SendResult(c, &GetCaptchaResult{
 		CaptchaId: id,
 		Captcha:   b64s,

@@ -115,7 +115,7 @@ paths:
       operationId: GenerateCaptchaV1
       parameters:
       - description: Client-R-ID
-        in: query
+        in: header
         name: Client-R-ID
         required: true
         type: string
