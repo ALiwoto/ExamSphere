@@ -29,6 +29,7 @@ func RunServer() error {
 
 	LoadMiddlewares(appValues.ServerEngine)
 	LoadHandlersV1(appValues.ServerEngine)
+	LoadUIFiles(appValues.ServerEngine)
 
 	if appConfig.IsDebug() {
 		LoadSwaggerHandler(appValues.ServerEngine)
