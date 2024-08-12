@@ -1,9 +1,9 @@
 package userHandlers
 
 import (
-	"OnlineExams/src/apiHandlers"
-	"OnlineExams/src/core/appConfig"
-	"OnlineExams/src/database"
+	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/database"
 
 	"strings"
 	"sync"

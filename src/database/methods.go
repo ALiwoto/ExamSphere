@@ -1,7 +1,7 @@
 package database
 
 import (
-	"OnlineExams/src/core/utils/logging"
+	"ExamSphere/src/core/utils/logging"
 	"context"
 
 	"github.com/jackc/pgx/v5"

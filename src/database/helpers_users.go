@@ -1,10 +1,10 @@
 package database
 
 import (
-	"OnlineExams/src/core/appConfig"
-	"OnlineExams/src/core/appValues"
-	"OnlineExams/src/core/utils/hashing"
-	"OnlineExams/src/core/utils/logging"
+	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/hashing"
+	"ExamSphere/src/core/utils/logging"
 	"context"
 	"strings"
 

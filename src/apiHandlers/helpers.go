@@ -1,7 +1,7 @@
 package apiHandlers
 
 import (
-	"OnlineExams/src/core/appValues"
+	"ExamSphere/src/core/appValues"
 	"fmt"
 	"time"
 

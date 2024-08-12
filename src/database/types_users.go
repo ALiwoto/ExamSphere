@@ -1,7 +1,7 @@
 package database
 
 import (
-	"OnlineExams/src/core/appValues"
+	"ExamSphere/src/core/appValues"
 	"time"
 )
 

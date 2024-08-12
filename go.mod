@@ -1,4 +1,4 @@
-module OnlineExams
+module ExamSphere
 
 go 1.22.3
 

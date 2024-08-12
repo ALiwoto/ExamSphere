@@ -1,6 +1,6 @@
 package database
 
-import "OnlineExams/src/core/appValues"
+import "ExamSphere/src/core/appValues"
 
 // CanCreateRole returns true if and only if the current user has
 // the permission to create a new user with the specified role.

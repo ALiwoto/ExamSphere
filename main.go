@@ -1,9 +1,9 @@
 package main
 
 import (
-	"OnlineExams/src/core/appConfig"
-	"OnlineExams/src/core/utils/logging"
-	"OnlineExams/src/masterServer"
+	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/core/utils/logging"
+	"ExamSphere/src/masterServer"
 )
 
 // @title           ExamSphere API

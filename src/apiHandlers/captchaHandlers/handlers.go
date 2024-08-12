@@ -1,9 +1,9 @@
 package captchaHandlers
 
 import (
-	"OnlineExams/src/apiHandlers"
-	"OnlineExams/src/core/appValues"
-	"OnlineExams/src/core/utils/logging"
+	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/logging"
 	"image/color"
 
 	"github.com/gofiber/fiber/v2"

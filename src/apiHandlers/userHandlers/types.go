@@ -1,7 +1,7 @@
 package userHandlers
 
 import (
-	"OnlineExams/src/database"
+	"ExamSphere/src/database"
 	"sync"
 	"time"
 )

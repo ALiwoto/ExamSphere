@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"OnlineExams/src/core/utils/timeUtils"
+	"ExamSphere/src/core/utils/timeUtils"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"OnlineExams/src/core/appValues"
+	"ExamSphere/src/core/appValues"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

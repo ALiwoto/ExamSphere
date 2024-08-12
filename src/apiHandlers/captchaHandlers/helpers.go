@@ -1,6 +1,6 @@
 package captchaHandlers
 
-import "OnlineExams/src/core/appValues"
+import "ExamSphere/src/core/appValues"
 
 func init() {
 	appValues.VerifyCaptchaHandler = VerifyCaptcha

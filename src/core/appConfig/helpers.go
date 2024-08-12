@@ -1,7 +1,7 @@
 package appConfig
 
 import (
-	"OnlineExams/src/core/utils/hashing"
+	"ExamSphere/src/core/utils/hashing"
 	"encoding/base64"
 	"errors"
 	"strings"

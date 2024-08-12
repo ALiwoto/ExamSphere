@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"OnlineExams/src/core/utils/stringUtils"
+	"ExamSphere/src/core/utils/stringUtils"
 )
 
 // GenerateCurrentDateTime format of the date time will be dd/MM/yyyy HH:mm:ss

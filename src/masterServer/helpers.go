@@ -1,13 +1,13 @@
 package masterServer
 
 import (
-	"OnlineExams/src/apiHandlers/captchaHandlers"
-	"OnlineExams/src/apiHandlers/swaggerHandlers"
-	"OnlineExams/src/apiHandlers/userHandlers"
-	"OnlineExams/src/core/appConfig"
-	"OnlineExams/src/core/appValues"
-	"OnlineExams/src/core/utils/logging"
-	"OnlineExams/src/database"
+	"ExamSphere/src/apiHandlers/captchaHandlers"
+	"ExamSphere/src/apiHandlers/swaggerHandlers"
+	"ExamSphere/src/apiHandlers/userHandlers"
+	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/logging"
+	"ExamSphere/src/database"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

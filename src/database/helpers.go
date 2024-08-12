@@ -1,7 +1,7 @@
 package database
 
 import (
-	"OnlineExams/src/core/appConfig"
+	"ExamSphere/src/core/appConfig"
 	"context"
 	"fmt"
 

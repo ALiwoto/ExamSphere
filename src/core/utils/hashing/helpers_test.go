@@ -3,7 +3,7 @@ package hashing_test
 import (
 	"testing"
 
-	"OnlineExams/src/core/utils/hashing"
+	"ExamSphere/src/core/utils/hashing"
 )
 
 func TestSHA256(t *testing.T) {

@@ -1,11 +1,11 @@
 package userHandlers
 
 import (
-	"OnlineExams/src/apiHandlers"
-	"OnlineExams/src/core/appConfig"
-	"OnlineExams/src/core/appValues"
-	"OnlineExams/src/core/utils/logging"
-	"OnlineExams/src/database"
+	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/logging"
+	"ExamSphere/src/database"
 	"strings"
 
 	jwtware "github.com/gofiber/contrib/jwt"
