@@ -8,6 +8,7 @@ import (
 	"ExamSphere/src/core/appValues"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -82,6 +83,20 @@ func LoadMiddlewares(app *fiber.App) {
 		c.Set("X-Powered-By", "PHP/8.2.8")
 
 		return c.Next()
+	})
+}
+
+func LoadUIFiles(app *fiber.App) {
+	app.Static("/", "./ui", fiber.Static{
+		Next: func(c *fiber.Ctx) bool {
+			thePath := c.Path()
+			if !strings.HasSuffix(thePath, ".html") &&
+				!strings.HasSuffix(thePath, "/") {
+				c.Path(thePath + ".html")
+			}
+
+			return false
+		},
 	})
 }
 
