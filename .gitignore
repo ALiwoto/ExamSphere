@@ -27,4 +27,4 @@ config.ini
 
 ui/*
 !ui/.gitkeep
-./ExamSphere
+ExamSphere
