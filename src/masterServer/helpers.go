@@ -2,6 +2,7 @@ package masterServer
 
 import (
 	"ExamSphere/src/apiHandlers/captchaHandlers"
+	"ExamSphere/src/apiHandlers/sudoHandlers"
 	"ExamSphere/src/apiHandlers/swaggerHandlers"
 	"ExamSphere/src/apiHandlers/userHandlers"
 	"ExamSphere/src/core/appConfig"
@@ -59,6 +60,9 @@ func LoadHandlersV1(app *fiber.App) {
 
 	// captcha handlers
 	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)
+
+	// sudo handlers
+	v1.Post("/sudo/exit", sudoHandlers.ExitV1)
 }
 
 // @securityDefinitions.basic BasicAuth
