@@ -1,6 +1,7 @@
 package userHandlers
 
 import (
+	"ExamSphere/src/core/appValues"
 	"ExamSphere/src/database"
 	"sync"
 	"time"
@@ -18,10 +19,10 @@ type LoginResult struct {
 	UserId   string `json:"user_id"`
 	FullName string `json:"full_name"`
 
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	Expiration   int64  `json:"expiration"`
-	Role         string `json:"role"`
+	AccessToken  string             `json:"access_token"`
+	RefreshToken string             `json:"refresh_token"`
+	Expiration   int64              `json:"expiration"`
+	Role         appValues.UserRole `json:"role"`
 }
 
 type AuthResult struct {

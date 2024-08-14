@@ -100,6 +100,20 @@ definitions:
       success:
         type: boolean
     type: object
+  appValues.UserRole:
+    enum:
+    - owner
+    - admin
+    - student
+    - teacher
+    - ""
+    type: string
+    x-enum-varnames:
+    - UserRoleOwner
+    - UserRoleAdmin
+    - UserRoleStudent
+    - UserRoleTeacher
+    - UserRoleUnknown
   captchaHandlers.GetCaptchaResult:
     properties:
       captcha:
@@ -133,7 +147,7 @@ definitions:
       password:
         type: string
       role:
-        type: string
+        $ref: '#/definitions/appValues.UserRole'
       user_id:
         type: string
     type: object
@@ -172,7 +186,7 @@ definitions:
       refresh_token:
         type: string
       role:
-        type: string
+        $ref: '#/definitions/appValues.UserRole'
       user_id:
         type: string
     type: object

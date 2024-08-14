@@ -1,8 +1,6 @@
 package database
 
 import (
-	"ExamSphere/src/core/appValues"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -24,13 +22,4 @@ type DatabaseContainer struct {
 	dialect string
 
 	DatabaseErrorHandler func(action string, attemptIndex int, err error) (retry bool)
-}
-
-type NewUserData struct {
-	UserId      string             `json:"user_id"`
-	FullName    string             `json:"full_name"`
-	Email       string             `json:"email"`
-	RawPassword string             `json:"password"`
-	Role        appValues.UserRole `json:"-"`
-	RoleStr     string             `json:"role"`
 }

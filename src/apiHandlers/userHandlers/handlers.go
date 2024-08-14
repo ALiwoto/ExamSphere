@@ -68,7 +68,7 @@ func LoginV1(c *fiber.Ctx) error {
 	return apiHandlers.SendResult(c, &LoginResult{
 		UserId:       userInfo.UserId,
 		FullName:     userInfo.FullName,
-		Role:         userInfo.Role.ToString(),
+		Role:         userInfo.Role,
 		AccessToken:  GenerateAccessToken(userInfo),
 		RefreshToken: GenerateRefreshToken(userInfo),
 		Expiration:   getLoginExpiration(),
@@ -173,16 +173,14 @@ func CreateUserV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	newRole := appValues.ParseRole(newUserData.RoleStr)
-	if !userInfo.CanCreateRole(newRole) {
-		return apiHandlers.SendErrPermissionDenied(c)
-	} else if newRole.IsInvalid() {
+	if newUserData.Role.IsInvalid() {
 		return apiHandlers.SendErrInvalidBodyData(c)
+	} else if !userInfo.CanCreateRole(newUserData.Role) {
+		return apiHandlers.SendErrPermissionDenied(c)
 	} else if newUserData.Email == "" { // email is mandatory
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	newUserData.Role = newRole
 	createUserMutex.Lock()
 	defer createUserMutex.Unlock()
 

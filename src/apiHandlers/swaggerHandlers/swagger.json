@@ -350,6 +350,23 @@
                 }
             }
         },
+        "appValues.UserRole": {
+            "type": "string",
+            "enum": [
+                "owner",
+                "admin",
+                "student",
+                "teacher",
+                ""
+            ],
+            "x-enum-varnames": [
+                "UserRoleOwner",
+                "UserRoleAdmin",
+                "UserRoleStudent",
+                "UserRoleTeacher",
+                "UserRoleUnknown"
+            ]
+        },
         "captchaHandlers.GetCaptchaResult": {
             "type": "object",
             "properties": {
@@ -400,7 +417,7 @@
                     "type": "string"
                 },
                 "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/appValues.UserRole"
                 },
                 "user_id": {
                     "type": "string"
@@ -460,7 +477,7 @@
                     "type": "string"
                 },
                 "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/appValues.UserRole"
                 },
                 "user_id": {
                     "type": "string"

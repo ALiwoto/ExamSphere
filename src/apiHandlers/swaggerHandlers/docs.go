@@ -358,6 +358,23 @@ const docTemplate = `{
                 }
             }
         },
+        "appValues.UserRole": {
+            "type": "string",
+            "enum": [
+                "owner",
+                "admin",
+                "student",
+                "teacher",
+                ""
+            ],
+            "x-enum-varnames": [
+                "UserRoleOwner",
+                "UserRoleAdmin",
+                "UserRoleStudent",
+                "UserRoleTeacher",
+                "UserRoleUnknown"
+            ]
+        },
         "captchaHandlers.GetCaptchaResult": {
             "type": "object",
             "properties": {
@@ -408,7 +425,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/appValues.UserRole"
                 },
                 "user_id": {
                     "type": "string"
@@ -468,7 +485,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/appValues.UserRole"
                 },
                 "user_id": {
                     "type": "string"

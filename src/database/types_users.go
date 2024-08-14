@@ -35,3 +35,11 @@ type UserInfo struct {
 	// CreatedAt is the time when the user was created.
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type NewUserData struct {
+	UserId      string             `json:"user_id"`
+	FullName    string             `json:"full_name"`
+	Email       string             `json:"email"`
+	RawPassword string             `json:"password"`
+	Role        appValues.UserRole `json:"role"`
+}
