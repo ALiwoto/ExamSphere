@@ -1,5 +1,5 @@
 definitions:
-  apiHandlers.APIErrorCode:
+  APIErrorCode:
     enum:
     - 2100
     - 2101
@@ -81,10 +81,36 @@ definitions:
     - ErrCodeTextTooLong
     - ErrCodeInvalidClientRId
     - ErrCodeInvalidCaptcha
-  apiHandlers.EndpointError:
+  AuthResult:
+    properties:
+      access_token:
+        type: string
+      expiration:
+        type: integer
+      full_name:
+        type: string
+      refresh_token:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  CreateUserResult:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  EndpointError:
     properties:
       code:
-        $ref: '#/definitions/apiHandlers.APIErrorCode'
+        $ref: '#/definitions/APIErrorCode'
       date:
         type: string
       message:
@@ -92,15 +118,53 @@ definitions:
       origin:
         type: string
     type: object
-  apiHandlers.EndpointResponse:
+  EndpointResponse:
     properties:
       error:
-        $ref: '#/definitions/apiHandlers.EndpointError'
+        $ref: '#/definitions/EndpointError'
       result: {}
       success:
         type: boolean
     type: object
-  appValues.UserRole:
+  GetMeResult:
+    properties:
+      full_name:
+        type: string
+      role:
+        $ref: '#/definitions/UserRole'
+      user_id:
+        type: string
+    type: object
+  LoginData:
+    properties:
+      captcha_answer:
+        type: string
+      captcha_id:
+        type: string
+      client_rid:
+        type: string
+      password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  LoginResult:
+    properties:
+      access_token:
+        type: string
+      expiration:
+        type: integer
+      full_name:
+        type: string
+      refresh_token:
+        type: string
+      role:
+        $ref: '#/definitions/UserRole'
+      user_id:
+        type: string
+    type: object
+  UserRole:
+    description: UserRole is the role of the user.
     enum:
     - owner
     - admin
@@ -123,21 +187,6 @@ definitions:
       client_r_id:
         type: string
     type: object
-  userHandlers.AuthResult:
-    properties:
-      access_token:
-        type: string
-      expiration:
-        type: integer
-      full_name:
-        type: string
-      refresh_token:
-        type: string
-      role:
-        type: string
-      user_id:
-        type: string
-    type: object
   userHandlers.CreateUserData:
     properties:
       email:
@@ -147,55 +196,7 @@ definitions:
       password:
         type: string
       role:
-        $ref: '#/definitions/appValues.UserRole'
-      user_id:
-        type: string
-    type: object
-  userHandlers.CreateUserResult:
-    properties:
-      email:
-        type: string
-      full_name:
-        type: string
-      role:
-        type: string
-      user_id:
-        type: string
-    type: object
-  userHandlers.LoginData:
-    properties:
-      captcha_answer:
-        type: string
-      captcha_id:
-        type: string
-      client_rid:
-        type: string
-      password:
-        type: string
-      user_id:
-        type: string
-    type: object
-  userHandlers.LoginResult:
-    properties:
-      access_token:
-        type: string
-      expiration:
-        type: integer
-      full_name:
-        type: string
-      refresh_token:
-        type: string
-      role:
-        $ref: '#/definitions/appValues.UserRole'
-      user_id:
-        type: string
-    type: object
-  userHandlers.MeResult:
-    properties:
-      full_name:
-        type: string
-      role:
-        type: string
+        $ref: '#/definitions/UserRole'
       user_id:
         type: string
     type: object
@@ -222,7 +223,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
                   $ref: '#/definitions/captchaHandlers.GetCaptchaResult'
@@ -255,10 +256,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  $ref: '#/definitions/userHandlers.CreateUserResult'
+                  $ref: '#/definitions/CreateUserResult'
               type: object
       summary: Create a new user
       tags:
@@ -276,7 +277,7 @@ paths:
         name: loginData
         required: true
         schema:
-          $ref: '#/definitions/userHandlers.LoginData'
+          $ref: '#/definitions/LoginData'
       produces:
       - application/json
       responses:
@@ -284,10 +285,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  $ref: '#/definitions/userHandlers.LoginResult'
+                  $ref: '#/definitions/LoginResult'
               type: object
       summary: Login to the system
       tags:
@@ -309,10 +310,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  $ref: '#/definitions/userHandlers.MeResult'
+                  $ref: '#/definitions/GetMeResult'
               type: object
       summary: Get the user's information
       tags:
@@ -334,10 +335,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/apiHandlers.EndpointResponse'
+            - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  $ref: '#/definitions/userHandlers.AuthResult'
+                  $ref: '#/definitions/AuthResult'
               type: object
       summary: Refresh the access token
       tags:

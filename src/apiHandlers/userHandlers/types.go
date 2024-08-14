@@ -13,7 +13,7 @@ type LoginData struct {
 	ClientRId     string `json:"client_rid"`
 	CaptchaId     string `json:"captcha_id"`
 	CaptchaAnswer string `json:"captcha_answer"`
-}
+} // @name LoginData
 
 type LoginResult struct {
 	UserId   string `json:"user_id"`
@@ -23,7 +23,7 @@ type LoginResult struct {
 	RefreshToken string             `json:"refresh_token"`
 	Expiration   int64              `json:"expiration"`
 	Role         appValues.UserRole `json:"role"`
-}
+} // @name LoginResult
 
 type AuthResult struct {
 	UserId   string `json:"user_id"`
@@ -33,13 +33,13 @@ type AuthResult struct {
 	RefreshToken string `json:"refresh_token"`
 	Expiration   int64  `json:"expiration"`
 	Role         string `json:"role"`
-}
+} // @name AuthResult
 
 type MeResult struct {
-	UserId   string `json:"user_id"`
-	FullName string `json:"full_name"`
-	Role     string `json:"role"`
-}
+	UserId   string             `json:"user_id"`
+	FullName string             `json:"full_name"`
+	Role     appValues.UserRole `json:"role"`
+} // @name GetMeResult
 
 type CreateUserData = database.NewUserData
 
@@ -49,7 +49,7 @@ type CreateUserResult struct {
 	Email    string `json:"email"`
 	FullName string `json:"full_name"`
 	Role     string `json:"role"`
-}
+} // @name CreateUserResult
 
 type userRequestEntry struct {
 	RequestPath string

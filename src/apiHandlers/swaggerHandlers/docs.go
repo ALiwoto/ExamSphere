@@ -41,7 +41,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                    "$ref": "#/definitions/EndpointResponse"
                                 },
                                 {
                                     "type": "object",
@@ -95,13 +95,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                    "$ref": "#/definitions/EndpointResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/userHandlers.CreateUserResult"
+                                            "$ref": "#/definitions/CreateUserResult"
                                         }
                                     }
                                 }
@@ -132,7 +132,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userHandlers.LoginData"
+                            "$ref": "#/definitions/LoginData"
                         }
                     }
                 ],
@@ -142,13 +142,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                    "$ref": "#/definitions/EndpointResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/userHandlers.LoginResult"
+                                            "$ref": "#/definitions/LoginResult"
                                         }
                                     }
                                 }
@@ -184,13 +184,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                    "$ref": "#/definitions/EndpointResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/userHandlers.MeResult"
+                                            "$ref": "#/definitions/GetMeResult"
                                         }
                                     }
                                 }
@@ -226,13 +226,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/apiHandlers.EndpointResponse"
+                                    "$ref": "#/definitions/EndpointResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/userHandlers.AuthResult"
+                                            "$ref": "#/definitions/AuthResult"
                                         }
                                     }
                                 }
@@ -244,7 +244,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "apiHandlers.APIErrorCode": {
+        "APIErrorCode": {
             "type": "integer",
             "enum": [
                 2100,
@@ -329,11 +329,51 @@ const docTemplate = `{
                 "ErrCodeInvalidCaptcha"
             ]
         },
-        "apiHandlers.EndpointError": {
+        "AuthResult": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "integer"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateUserResult": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "EndpointError": {
             "type": "object",
             "properties": {
                 "code": {
-                    "$ref": "#/definitions/apiHandlers.APIErrorCode"
+                    "$ref": "#/definitions/APIErrorCode"
                 },
                 "date": {
                     "type": "string"
@@ -346,11 +386,11 @@ const docTemplate = `{
                 }
             }
         },
-        "apiHandlers.EndpointResponse": {
+        "EndpointResponse": {
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/apiHandlers.EndpointError"
+                    "$ref": "#/definitions/EndpointError"
                 },
                 "result": {},
                 "success": {
@@ -358,7 +398,65 @@ const docTemplate = `{
                 }
             }
         },
-        "appValues.UserRole": {
+        "GetMeResult": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "LoginData": {
+            "type": "object",
+            "properties": {
+                "captcha_answer": {
+                    "type": "string"
+                },
+                "captcha_id": {
+                    "type": "string"
+                },
+                "client_rid": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "LoginResult": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "integer"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserRole": {
+            "description": "UserRole is the role of the user.",
             "type": "string",
             "enum": [
                 "owner",
@@ -389,29 +487,6 @@ const docTemplate = `{
                 }
             }
         },
-        "userHandlers.AuthResult": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expiration": {
-                    "type": "integer"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "userHandlers.CreateUserData": {
             "type": "object",
             "properties": {
@@ -425,81 +500,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "$ref": "#/definitions/appValues.UserRole"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.CreateUserResult": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.LoginData": {
-            "type": "object",
-            "properties": {
-                "captcha_answer": {
-                    "type": "string"
-                },
-                "captcha_id": {
-                    "type": "string"
-                },
-                "client_rid": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.LoginResult": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expiration": {
-                    "type": "integer"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/appValues.UserRole"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.MeResult": {
-            "type": "object",
-            "properties": {
-                "full_name": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
+                    "$ref": "#/definitions/UserRole"
                 },
                 "user_id": {
                     "type": "string"

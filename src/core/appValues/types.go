@@ -1,7 +1,8 @@
 package appValues
 
-// UserRole is the role of a user.
-type UserRole string
+// UserRole godoc
+// @description UserRole is the role of the user.
+type UserRole string // @name UserRole
 
 // JWTClaimsInfo is a general structure that can be filled by jwt
 // claims fields.

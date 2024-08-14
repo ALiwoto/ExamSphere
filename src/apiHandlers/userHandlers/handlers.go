@@ -140,7 +140,7 @@ func GetMeV1(c *fiber.Ctx) error {
 	return apiHandlers.SendResult(c, &MeResult{
 		UserId:   userInfo.UserId,
 		FullName: userInfo.FullName,
-		Role:     userInfo.Role.ToString(),
+		Role:     userInfo.Role,
 	})
 }
 
