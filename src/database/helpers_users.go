@@ -195,7 +195,7 @@ func CreateNewUser(data *NewUserData) (*UserInfo, error) {
 // SearchUser searches for users based on the query.
 func SearchUser(searchData *SearchUserData) ([]*UserInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT user_id, full_name, email, role
+		`SELECT user_id, full_name, email, role, is_banned, ban_reason, created_at
 		FROM user_info
 		WHERE user_id ILIKE $1 OR full_name ILIKE $1 OR email ILIKE $1
 		ORDER BY user_id ASC
@@ -212,7 +212,15 @@ func SearchUser(searchData *SearchUserData) ([]*UserInfo, error) {
 	var users []*UserInfo
 	for rows.Next() {
 		info := &UserInfo{}
-		err = rows.Scan(&info.UserId, &info.FullName, &info.Email, &info.Role)
+		err = rows.Scan(
+			&info.UserId,
+			&info.FullName,
+			&info.Email,
+			&info.Role,
+			&info.IsBanned,
+			&info.BanReason,
+			&info.CreatedAt,
+		)
 		if err != nil {
 			return nil, err
 		}
