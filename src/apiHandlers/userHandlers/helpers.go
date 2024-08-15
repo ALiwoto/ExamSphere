@@ -111,9 +111,13 @@ func toSearchedUsersResult(users []*database.UserInfo) []SearchedUserInfo {
 
 	for _, user := range users {
 		searchedUsers = append(searchedUsers, SearchedUserInfo{
-			UserId:   user.UserId,
-			FullName: user.FullName,
-			Role:     user.Role,
+			UserId:    user.UserId,
+			FullName:  user.FullName,
+			Role:      user.Role,
+			Email:     user.Email,
+			IsBanned:  user.IsBanned,
+			BanReason: user.BanReason,
+			CreatedAt: user.CreatedAt,
 		})
 	}
 

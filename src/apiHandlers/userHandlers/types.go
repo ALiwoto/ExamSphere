@@ -71,8 +71,11 @@ type SearchUserResult struct {
 } // @name SearchUserResult
 
 type SearchedUserInfo struct {
-	UserId   string             `json:"user_id"`
-	FullName string             `json:"full_name"`
-	Role     appValues.UserRole `json:"role"`
-	Email    string             `json:"email"`
+	UserId    string             `json:"user_id"`
+	FullName  string             `json:"full_name"`
+	Role      appValues.UserRole `json:"role"`
+	Email     string             `json:"email"`
+	IsBanned  bool               `json:"is_banned"`
+	BanReason string             `json:"ban_reason"`
+	CreatedAt time.Time          `json:"created_at"`
 } // @name SearchedUserInfo
