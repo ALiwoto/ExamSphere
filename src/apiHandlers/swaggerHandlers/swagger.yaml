@@ -96,6 +96,19 @@ definitions:
       user_id:
         type: string
     type: object
+  CreateUserData:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/UserRole'
+      user_id:
+        type: string
+    type: object
   CreateUserResult:
     properties:
       email:
@@ -187,19 +200,6 @@ definitions:
       client_r_id:
         type: string
     type: object
-  userHandlers.CreateUserData:
-    properties:
-      email:
-        type: string
-      full_name:
-        type: string
-      password:
-        type: string
-      role:
-        $ref: '#/definitions/UserRole'
-      user_id:
-        type: string
-    type: object
 info:
   contact: {}
   description: This is the API for the ExamSphere system
@@ -248,7 +248,7 @@ paths:
         name: createUserData
         required: true
         schema:
-          $ref: '#/definitions/userHandlers.CreateUserData'
+          $ref: '#/definitions/CreateUserData'
       produces:
       - application/json
       responses:

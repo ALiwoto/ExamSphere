@@ -85,7 +85,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userHandlers.CreateUserData"
+                            "$ref": "#/definitions/CreateUserData"
                         }
                     }
                 ],
@@ -352,6 +352,26 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateUserData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateUserResult": {
             "type": "object",
             "properties": {
@@ -483,26 +503,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "client_r_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.CreateUserData": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/UserRole"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }

@@ -41,7 +41,8 @@ type MeResult struct {
 	Role     appValues.UserRole `json:"role"`
 } // @name GetMeResult
 
-type CreateUserData = database.NewUserData
+// CreateUserData is the data required to create a new user.
+type CreateUserData = database.NewUserData // @name CreateUserData
 
 // CreateUserResult is the result of creating a new user.
 type CreateUserResult struct {

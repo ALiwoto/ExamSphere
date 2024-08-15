@@ -77,7 +77,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userHandlers.CreateUserData"
+                            "$ref": "#/definitions/CreateUserData"
                         }
                     }
                 ],
@@ -344,6 +344,26 @@
                 }
             }
         },
+        "CreateUserData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateUserResult": {
             "type": "object",
             "properties": {
@@ -475,26 +495,6 @@
                     "type": "string"
                 },
                 "client_r_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "userHandlers.CreateUserData": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/UserRole"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
