@@ -43,3 +43,9 @@ type NewUserData struct {
 	RawPassword string             `json:"password"`
 	Role        appValues.UserRole `json:"role"`
 }
+
+type SearchUserData struct {
+	Query  string `json:"query"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit" validate:"min=1"`
+}

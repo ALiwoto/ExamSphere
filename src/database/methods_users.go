@@ -26,3 +26,14 @@ func (i *UserInfo) CanCreateRole(targetRole appValues.UserRole) bool {
 
 	return false
 }
+
+// CanSearchUser returns true if and only if the current user has
+// the permission to search for a user.
+func (i *UserInfo) CanSearchUser() bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	return i.Role == appValues.UserRoleOwner || i.Role == appValues.UserRoleAdmin
+}

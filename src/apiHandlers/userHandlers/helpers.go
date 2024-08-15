@@ -105,3 +105,17 @@ func isRateLimited(c *fiber.Ctx) bool {
 
 	return false
 }
+
+func toSearchedUsersResult(users []*database.UserInfo) []SearchedUserInfo {
+	searchedUsers := make([]SearchedUserInfo, 0, len(users))
+
+	for _, user := range users {
+		searchedUsers = append(searchedUsers, SearchedUserInfo{
+			UserId:   user.UserId,
+			FullName: user.FullName,
+			Role:     user.Role,
+		})
+	}
+
+	return searchedUsers
+}

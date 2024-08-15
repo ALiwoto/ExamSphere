@@ -218,3 +218,49 @@ func CreateUserV1(c *fiber.Ctx) error {
 		Role:     newUserInfo.Role.ToString(),
 	})
 }
+
+// SearchUserV1 godoc
+// @Summary Search users
+// @Description Allows a user to search for users
+// @ID searchUserV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param searchUserData body SearchUserData true "Search user data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=SearchUserResult}
+// @Router /api/v1/user/search [post]
+func SearchUserV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	if !userInfo.CanSearchUser() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	searchUserData := &SearchUserData{}
+	if err := c.BodyParser(searchUserData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	} else if searchUserData.Query == "" || searchUserData.Limit <= 0 {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	users, err := database.SearchUser(searchUserData)
+	if err != nil {
+		logging.Error("SearchUserV1: failed to search users: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &SearchUserResult{
+		Users: toSearchedUsersResult(users),
+	})
+}

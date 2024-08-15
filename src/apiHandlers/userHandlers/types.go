@@ -63,3 +63,16 @@ type ChangePasswordData struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type SearchUserData = database.SearchUserData // @name SearchUserData
+
+type SearchUserResult struct {
+	Users []SearchedUserInfo `json:"users"`
+}
+
+type SearchedUserInfo struct {
+	UserId   string             `json:"user_id"`
+	FullName string             `json:"full_name"`
+	Role     appValues.UserRole `json:"role"`
+	Email    string             `json:"email"`
+}
