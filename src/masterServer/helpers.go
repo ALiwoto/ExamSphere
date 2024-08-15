@@ -1,6 +1,7 @@
 package masterServer
 
 import (
+	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/apiHandlers/captchaHandlers"
 	"ExamSphere/src/apiHandlers/sudoHandlers"
 	"ExamSphere/src/apiHandlers/swaggerHandlers"
@@ -90,6 +91,12 @@ func LoadMiddlewares(app *fiber.App) {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Server", "Microsoft-IIS/10.0")
 		c.Set("X-Powered-By", "PHP/8.2.8")
+
+		defer func() {
+			if r := recover(); r != nil {
+				_ = apiHandlers.ApiPanicHandler(c, r)
+			}
+		}()
 
 		return c.Next()
 	})

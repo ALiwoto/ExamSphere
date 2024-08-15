@@ -18,10 +18,11 @@ func GetUserInfoByAuthHash(userId, authHash string) *UserInfo {
 	}
 
 	info := usersInfoMap.Get(userId)
+	var err error
 	if info == valueUserNotFound {
 		return nil
 	} else if info == nil {
-		info, err := getUserFromDB(userId)
+		info, err = getUserFromDB(userId)
 		if err != nil {
 			if err == ErrUserNotFound {
 				usersInfoMap.Add(userId, valueUserNotFound)
@@ -32,7 +33,7 @@ func GetUserInfoByAuthHash(userId, authHash string) *UserInfo {
 		usersInfoMap.Add(userId, info)
 	}
 
-	if info.AuthHash != authHash {
+	if info == nil || info.AuthHash != authHash {
 		return nil
 	}
 
@@ -131,12 +132,20 @@ func createArtificialOwnerUser(userId string) *UserInfo {
 func getUserFromDB(userId string) (*UserInfo, error) {
 	info := &UserInfo{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT user_id, full_name, email, auth_hash, password, role
+		`SELECT user_id, full_name, email, auth_hash, password, role, is_banned, ban_reason, created_at
 		FROM user_info WHERE user_id = $1`,
 		userId,
 	).Scan(
-		&info.UserId, &info.FullName, &info.Email,
-		&info.AuthHash, &info.Password, &info.Role)
+		&info.UserId,
+		&info.FullName,
+		&info.Email,
+		&info.AuthHash,
+		&info.Password,
+		&info.Role,
+		&info.IsBanned,
+		&info.BanReason,
+		&info.CreatedAt,
+	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, ErrUserNotFound
