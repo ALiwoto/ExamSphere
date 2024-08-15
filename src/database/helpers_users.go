@@ -201,6 +201,8 @@ func SearchUser(searchData *SearchUserData) ([]*UserInfo, error) {
 		ORDER BY user_id ASC
 		LIMIT $2 OFFSET $3`,
 		"%"+searchData.Query+"%",
+		searchData.Limit,
+		searchData.Offset,
 	)
 	if err != nil {
 		return nil, err
