@@ -76,6 +76,6 @@ type SearchedUserInfo struct {
 	Role      appValues.UserRole `json:"role"`
 	Email     string             `json:"email"`
 	IsBanned  bool               `json:"is_banned"`
-	BanReason string             `json:"ban_reason"`
+	BanReason *string            `json:"ban_reason"`
 	CreatedAt time.Time          `json:"created_at"`
 } // @name SearchedUserInfo

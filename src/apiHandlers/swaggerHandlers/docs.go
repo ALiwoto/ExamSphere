@@ -558,11 +558,20 @@ const docTemplate = `{
         "SearchedUserInfo": {
             "type": "object",
             "properties": {
+                "ban_reason": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "full_name": {
                     "type": "string"
+                },
+                "is_banned": {
+                    "type": "boolean"
                 },
                 "role": {
                     "$ref": "#/definitions/UserRole"

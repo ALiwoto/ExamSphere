@@ -30,7 +30,7 @@ type UserInfo struct {
 	IsBanned bool `json:"is_banned"`
 
 	// BanReason is the user's ban reason (from the platform).
-	BanReason string `json:"ban_reason"`
+	BanReason *string `json:"ban_reason"`
 
 	// CreatedAt is the time when the user was created.
 	CreatedAt time.Time `json:"created_at"`
