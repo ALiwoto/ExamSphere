@@ -27,13 +27,17 @@ func RunServer() error {
 		CaseSensitive: CaseSensitive,
 	})
 
-	LoadMiddlewares(appValues.ServerEngine)
-	LoadHandlersV1(appValues.ServerEngine)
-	LoadUIFiles(appValues.ServerEngine)
-
 	if appConfig.IsDebug() {
 		LoadSwaggerHandler(appValues.ServerEngine)
 	}
+
+	LoadMiddlewares(appValues.ServerEngine)
+	LoadHandlersV1(appValues.ServerEngine)
+
+	// make sure to load the UI files at the end
+	// because it uses the pattern * which will
+	// match all the routes
+	LoadUIFiles(appValues.ServerEngine)
 
 	if appConfig.TheConfig.CertFile != "" {
 		return appValues.ServerEngine.ListenTLS(
