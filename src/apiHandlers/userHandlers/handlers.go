@@ -264,3 +264,70 @@ func SearchUserV1(c *fiber.Ctx) error {
 		Users: toSearchedUsersResult(users),
 	})
 }
+
+// EditUserV1 godoc
+// @Summary Edit a user's basic information
+// @Description Allows a user to edit another user. Users are not allowed to edit their own information.
+// @ID editUserV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param editUserData body EditUserData true "Edit user data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=EditUserResult}
+// @Router /api/v1/user/edit [post]
+func EditUserV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	updateUserData := &EditUserData{}
+	if err := c.BodyParser(updateUserData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	} else if updateUserData.UserId == "" {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if updateUserData.IsEmpty() {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	targetUserInfo, err := database.GetUserByUserId(updateUserData.UserId)
+	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUsername(c)
+		}
+
+		logging.Error("EditUserV1: failed to get user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if !userInfo.CanEditUser(targetUserInfo.Role) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	if updateUserData.UserId == userInfo.UserId {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	targetUserInfo, err = database.UpdateUserInfo(updateUserData)
+	if err != nil {
+		logging.Error("EditUserV1: failed to update user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &EditUserResult{
+		UserId:   targetUserInfo.UserId,
+		FullName: targetUserInfo.FullName,
+		Email:    targetUserInfo.Email,
+		Role:     targetUserInfo.Role,
+	})
+}

@@ -239,3 +239,38 @@ func SearchUser(searchData *SearchUserData) ([]*UserInfo, error) {
 
 	return users, nil
 }
+
+// UpdateUserInfo updates the user's basic information.
+func UpdateUserInfo(data *UpdateUserData) (*UserInfo, error) {
+	data.UserId = appValues.NormalizeUserId(data.UserId)
+	if data.UserId == "" {
+		return nil, ErrUserNotFound
+	}
+
+	info, err := GetUserByUserId(data.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	if data.FullName != "" {
+		info.FullName = data.FullName
+	}
+
+	if data.Email != "" {
+		info.Email = data.Email
+	}
+
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`UPDATE user_info
+		SET full_name = $1, email = $2
+		WHERE user_id = $3`,
+		info.FullName,
+		info.Email,
+		info.UserId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}

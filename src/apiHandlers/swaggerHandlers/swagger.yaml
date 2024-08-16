@@ -120,6 +120,26 @@ definitions:
       user_id:
         type: string
     type: object
+  EditUserData:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      user_id:
+        type: string
+    type: object
+  EditUserResult:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      role:
+        $ref: '#/definitions/UserRole'
+      user_id:
+        type: string
+    type: object
   EndpointError:
     properties:
       code:
@@ -296,6 +316,40 @@ paths:
                   $ref: '#/definitions/CreateUserResult'
               type: object
       summary: Create a new user
+      tags:
+      - User
+  /api/v1/user/edit:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to edit another user. Users are not allowed to edit
+        their own information.
+      operationId: editUserV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Edit user data
+        in: body
+        name: editUserData
+        required: true
+        schema:
+          $ref: '#/definitions/EditUserData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/EditUserResult'
+              type: object
+      summary: Edit a user's basic information
       tags:
       - User
   /api/v1/user/login:

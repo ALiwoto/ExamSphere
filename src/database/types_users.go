@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// UserInfo is a struct that holds the information of a user.
 type UserInfo struct {
 	// UserId is the user-id of the user.
 	UserId string `json:"user_id"`
@@ -36,6 +37,7 @@ type UserInfo struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// NewUserData is used to create a new user.
 type NewUserData struct {
 	UserId      string             `json:"user_id"`
 	FullName    string             `json:"full_name"`
@@ -44,8 +46,15 @@ type NewUserData struct {
 	Role        appValues.UserRole `json:"role"`
 }
 
+// SearchUserData is used to search for users.
 type SearchUserData struct {
 	Query  string `json:"query"`
 	Offset int    `json:"offset"`
 	Limit  int    `json:"limit" validate:"min=1"`
+}
+
+type UpdateUserData struct {
+	UserId   string `json:"user_id"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
 }

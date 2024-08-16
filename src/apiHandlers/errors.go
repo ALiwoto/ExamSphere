@@ -14,7 +14,7 @@ const (
 	ErrInvalidFileData            = "Invalid file data provided"
 	ErrInvalidPhoneNumber         = "Invalid phone number provided: %s"
 	ErrPhoneNumberAlreadyImported = "Phone number already imported: %s"
-	ErrInvalidUsername            = "Invalid username provided"
+	ErrInvalidUsername            = "Invalid username/userId provided"
 	ErrNoPhonesDonated            = "No phones donated by this account"
 	ErrAgentNotConnected          = "Agent is not connected; try again later"
 	ErrInvalidPagination          = "Invalid pagination parameters provided"

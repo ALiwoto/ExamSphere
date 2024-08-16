@@ -63,6 +63,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Get("/user/me", authProtection, userHandlers.GetMeV1)
 	v1.Post("/user/create", authProtection, userHandlers.CreateUserV1)
 	v1.Post("/user/search", authProtection, userHandlers.SearchUserV1)
+	v1.Post("/user/edit", authProtection, userHandlers.EditUserV1)
 
 	// captcha handlers
 	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)

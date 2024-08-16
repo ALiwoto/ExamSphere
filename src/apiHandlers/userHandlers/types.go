@@ -79,3 +79,12 @@ type SearchedUserInfo struct {
 	BanReason *string            `json:"ban_reason"`
 	CreatedAt time.Time          `json:"created_at"`
 } // @name SearchedUserInfo
+
+type EditUserData = database.UpdateUserData // @name EditUserData
+
+type EditUserResult struct {
+	UserId   string             `json:"user_id"`
+	FullName string             `json:"full_name"`
+	Email    string             `json:"email"`
+	Role     appValues.UserRole `json:"role"`
+} // @name EditUserResult
