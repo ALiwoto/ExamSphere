@@ -4,11 +4,13 @@ import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/core/appConfig"
 	"ExamSphere/src/database"
+	"encoding/hex"
 
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/ALiwoto/ssg/ssg"
 	"github.com/gofiber/fiber/v2"
 	fUtils "github.com/gofiber/fiber/v2/utils"
 	"github.com/golang-jwt/jwt/v5"
@@ -122,4 +124,53 @@ func toSearchedUsersResult(users []*database.UserInfo) []SearchedUserInfo {
 	}
 
 	return searchedUsers
+}
+
+func newChangePasswordRequest(userInfo *database.UserInfo) (*changePasswordRequestEntry, error) {
+	entry := changePasswordRequestMap.Get(userInfo.UserId)
+
+	if entry != nil {
+		entry.mut.Lock()
+		defer entry.mut.Unlock()
+
+		// the user has previous attempt in our current time-frame.
+		if entry.TryCount >= MaxPasswordRequestAttempts {
+			return nil, ErrTooManyPasswordChangeAttempts
+		} else if time.Since(entry.LastTryAt) < MinPasswordAttemptWaitTime {
+			return nil, ErrTooManyPasswordChangeAttempts
+		}
+
+		entry.TryCount++
+		entry.LastTryAt = time.Now()
+
+		// since we are going to generate new RqId parameter, we should delete the old one
+		changePasswordRequestMap.Delete(reqFirst + entry.RqId)
+	} else {
+		entry = &changePasswordRequestEntry{
+			UserId:    userInfo.UserId,
+			mut:       &sync.Mutex{},
+			LastTryAt: time.Now(),
+			TryCount:  1,
+		}
+	}
+
+	// generate the request parameters
+	entry.RqId = fUtils.UUIDv4()
+	entry.LTNum = passwordChangeRqGenerator.Next()
+	entry.RTParam = hex.EncodeToString([]byte(
+		userInfo.AuthHash + entry.RqId + ssg.ToBase10(entry.LTNum)))
+
+	changePasswordRequestMap.Add(userInfo.UserId, entry)
+	changePasswordRequestMap.Add(reqFirst+entry.RqId, entry)
+
+	return entry, nil
+}
+
+func getChangePasswordRequest(rqId string) *changePasswordRequestEntry {
+	entry := changePasswordRequestMap.Get(reqFirst + rqId)
+	if entry == nil {
+		return nil
+	}
+
+	return entry
 }

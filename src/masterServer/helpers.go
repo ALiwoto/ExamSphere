@@ -8,6 +8,7 @@ import (
 	"ExamSphere/src/apiHandlers/userHandlers"
 	"ExamSphere/src/core/appConfig"
 	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/emailUtils"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
 
@@ -40,6 +41,8 @@ func RunServer() error {
 	// match all the routes
 	LoadUIFiles(appValues.ServerEngine)
 
+	LoadEmailClient()
+
 	if appConfig.TheConfig.CertFile != "" {
 		return appValues.ServerEngine.ListenTLS(
 			appConfig.TheConfig.BindAddress,
@@ -62,8 +65,12 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/user/reAuth", refreshAuthProtection, userHandlers.ReAuthV1)
 	v1.Get("/user/me", authProtection, userHandlers.GetMeV1)
 	v1.Post("/user/create", authProtection, userHandlers.CreateUserV1)
+	v1.Get("/user/info", authProtection, userHandlers.GetUserInfoV1)
 	v1.Post("/user/search", authProtection, userHandlers.SearchUserV1)
 	v1.Post("/user/edit", authProtection, userHandlers.EditUserV1)
+	v1.Post("/user/ban", authProtection, userHandlers.BanUserV1)
+	v1.Post("/user/changePassword", authProtection, userHandlers.ChangePasswordV1)
+	v1.Post("/user/confirmChangePassword", authProtection, userHandlers.ConfirmChangePasswordV1)
 
 	// captcha handlers
 	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)
@@ -112,4 +119,13 @@ func LoadUIFiles(app *fiber.App) {
 
 func LoadDatabase() error {
 	return database.StartDatabase()
+}
+
+func LoadEmailClient() {
+	err := emailUtils.LoadEmailClient()
+	if err != nil {
+		logging.Warn("LoadEmailClient: failed to load email client: ", err)
+		logging.Warn("Without an email client, some features of the platform will not work correctly.")
+		logging.Warn("Please check the email configuration in the config file.")
+	}
 }

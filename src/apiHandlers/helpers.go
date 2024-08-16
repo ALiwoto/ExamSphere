@@ -435,3 +435,27 @@ func SendErrInvalidCaptcha(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrQueryParameterNotProvided(c *fiber.Ctx, paramName string) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeQueryParameterNotProvided,
+		Message:   fmt.Sprintf(ErrQueryParameterNotProvided, paramName),
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrTooManyPasswordChangeAttempts(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeTooManyPasswordChangeAttempts,
+		Message:   ErrTooManyPasswordChangeAttempts,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrRequestExpired(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeRequestExpired,
+		Message:   ErrRequestExpired,
+		Origin:    c.Path(),
+	})
+}

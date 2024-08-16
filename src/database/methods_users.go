@@ -62,6 +62,68 @@ func (i *UserInfo) CanSearchUser() bool {
 	return i.Role == appValues.UserRoleOwner || i.Role == appValues.UserRoleAdmin
 }
 
+func (i *UserInfo) CanGetUserInfo(targetUser *UserInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	} else if targetUser == nil || targetUser.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.Role == appValues.UserRoleOwner {
+		// owner can get info of anyone
+		return true
+	} else if i.Role == appValues.UserRoleAdmin {
+		// admins can get info of anyone below themselves
+		return targetUser.Role != appValues.UserRoleOwner
+	}
+
+	return false
+}
+
+func (i *UserInfo) CanBanUser(targetUser *UserInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	} else if targetUser == nil || targetUser.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.Role == appValues.UserRoleOwner {
+		// owner can ban anyone
+		return true
+	} else if i.Role == appValues.UserRoleAdmin {
+		// admins can ban anyone below themselves
+		return targetUser.Role != appValues.UserRoleOwner &&
+			targetUser.Role != appValues.UserRoleAdmin
+	}
+
+	return false
+}
+
+func (i *UserInfo) CanChangePassword(targetUser *UserInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	} else if targetUser == nil || targetUser.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.Role == appValues.UserRoleOwner {
+		// owner can change anyone's password
+		return true
+	} else if i.Role == appValues.UserRoleAdmin {
+		// admins can change anyone's password below themselves
+		return targetUser.Role != appValues.UserRoleOwner &&
+			targetUser.Role != appValues.UserRoleAdmin
+	}
+
+	return false
+}
+
 //---------------------------------------------------------
 
 func (d *UpdateUserData) IsEmpty() bool {

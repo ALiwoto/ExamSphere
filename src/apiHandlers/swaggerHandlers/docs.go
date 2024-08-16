@@ -57,6 +57,161 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/ban": {
+            "post": {
+                "description": "Allows a user to ban another user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Ban a user",
+                "operationId": "banUserV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Ban user data",
+                        "name": "banUserData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/BanUserData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/BanUserResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/changePassword": {
+            "post": {
+                "description": "Allows a user to change a user's password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Change a user's password",
+                "operationId": "changePasswordV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Change password data",
+                        "name": "changePasswordData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChangePasswordData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/confirmChangePassword": {
+            "post": {
+                "description": "Allows a user to confirm changing their own's password (from redirected page)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Confirm changing your own's password",
+                "operationId": "confirmChangePasswordV1",
+                "parameters": [
+                    {
+                        "description": "Confirm change password data",
+                        "name": "confirmChangePasswordData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ConfirmChangePasswordData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/create": {
             "post": {
                 "description": "Allows a user to create a new user",
@@ -156,6 +311,55 @@ const docTemplate = `{
                                     "properties": {
                                         "result": {
                                             "$ref": "#/definitions/EditUserResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/info": {
+            "get": {
+                "description": "Allows a user to get another user's information by their user ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get a user's information",
+                "operationId": "getUserInfoV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUserInfoResult"
                                         }
                                     }
                                 }
@@ -393,7 +597,10 @@ const docTemplate = `{
                 2135,
                 2136,
                 2137,
-                2138
+                2138,
+                2139,
+                2140,
+                2141
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -434,7 +641,10 @@ const docTemplate = `{
                 "ErrCodeTextEmpty",
                 "ErrCodeTextTooLong",
                 "ErrCodeInvalidClientRId",
-                "ErrCodeInvalidCaptcha"
+                "ErrCodeInvalidCaptcha",
+                "ErrCodeQueryParameterNotProvided",
+                "ErrCodeTooManyPasswordChangeAttempts",
+                "ErrCodeRequestExpired"
             ]
         },
         "AuthResult": {
@@ -456,6 +666,69 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "BanUserData": {
+            "type": "object",
+            "properties": {
+                "ban_reason": {
+                    "type": "string"
+                },
+                "is_banned": {
+                    "type": "boolean"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "BanUserResult": {
+            "type": "object",
+            "properties": {
+                "ban_reason": {
+                    "type": "string"
+                },
+                "is_banned": {
+                    "type": "boolean"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ChangePasswordData": {
+            "type": "object",
+            "properties": {
+                "lang": {
+                    "type": "string",
+                    "default": "en"
+                },
+                "new_password": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ConfirmChangePasswordData": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "rq_id": {
+                    "type": "string"
+                },
+                "rt_hash": {
+                    "type": "string"
+                },
+                "rt_param": {
+                    "type": "string"
+                },
+                "rt_verifier": {
                     "type": "string"
                 }
             }
@@ -562,6 +835,32 @@ const docTemplate = `{
             "properties": {
                 "full_name": {
                     "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetUserInfoResult": {
+            "type": "object",
+            "properties": {
+                "ban_reason": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "is_banned": {
+                    "type": "boolean"
                 },
                 "role": {
                     "$ref": "#/definitions/UserRole"

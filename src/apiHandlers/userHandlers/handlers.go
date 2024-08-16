@@ -4,6 +4,7 @@ import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/core/appConfig"
 	"ExamSphere/src/core/appValues"
+	"ExamSphere/src/core/utils/emailUtils"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
 	"strings"
@@ -330,4 +331,247 @@ func EditUserV1(c *fiber.Ctx) error {
 		Email:    targetUserInfo.Email,
 		Role:     targetUserInfo.Role,
 	})
+}
+
+// GetUserInfoV1 godoc
+// @Summary Get a user's information
+// @Description Allows a user to get another user's information by their user ID
+// @ID getUserInfoV1
+// @Tags User
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param id query string true "User ID"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserInfoResult}
+// @Router /api/v1/user/info [get]
+func GetUserInfoV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	targetUserId := c.Query("id")
+	if targetUserId == "" {
+		return apiHandlers.SendErrQueryParameterNotProvided(c, "id")
+	}
+
+	targetUserInfo, err := database.GetUserByUserId(targetUserId)
+	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUsername(c)
+		}
+
+		logging.Error("GetUserInfoV1: failed to get user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if !userInfo.CanGetUserInfo(targetUserInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	return apiHandlers.SendResult(c, &GetUserInfoResult{
+		UserId:   targetUserInfo.UserId,
+		FullName: targetUserInfo.FullName,
+		Email:    targetUserInfo.Email,
+		Role:     targetUserInfo.Role,
+	})
+}
+
+// BanUserV1 godoc
+// @Summary Ban a user
+// @Description Allows a user to ban another user
+// @ID banUserV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param banUserData body BanUserData true "Ban user data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=BanUserResult}
+// @Router /api/v1/user/ban [post]
+func BanUserV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	banData := &BanUserData{}
+	if err := c.BodyParser(banData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	targetUserInfo, err := database.GetUserByUserId(banData.UserId)
+	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUsername(c)
+		}
+
+		logging.Error("BanUserV1: failed to get user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if !userInfo.CanBanUser(targetUserInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	targetUserInfo, err = database.BanUser(banData)
+	if err != nil {
+		logging.Error("BanUserV1: failed to ban user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &BanUserResult{
+		UserId:    targetUserInfo.UserId,
+		IsBanned:  targetUserInfo.IsBanned,
+		BanReason: targetUserInfo.BanReason,
+	})
+}
+
+// ChangePasswordV1 godoc
+// @Summary Change a user's password
+// @Description Allows a user to change a user's password.
+// If the user is trying to change their own password, they should get an email,
+// click on the email link, get redirected to the special change password page
+// which contains their token-parameters, and then that page will
+// have to send the new password in confirmChangePassword endpoint.
+// @ID changePasswordV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param changePasswordData body ChangePasswordData true "Change password data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
+// @Router /api/v1/user/changePassword [post]
+func ChangePasswordV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	newPasswordData := &ChangePasswordData{}
+	if err := c.BodyParser(newPasswordData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if IsInvalidPassword(newPasswordData.NewPassword) {
+		return apiHandlers.SendErrInvalidInputPass(c)
+	}
+
+	targetUserInfo, err := database.GetUserByUserId(newPasswordData.UserId)
+	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUsername(c)
+		}
+
+		logging.Error("ChangePasswordV1: failed to get user: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if targetUserInfo.UserId == userInfo.UserId {
+		// the user is trying to change their own password
+		// so they should get an email, click on the email link
+		// get redirected to the special change password page
+		// which contains their token, and then that page will
+		// call the change password endpoint with the token
+		entry, err := newChangePasswordRequest(userInfo)
+		if err != nil {
+			if err == ErrTooManyPasswordChangeAttempts {
+				return apiHandlers.SendErrTooManyPasswordChangeAttempts(c)
+			}
+
+			logging.Error("ChangePasswordV1: failed to create change password request: ", err)
+		}
+
+		if entry == nil {
+			return apiHandlers.SendErrInternalServerError(c)
+		}
+
+		emailUtils.SendChangePassword(&emailUtils.ChangePasswordEmailData{
+			UserFullName: userInfo.FullName,
+			ChangeLink:   entry.GetRedirectAddress(appConfig.GetChangePasswordBaseURL()),
+			EmailTo:      userInfo.Email,
+			Lang:         newPasswordData.Lang,
+		})
+	}
+	if !userInfo.CanChangePassword(targetUserInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	err = database.UpdateUserPassword(&database.UpdateUserPasswordData{
+		UserId:      targetUserInfo.UserId,
+		RawPassword: newPasswordData.NewPassword,
+	})
+	if err != nil {
+		logging.Error("ChangePasswordV1: failed to update password: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, true)
+}
+
+// ConfirmChangePasswordV1 godoc
+// @Summary Confirm changing your own's password
+// @Description Allows a user to confirm changing their own's password (from redirected page)
+// @ID confirmChangePasswordV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param confirmChangePasswordData body ConfirmChangePasswordData true "Confirm change password data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
+// @Router /api/v1/user/confirmChangePassword [post]
+func ConfirmChangePasswordV1(c *fiber.Ctx) error {
+	confirmData := &ConfirmChangePasswordData{}
+	if err := c.BodyParser(confirmData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if confirmData.RqId == "" {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	entry := getChangePasswordRequest(confirmData.RqId)
+	if entry == nil {
+		// this basically means the request is expired, the user
+		// should try sending another request later
+		return apiHandlers.SendErrRequestExpired(c)
+	}
+
+	if !entry.Verify(confirmData) {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if !IsInvalidPassword(confirmData.NewPassword) {
+		return apiHandlers.SendErrInvalidInputPass(c)
+	}
+
+	// all is fine, we can now update the password in the database
+	err := database.UpdateUserPassword(&database.UpdateUserPasswordData{
+		UserId:      entry.UserId,
+		RawPassword: confirmData.NewPassword,
+	})
+	if err != nil {
+		logging.Error("ConfirmChangePasswordV1: failed to update password: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, true)
 }

@@ -8,6 +8,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/ALiwoto/ssg/ssg"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -273,4 +274,71 @@ func UpdateUserInfo(data *UpdateUserData) (*UserInfo, error) {
 	}
 
 	return info, nil
+}
+
+func BanUser(data *BanUserData) (*UserInfo, error) {
+	data.UserId = appValues.NormalizeUserId(data.UserId)
+	if data.UserId == "" {
+		return nil, ErrUserNotFound
+	}
+
+	info, err := GetUserByUserId(data.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	info.IsBanned = data.IsBanned
+	info.AuthHash = hashing.GenerateAuthHash()
+	if data.IsBanned {
+		info.BanReason = ssg.Clone(data.BanReason) // clone for more safety
+	}
+
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`UPDATE user_info
+		SET is_banned = $1, ban_reason = $2, auth_hash = $3
+		WHERE user_id = $4`,
+		info.IsBanned,
+		info.BanReason,
+		info.AuthHash,
+		info.UserId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}
+
+// UpdateUserPassword updates the user's password.
+func UpdateUserPassword(data *UpdateUserPasswordData) error {
+	data.UserId = appValues.NormalizeUserId(data.UserId)
+	if data.UserId == "" {
+		return ErrUserNotFound
+	}
+
+	if appConfig.IsOwnerUsername(data.UserId) {
+		return ErrOperationNotAllowed
+	}
+
+	info, err := GetUserByUserId(data.UserId)
+	if err != nil {
+		return err
+	} else if info == nil {
+		return ErrUserNotFound
+	}
+
+	info.Password = hashing.HashPassword(data.RawPassword)
+	info.AuthHash = hashing.GenerateAuthHash()
+
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`SELECT update_user_password(
+			p_user_id := $1,
+			p_auth_hash := $2,
+			p_new_password := $3
+		)`,
+		info.UserId,
+		info.AuthHash,
+		info.Password,
+	)
+	return err
 }

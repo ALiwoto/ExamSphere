@@ -59,11 +59,6 @@ type userRequestEntry struct {
 	mut         *sync.Mutex
 }
 
-type ChangePasswordData struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type SearchUserData = database.SearchUserData // @name SearchUserData
 
 type SearchUserResult struct {
@@ -88,3 +83,59 @@ type EditUserResult struct {
 	Email    string             `json:"email"`
 	Role     appValues.UserRole `json:"role"`
 } // @name EditUserResult
+
+type GetUserInfoResult struct {
+	UserId    string             `json:"user_id"`
+	FullName  string             `json:"full_name"`
+	Email     string             `json:"email"`
+	Role      appValues.UserRole `json:"role"`
+	IsBanned  bool               `json:"is_banned"`
+	BanReason *string            `json:"ban_reason"`
+	CreatedAt time.Time          `json:"created_at"`
+} // @name GetUserInfoResult
+
+type BanUserData = database.BanUserData // @name BanUserData
+
+type BanUserResult struct {
+	UserId    string  `json:"user_id"`
+	IsBanned  bool    `json:"is_banned"`
+	BanReason *string `json:"ban_reason"`
+} // @name BanUserResult
+
+type ChangePasswordData struct {
+	UserId      string `json:"user_id"`
+	NewPassword string `json:"new_password"`
+	Lang        string `json:"lang" default:"en"`
+
+	// if the user itself is trying to change their password,
+	// they should get an email, click on the email link
+	// get redirected to the special change password page
+	// which contains their token, and then that page will
+	// have to send the following parameters:
+} // @name ChangePasswordData
+
+type ChangePasswordResult struct {
+	EmailSent       bool   `json:"email_sent"`
+	PasswordChanged bool   `json:"password_changed"`
+	Lang            string `json:"lang" default:"en"`
+} // @name ChangePasswordResult
+
+type ConfirmChangePasswordData struct {
+	RTParam     string `json:"rt_param"`
+	RTHash      string `json:"rt_hash"`
+	RTVerifier  string `json:"rt_verifier"`
+	RqId        string `json:"rq_id"`
+	NewPassword string `json:"new_password"`
+} // @name ConfirmChangePasswordData
+
+// changePasswordRequestEntry is an internal type to keep track of
+// password-change requests per-user.
+type changePasswordRequestEntry struct {
+	UserId    string
+	LastTryAt time.Time
+	TryCount  int
+	mut       *sync.Mutex
+	RqId      string
+	RTParam   string
+	LTNum     int32
+}

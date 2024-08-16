@@ -32,6 +32,13 @@ type PlatformConfig struct {
 	PostgresPassword string `key:"postgres_password"`
 	PostgresDb       string `key:"postgres_db"`
 
+	EmailFrom         string `key:"email_from"`
+	EmailHost         string `key:"email_host"`
+	EmailUser         string `key:"email_user"`
+	EmailPort         int    `key:"email_port" default:"587"`
+	EmailPass         string `key:"email_pass"`
+	ChangePassBaseUrl string `key:"change_pass_base_url"`
+
 	MaxOutgoingMessagesCount      int    `key:"max_outgoing_messages_count" default:"15"`
 	MaxDailyNewConversationsCount int    `key:"max_daily_new_conversations_count" default:"45"`
 	NewConversationMinDelay       Minute `key:"new_conversation_min_delay" default:"2"`

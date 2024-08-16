@@ -58,3 +58,14 @@ type UpdateUserData struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 }
+
+type BanUserData struct {
+	UserId    string  `json:"user_id"`
+	IsBanned  bool    `json:"is_banned"`
+	BanReason *string `json:"ban_reason"`
+}
+
+type UpdateUserPasswordData struct {
+	UserId      string `json:"user_id"`
+	RawPassword string `json:"password"`
+}

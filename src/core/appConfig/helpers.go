@@ -161,3 +161,11 @@ func GetRateLimitPunishmentDuration() time.Duration {
 
 	return TheConfig.RateLimitPunishmentDuration * time.Minute
 }
+
+func GetChangePasswordBaseURL() string {
+	if TheConfig == nil {
+		return ""
+	}
+
+	return TheConfig.ChangePassBaseUrl
+}
