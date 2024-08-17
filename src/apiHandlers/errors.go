@@ -44,6 +44,7 @@ const (
 	ErrQueryParameterNotProvided     = "Query parameter required but not provided: %s"
 	ErrTooManyPasswordChangeAttempts = "Too many password change attempts. Please try again later"
 	ErrRequestExpired                = "Request expired. Please try again later"
+	ErrInvalidEmail                  = "Invalid email provided: %s"
 )
 
 // error codes
@@ -90,4 +91,5 @@ const (
 	ErrCodeQueryParameterNotProvided
 	ErrCodeTooManyPasswordChangeAttempts
 	ErrCodeRequestExpired
+	ErrCodeInvalidEmail
 )

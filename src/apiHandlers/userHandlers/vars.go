@@ -1,6 +1,7 @@
 package userHandlers
 
 import (
+	"regexp"
 	"sync"
 	"time"
 
@@ -41,4 +42,8 @@ var (
 
 var (
 	createUserMutex = &sync.Mutex{}
+)
+
+var (
+	emailRegex = regexp.MustCompile(`^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$`)
 )

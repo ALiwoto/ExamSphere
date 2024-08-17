@@ -53,6 +53,12 @@ func IsInvalidPassword(value string) bool {
 		len(value) > MaxPasswordLength
 }
 
+func IsEmailValid(email string) bool {
+	// minimum length of an email is 3
+	// e.g. a@a (if the domain is 1 character)
+	return len(email) >= 3 && emailRegex.MatchString(email)
+}
+
 func jwtError(c *fiber.Ctx, err error) error {
 	if err.Error() == "Missing or malformed JWT" {
 		return apiHandlers.SendErrMalformedJWT(c)

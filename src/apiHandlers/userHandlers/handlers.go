@@ -7,7 +7,6 @@ import (
 	"ExamSphere/src/core/utils/emailUtils"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
-	"strings"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -178,7 +177,7 @@ func CreateUserV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	} else if !userInfo.CanCreateRole(newUserData.Role) {
 		return apiHandlers.SendErrPermissionDenied(c)
-	} else if newUserData.Email == "" { // email is mandatory
+	} else if !IsEmailValid(newUserData.Email) { // email is mandatory
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
@@ -202,10 +201,6 @@ func CreateUserV1(c *fiber.Ctx) error {
 
 	newUserInfo, err = database.CreateNewUser(newUserData)
 	if err != nil {
-		if strings.Contains(err.Error(), "violates check constraint") {
-			return apiHandlers.SendErrInvalidBodyData(c)
-		}
-
 		logging.Error("CreateUserV1: failed to create new user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	} else if newUserInfo == nil {
@@ -295,6 +290,8 @@ func EditUserV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	} else if updateUserData.UserId == "" {
 		return apiHandlers.SendErrInvalidBodyData(c)
+	} else if updateUserData.Email != "" && !IsEmailValid(updateUserData.Email) {
+		return apiHandlers.SendErrInvalidEmail(c)
 	}
 
 	if updateUserData.IsEmpty() {

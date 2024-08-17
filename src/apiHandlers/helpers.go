@@ -459,3 +459,11 @@ func SendErrRequestExpired(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrInvalidEmail(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeInvalidEmail,
+		Message:   ErrInvalidEmail,
+		Origin:    c.Path(),
+	})
+}
