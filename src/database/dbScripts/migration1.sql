@@ -97,8 +97,8 @@ EXECUTE FUNCTION check_password_auth_hash();
 
 CREATE TABLE IF NOT EXISTS "topic_info" (
     topic_id SERIAL PRIMARY KEY,
-    topic_name VARCHAR(127) NOT NULL,
-)
+    topic_name VARCHAR(127) NOT NULL
+);
 
 COMMENT ON COLUMN "topic_info".topic_id IS 'Unique identifier for the topic';
 COMMENT ON COLUMN "topic_info".topic_name IS 'Name of the topic';
@@ -118,6 +118,7 @@ BEGIN
     
     RETURN new_topic_id;
 END;
+$$ LANGUAGE plpgsql;
 
 ---------------------------------------------------------------
 
@@ -168,8 +169,8 @@ COMMENT ON COLUMN "course_info".added_by IS 'ID of the user who added the course
 
 CREATE OR REPLACE FUNCTION create_course_info(
     p_course_name VARCHAR(127),
-    p_topic_id INTEGER NOT NULL,
-    p_course_description TEXT DEFAULT NULL,
+    p_topic_id INTEGER,
+    p_course_description TEXT,
     p_added_by UserIdType
 ) RETURNS INTEGER AS $$
 DECLARE
@@ -221,8 +222,8 @@ COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is publi
 -- );
 CREATE OR REPLACE FUNCTION create_exam_info(
     p_course_id INTEGER,
-    p_price VARCHAR(16) DEFAULT '0T',
     p_created_by INTEGER,
+    p_price VARCHAR(16) DEFAULT '0T',
     p_is_public BOOLEAN DEFAULT FALSE,
     p_duration INTEGER DEFAULT 60,
     p_exam_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
