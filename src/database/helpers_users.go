@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// GetUserInfoByAuthHash returns a user by their user-id and auth-hash.
 func GetUserInfoByAuthHash(userId, authHash string) *UserInfo {
 	userId = appValues.NormalizeUserId(userId)
 	if userId == "" || authHash == "" {
@@ -41,6 +42,7 @@ func GetUserInfoByAuthHash(userId, authHash string) *UserInfo {
 	return info
 }
 
+// GetUserInfoByPass returns a user by their user-id and password.
 func GetUserInfoByPass(userId, password string) *UserInfo {
 	userId = appValues.NormalizeUserId(userId)
 	if userId == "" || password == "" {
@@ -118,6 +120,7 @@ func GetUserByUserId(userId string) (*UserInfo, error) {
 	return info, nil
 }
 
+// createArtificialOwnerUser creates an artificial owner user.
 func createArtificialOwnerUser(userId string) *UserInfo {
 	info := &UserInfo{
 		UserId:   userId,
@@ -130,10 +133,21 @@ func createArtificialOwnerUser(userId string) *UserInfo {
 	return info
 }
 
+// getUserFromDB gets a user from the database.
 func getUserFromDB(userId string) (*UserInfo, error) {
 	info := &UserInfo{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT user_id, full_name, email, auth_hash, password, role, is_banned, ban_reason, created_at
+		`SELECT user_id, 
+			full_name, 
+			email, 
+			auth_hash, 
+			password, 
+			role, 
+			is_banned, 
+			ban_reason, 
+			created_at,
+			user_address,
+			phone_number
 		FROM user_info WHERE user_id = $1`,
 		userId,
 	).Scan(
@@ -146,6 +160,8 @@ func getUserFromDB(userId string) (*UserInfo, error) {
 		&info.IsBanned,
 		&info.BanReason,
 		&info.CreatedAt,
+		&info.UserAddress,
+		&info.PhoneNumber,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -158,6 +174,7 @@ func getUserFromDB(userId string) (*UserInfo, error) {
 	return info, nil
 }
 
+// CreateNewUser creates a new user.
 func CreateNewUser(data *NewUserData) (*UserInfo, error) {
 	data.UserId = strings.TrimSpace(strings.ToLower(data.UserId))
 	info := usersInfoMap.Get(data.UserId)
@@ -182,7 +199,10 @@ func CreateNewUser(data *NewUserData) (*UserInfo, error) {
 			p_email := $3,
 			p_auth_hash := $4,
 			p_password := $5,
-			p_role := $6
+			p_role := $6,
+			p_user_address := $7,
+			p_phone_number := $8,
+			p_setup_completed := $9
 		)`,
 		info.UserId,
 		info.FullName,
@@ -190,6 +210,9 @@ func CreateNewUser(data *NewUserData) (*UserInfo, error) {
 		info.AuthHash,
 		info.Password,
 		info.Role,
+		info.UserAddress,
+		info.PhoneNumber,
+		data.SetupCompleted,
 	).Scan(&newUserId)
 	if err != nil {
 		return nil, err
@@ -261,12 +284,22 @@ func UpdateUserInfo(data *UpdateUserData) (*UserInfo, error) {
 		info.Email = data.Email
 	}
 
+	info.UserAddress = data.UserAddress
+	info.PhoneNumber = data.PhoneNumber
+
 	_, err = DefaultContainer.db.Exec(context.Background(),
 		`UPDATE user_info
-		SET full_name = $1, email = $2
-		WHERE user_id = $3`,
+		SET full_name = $1,
+			email = $2,
+			user_address = $3,
+			phone_number = $4,
+			setup_completed = $5
+		WHERE user_id = $6`,
 		info.FullName,
 		info.Email,
+		info.UserAddress,
+		info.PhoneNumber,
+		info.SetupCompleted,
 		info.UserId,
 	)
 	if err != nil {
@@ -276,6 +309,7 @@ func UpdateUserInfo(data *UpdateUserData) (*UserInfo, error) {
 	return info, nil
 }
 
+// BanUser bans or un-bans a user.
 func BanUser(data *BanUserData) (*UserInfo, error) {
 	data.UserId = appValues.NormalizeUserId(data.UserId)
 	if data.UserId == "" {

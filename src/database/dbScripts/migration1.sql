@@ -1,5 +1,9 @@
+-- Defining the UserIdType here, so we don't have to keep repeating 
+-- the same thing over and over again
+CREATE DOMAIN UserIdType AS VARCHAR(16) NOT NULL;
+
 CREATE TABLE IF NOT EXISTS "user_info" (
-    user_id VARCHAR(16) PRIMARY KEY,
+    user_id UserIdType PRIMARY KEY,
     full_name VARCHAR(127) NOT NULL,
     email VARCHAR(127) UNIQUE NOT NULL CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
     auth_hash VARCHAR(15) NOT NULL,
@@ -22,15 +26,15 @@ COMMENT ON COLUMN "user_info".role IS 'Role of the user in the system (admin, st
 
 -- Create user function
 CREATE OR REPLACE FUNCTION create_user_info(
-    p_user_id VARCHAR(16),
+    p_user_id UserIdType,
     p_full_name VARCHAR(127),
     p_email VARCHAR(127),
     p_auth_hash VARCHAR(15),
     p_password VARCHAR(511),
     p_role VARCHAR(10) DEFAULT 'student'
-) RETURNS VARCHAR(16) AS $$
+) RETURNS UserIdType AS $$
 DECLARE
-    new_user_id VARCHAR(16);
+    new_user_id UserIdType := '0'; -- UserIdType does not allow NULL values
 BEGIN
     INSERT INTO "user_info" (user_id, full_name, email, auth_hash, password, role)
     VALUES (p_user_id, p_full_name, p_email, p_auth_hash, p_password, p_role)
@@ -41,7 +45,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_user_password(
-    p_user_id VARCHAR(16),
+    p_user_id UserIdType,
     p_auth_hash VARCHAR(15),
     p_new_password VARCHAR(511)
 ) RETURNS VOID AS $$
@@ -90,27 +94,89 @@ EXECUTE FUNCTION check_password_auth_hash();
 
 ---------------------------------------------------------------
 
+
+CREATE TABLE IF NOT EXISTS "topic_info" (
+    topic_id SERIAL PRIMARY KEY,
+    topic_name VARCHAR(127) NOT NULL,
+)
+
+COMMENT ON COLUMN "topic_info".topic_id IS 'Unique identifier for the topic';
+COMMENT ON COLUMN "topic_info".topic_name IS 'Name of the topic';
+
+-- Create a function to create a new topic
+-- Example of calling this function:
+-- SELECT create_topic_info('Mathematics');
+CREATE OR REPLACE FUNCTION create_topic_info(
+    p_topic_name VARCHAR(127)
+) RETURNS INTEGER AS $$
+DECLARE
+    new_topic_id INTEGER;
+BEGIN
+    INSERT INTO "topic_info" (topic_name)
+    VALUES (p_topic_name)
+    RETURNING topic_id INTO new_topic_id;
+    
+    RETURN new_topic_id;
+END;
+
+---------------------------------------------------------------
+
+-- User topic stat table to store user's progress in each topic
+-- This table will be updated automatically using triggers defined later
+-- in SQL code, each time the backend should only query this table.
+-- This table should not be cached on backend.
+CREATE TABLE IF NOT EXISTS "user_topic_stat" (
+    user_id UserIdType,
+    topic_id INTEGER NOT NULL,
+    current_exp INTEGER DEFAULT 0,
+    total_exp INTEGER DEFAULT 0,
+    current_level INTEGER DEFAULT 1,
+    last_visited TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, topic_id),
+
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_topic_id FOREIGN KEY (topic_id) REFERENCES "topic_info"(topic_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+COMMENT ON TABLE "user_topic_stat" IS 'Stores user progress in each topic';
+COMMENT ON COLUMN "user_topic_stat".user_id IS 'ID of the user';
+COMMENT ON COLUMN "user_topic_stat".topic_id IS 'ID of the topic';
+COMMENT ON COLUMN "user_topic_stat".current_exp IS 'Current experience points in the topic';
+COMMENT ON COLUMN "user_topic_stat".total_exp IS 'Total experience points earned in the topic';
+COMMENT ON COLUMN "user_topic_stat".current_level IS 'Current level in the topic';
+COMMENT ON COLUMN "user_topic_stat".last_visited IS 'Timestamp when the user last visited the topic (earned exp)';
+
+---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS "course_info" (
     course_id SERIAL PRIMARY KEY,
+    topic_id INTEGER NOT NULL,
     course_name VARCHAR(127) NOT NULL,
     course_description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    added_by UserIdType,
+
+    CONSTRAINT fk_added_by FOREIGN KEY (added_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_topic_id FOREIGN KEY (topic_id) REFERENCES "topic_info"(topic_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMENT ON COLUMN "course_info".course_id IS 'Unique identifier for the course';
 COMMENT ON COLUMN "course_info".course_name IS 'Name of the course';
 COMMENT ON COLUMN "course_info".course_description IS 'Description of the course';
 COMMENT ON COLUMN "course_info".created_at IS 'Timestamp when the course was created';
+COMMENT ON COLUMN "course_info".added_by IS 'ID of the user who added the course';
 
 CREATE OR REPLACE FUNCTION create_course_info(
     p_course_name VARCHAR(127),
-    p_course_description TEXT DEFAULT NULL
+    p_topic_id INTEGER NOT NULL,
+    p_course_description TEXT DEFAULT NULL,
+    p_added_by UserIdType
 ) RETURNS INTEGER AS $$
 DECLARE
     new_course_id INTEGER;
 BEGIN
-    INSERT INTO "course_info" (course_name, course_description)
-    VALUES (p_course_name, p_course_description)
+    INSERT INTO "course_info" (course_name, topic_id, course_description, added_by)
+    VALUES (p_course_name, p_topic_id, p_course_description, p_added_by)
     RETURNING course_id INTO new_course_id;
     
     RETURN new_course_id;
@@ -122,11 +188,11 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS "exam_info" (
     exam_id SERIAL PRIMARY KEY,
     course_id INTEGER NOT NULL,
-    price NUMERIC(10, 2) DEFAULT 0.00,
+    price VARCHAR(16) DEFAULT '0T',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     exam_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     duration INTEGER NOT NULL DEFAULT 60, -- Duration in minutes (e.g. 120)
-    created_by VARCHAR(16) NOT NULL,
+    created_by UserIdType NOT NULL,
     is_public BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -155,7 +221,7 @@ COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is publi
 -- );
 CREATE OR REPLACE FUNCTION create_exam_info(
     p_course_id INTEGER,
-    p_price NUMERIC(10, 2),
+    p_price VARCHAR(16) DEFAULT '0T',
     p_created_by INTEGER,
     p_is_public BOOLEAN DEFAULT FALSE,
     p_duration INTEGER DEFAULT 60,

@@ -24,7 +24,18 @@ COMMENT ON COLUMN exam_question.option3 IS 'Third answer option (optional)';
 COMMENT ON COLUMN exam_question.option4 IS 'Fourth answer option (optional)';
 COMMENT ON COLUMN exam_question.created_at IS 'Timestamp when the question was created';
 
--- Function to create a single exam question
+-- Function to create a single exam question.
+-- Returns the question_id of the newly created question.
+-- Example usage:
+--      SELECT create_exam_question(
+--         p_exam_id := 1234,
+--         p_question_title := 'What is the capital of France?',
+--         p_description := 'Choose the correct option from the following.',
+--         p_option1 := 'Paris',
+--         p_option2 := 'London',
+--         p_option3 := 'Berlin',
+--         p_option4 := 'Madrid'
+--      );
 CREATE OR REPLACE FUNCTION create_exam_question(
     p_exam_id INTEGER,
     p_question_title VARCHAR(2048),
@@ -46,10 +57,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 ---------------------------------------------------------------
+
+-- Given exam holds information about exams taken by users.
 CREATE TABLE IF NOT EXISTS "given_exam" (
-    user_id VARCHAR(16) NOT NULL,
+    user_id UserIdType,
     exam_id INTEGER NOT NULL,
-    price NUMERIC(10, 2),
+    price VARCHAR(16) DEFAULT '0T', -- the price paid by the user to take the exam
     added_by VARCHAR(16) DEFAULT NULL,
     scored_by VARCHAR(16) DEFAULT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -74,7 +87,9 @@ COMMENT ON COLUMN given_exam.final_score IS 'Final score of the user in the exam
 -- Returns true if the user has participated in the exam, false otherwise
 -- Please note that if the user has been forcefully added by someone else to the exam,
 -- this function will still return true.
-CREATE OR REPLACE FUNCTION has_participated_in_exam(p_exam_id INTEGER, p_user_id VARCHAR(16))
+-- Example usage:
+--      SELECT has_participated_in_exam(1234, '5678');
+CREATE OR REPLACE FUNCTION has_participated_in_exam(p_exam_id INTEGER, p_user_id UserIdType)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
@@ -85,8 +100,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Returns true if the user can participate in the exam, false otherwise
-CREATE OR REPLACE FUNCTION can_participate_in_exam(p_exam_id INTEGER, p_user_id VARCHAR(16))
+-- Returns true if the user can participate in the exam, false otherwise.
+-- Example usage:
+--      SELECT can_participate_in_exam(1234, '5678');
+CREATE OR REPLACE FUNCTION can_participate_in_exam(p_exam_id INTEGER, p_user_id UserIdType)
 RETURNS BOOLEAN AS $$
 DECLARE
     is_public BOOLEAN;
@@ -110,32 +127,125 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Sets final_score and scored_by for a user in a given_exam.
-CREATE OR REPLACE FUNCTION set_score_for_user_in_exam(
+-- Example usage:
+--    CALL set_score_for_user_in_exam(
+--        1001,           -- p_exam_id: The ID of the exam
+--        'user123',      -- p_user_id: The ID of the user (assuming UserIdType is a string)
+--        '85/100',       -- p_final_score: The final score as a string
+--        5               -- p_scored_by: The ID of the user who scored the exam
+--    );
+CREATE OR REPLACE PROCEDURE set_score_for_user_in_exam(
     p_exam_id INTEGER,
-    p_user_id VARCHAR(16),
+    p_user_id UserIdType,
     p_final_score VARCHAR(63),
     p_scored_by INTEGER
-) RETURNS VOID AS $$
+)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    -- Check if the exam entry exists
-    IF NOT EXISTS (
-        SELECT 1 FROM given_exam
-        WHERE exam_id = p_exam_id AND user_id = p_user_id
-    ) THEN
-        RAISE EXCEPTION 'No exam entry found for user % in exam %', p_user_id, p_exam_id;
-    END IF;
+    BEGIN -- start a transaction
+        IF NOT EXISTS (
+            SELECT 1 FROM given_exam
+            WHERE exam_id = p_exam_id AND user_id = p_user_id
+        ) THEN
+            RAISE EXCEPTION 'No exam entry found for user % in exam %', p_user_id, p_exam_id;
+        END IF;
 
-    -- Update the final_score and added_by
-    UPDATE given_exam
-    SET final_score = p_final_score,
-        scored_by = p_added_by
-    WHERE exam_id = p_exam_id AND user_id = p_user_id;
+        UPDATE given_exam
+        SET final_score = p_final_score,
+            scored_by = p_scored_by
+        WHERE exam_id = p_exam_id AND user_id = p_user_id;
 
-    -- Check if any rows were affected
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'Failed to update score for user % in exam %', p_user_id, p_exam_id;
-    END IF;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Failed to update score for user % in exam %', p_user_id, p_exam_id;
+        END IF;
+
+        COMMIT; -- commit the transaction
+    EXCEPTION
+        WHEN OTHERS THEN
+            -- just rollback the transaction if any error occurs
+            ROLLBACK;
+            RAISE;
+    END;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+
+-- Procedure to add a user to an exam.
+-- Example usage:
+--    CALL add_user_in_exam(
+--        p_user_id := 'user123',
+--        p_exam_id := 1001,
+--        p_price := '0T',
+--        p_added_by := 'admin'
+--    );
+CREATE OR REPLACE PROCEDURE add_user_in_exam(
+    p_user_id UserIdType,
+    p_exam_id INTEGER,
+    p_price VARCHAR(16) DEFAULT '0T',
+    p_added_by VARCHAR(16) DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    BEGIN
+        -- Check if the user already exists in the exam
+        IF EXISTS (
+            SELECT 1 FROM given_exam
+            WHERE user_id = p_user_id AND exam_id = p_exam_id
+        ) THEN
+            RAISE EXCEPTION 'User % is already registered for exam %', p_user_id, p_exam_id;
+        END IF;
+
+        -- Insert the new entry
+        INSERT INTO "given_exam" (user_id, exam_id, price, added_by)
+        VALUES (p_user_id, p_exam_id, p_price, p_added_by);
+
+        -- If we get here, the insertion was successful, so commit the transaction
+        COMMIT;
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK; -- rollback all the changes
+            -- Re-raise the exception
+            RAISE;
+    END;
+END;
+$$;
+
+
+-- View to get all courses a user has ever enrolled in in their
+-- lifetime.
+-- An example of using this view would be:
+--      SELECT course_id, course_name
+--          FROM user_courses
+--          WHERE user_id = '1234';
+CREATE OR REPLACE VIEW user_courses AS
+SELECT DISTINCT u.user_id, c.course_id, c.course_name
+FROM "given_exam" g
+JOIN "exam_info" e ON g.exam_id = e.exam_id
+JOIN "course_info" c ON e.course_id = c.course_id
+JOIN "user_info" u ON g.user_id = u.user_id;
+
+COMMENT ON VIEW user_courses IS 'View to get all courses a user has ever enrolled in in their lifetime';
+
+
+-- View to get user_id and full_name of all users who have ever
+-- participated in any exam related to a certain course.
+-- An example of using this view would be:
+--      SELECT user_id, full_name
+--          FROM course_participants
+--          WHERE course_id = '1234';
+CREATE OR REPLACE VIEW course_participants AS
+SELECT DISTINCT
+    u.user_id,
+    u.full_name,
+    c.course_id,
+    c.course_name
+FROM "course_info" c
+JOIN "exam_info" e ON c.course_id = e.course_id
+JOIN "given_exam" g ON e.exam_id = g.exam_id
+JOIN "user_info" u ON g.user_id = u.user_id
+ORDER BY c.course_id, u.user_id;
+
+COMMENT ON VIEW course_participants IS 'View to get user_id and full_name of all users who have ever participated in any exam related to a certain course.';
 
 ---------------------------------------------------------------

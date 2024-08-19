@@ -30,3 +30,16 @@ BEGIN
     END LOOP;
 END
 $$;
+
+--  Drops all views in the public schema
+DO
+$do$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT viewname FROM pg_views WHERE schemaname = 'public')
+    LOOP
+        EXECUTE 'DROP VIEW IF EXISTS "' || r.viewname || '" CASCADE;';
+    END LOOP;
+END
+$do$;
