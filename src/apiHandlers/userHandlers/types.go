@@ -42,7 +42,17 @@ type MeResult struct {
 } // @name GetMeResult
 
 // CreateUserData is the data required to create a new user.
-type CreateUserData = database.NewUserData // @name CreateUserData
+type CreateUserData = struct {
+	UserId          string             `json:"user_id"`
+	FullName        string             `json:"full_name"`
+	Email           string             `json:"email"`
+	RawPassword     string             `json:"password"`
+	Role            appValues.UserRole `json:"role"`
+	UserAddress     *string            `json:"user_address"`
+	PhoneNumber     *string            `json:"phone_number"`
+	SetupCompleted  bool               `json:"setup_completed"`
+	PrimaryLanguage string             `json:"primary_language"`
+} // @name CreateUserData
 
 // CreateUserResult is the result of creating a new user.
 type CreateUserResult struct {
@@ -106,12 +116,6 @@ type ChangePasswordData struct {
 	UserId      string `json:"user_id"`
 	NewPassword string `json:"new_password"`
 	Lang        string `json:"lang" default:"en"`
-
-	// if the user itself is trying to change their password,
-	// they should get an email, click on the email link
-	// get redirected to the special change password page
-	// which contains their token, and then that page will
-	// have to send the following parameters:
 } // @name ChangePasswordData
 
 type ChangePasswordResult struct {
@@ -139,3 +143,17 @@ type changePasswordRequestEntry struct {
 	RTParam   string
 	LTNum     int32
 }
+
+type confirmAccountRequestEntry struct {
+	UserId       string
+	ConfirmToken string
+	RLToken      string
+}
+
+type ConfirmAccountData struct {
+	UserId       string `json:"user_id"`
+	ConfirmToken string `json:"confirm_token"`
+	RLToken      string `json:"rl_token"`
+	RawPassword  string `json:"raw_password"`
+	LTToken      string `json:"lt_token"`
+} // @name ConfirmAccountData

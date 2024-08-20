@@ -14,3 +14,10 @@ type ChangePasswordEmailData struct {
 	EmailTo      string
 	Lang         string
 }
+
+type ConfirmAccountEmailData struct {
+	UserFullName string
+	ChangeLink   string
+	EmailTo      string
+	Lang         string
+}

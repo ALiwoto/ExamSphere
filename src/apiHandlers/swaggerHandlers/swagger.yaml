@@ -43,6 +43,7 @@ definitions:
     - 2139
     - 2140
     - 2141
+    - 2142
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -87,6 +88,7 @@ definitions:
     - ErrCodeQueryParameterNotProvided
     - ErrCodeTooManyPasswordChangeAttempts
     - ErrCodeRequestExpired
+    - ErrCodeInvalidEmail
   AuthResult:
     properties:
       access_token:
@@ -143,6 +145,18 @@ definitions:
       rt_verifier:
         type: string
     type: object
+  CreateNewTopicData:
+    properties:
+      topicName:
+        type: string
+    type: object
+  CreateNewTopicResult:
+    properties:
+      topicID:
+        type: integer
+      topicName:
+        type: string
+    type: object
   CreateUserData:
     properties:
       email:
@@ -151,8 +165,14 @@ definitions:
         type: string
       password:
         type: string
+      phone_number:
+        type: string
       role:
         $ref: '#/definitions/UserRole'
+      setup_completed:
+        type: boolean
+      user_address:
+        type: string
       user_id:
         type: string
     type: object
@@ -172,6 +192,10 @@ definitions:
       email:
         type: string
       full_name:
+        type: string
+      phone_number:
+        type: string
+      user_address:
         type: string
       user_id:
         type: string

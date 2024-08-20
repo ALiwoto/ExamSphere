@@ -34,9 +34,13 @@ func LoadEmailClient() error {
 	return nil
 }
 
-func SendChangePassword(data *ChangePasswordEmailData) error {
+func IsEmailClientLoaded() bool {
+	return emailSenderClient != nil
+}
+
+func SendChangePasswordEmail(data *ChangePasswordEmailData) error {
 	if emailSenderClient == nil {
-		return fmt.Errorf("email client not loaded")
+		return ErrEmailClientNotLoaded
 	}
 
 	e := email.NewEmail()
@@ -47,11 +51,36 @@ func SendChangePassword(data *ChangePasswordEmailData) error {
 	htmlTemplate, ok := PasswordChangeTemplateMap[data.Lang]
 	if !ok {
 		// default to english
-		htmlTemplate = PasswordChangeTemplateMap["en"]
+		htmlTemplate = PasswordChangeTemplateMap[DefaultEmailLanguage]
 	}
 
 	e.HTML = []byte(fmt.Sprintf(htmlTemplate, data.UserFullName, data.ChangeLink))
-	print(string(e.HTML))
+
+	err := e.Send(emailSenderClient.GetHostAddress(), emailSenderClient.GetSmtpAuth())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func SendConfirmAccountEmail(data *ConfirmAccountEmailData) error {
+	if emailSenderClient == nil {
+		return ErrEmailClientNotLoaded
+	}
+
+	e := email.NewEmail()
+	e.From = emailSenderClient.EmailFrom
+	e.To = []string{data.EmailTo}
+	e.Subject = "Account Confirmation"
+
+	htmlTemplate, ok := ConfirmAccountTemplateMap[data.Lang]
+	if !ok {
+		// default to english
+		htmlTemplate = ConfirmAccountTemplateMap[DefaultEmailLanguage]
+	}
+
+	e.HTML = []byte(fmt.Sprintf(htmlTemplate, data.UserFullName, data.ChangeLink))
 
 	err := e.Send(emailSenderClient.GetHostAddress(), emailSenderClient.GetSmtpAuth())
 	if err != nil {

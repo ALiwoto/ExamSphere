@@ -3,6 +3,7 @@ package userHandlers
 import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/core/appConfig"
+	"ExamSphere/src/core/utils/hashing"
 	"ExamSphere/src/database"
 	"encoding/hex"
 
@@ -170,6 +171,26 @@ func newChangePasswordRequest(userInfo *database.UserInfo) (*changePasswordReque
 	changePasswordRequestMap.Add(reqFirst+entry.RqId, entry)
 
 	return entry, nil
+}
+
+func newConfirmAccountRequest(userInfo *database.UserInfo) (*confirmAccountRequestEntry, error) {
+	if userInfo.SetupCompleted {
+		return nil, ErrAccountAlreadyConfirmed
+	}
+
+	entry := &confirmAccountRequestEntry{
+		UserId:       userInfo.UserId,
+		ConfirmToken: hashing.HashSHA256(userInfo.AuthHash + userInfo.Email),
+		RLToken:      hashing.HashSHA512(userInfo.AuthHash + "_" + userInfo.Email),
+	}
+
+	return entry, nil
+}
+
+func verifyAccountConfirmation(userInfo *database.UserInfo, data *ConfirmAccountData) bool {
+	return userInfo.UserId == data.UserId &&
+		hashing.CompareSHA256(data.ConfirmToken, userInfo.AuthHash+userInfo.Email) &&
+		hashing.CompareSHA512(data.RLToken, userInfo.AuthHash+"_"+userInfo.Email)
 }
 
 func getChangePasswordRequest(rqId string) *changePasswordRequestEntry {

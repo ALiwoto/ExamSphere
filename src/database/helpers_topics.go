@@ -8,9 +8,9 @@ import (
 
 // CreateNewTopic creates a new topic in the database,
 // using the plpgsql function create_topic_info.
-func CreateNewTopic(topicName string) (*TopicInfo, error) {
+func CreateNewTopic(topicData *NewTopicData) (*TopicInfo, error) {
 	info := &TopicInfo{
-		TopicName: topicName,
+		TopicName: topicData.TopicName,
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
@@ -53,6 +53,35 @@ func GetTopicInfo(topicId int) (*TopicInfo, error) {
 	return info, nil
 }
 
+// SearchTopics searches for topics in the database.
+func SearchTopics(topicName string) ([]*TopicInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT topic_id, topic_name
+		FROM topic_info WHERE topic_name ILIKE '%' || $1 || '%'`,
+		topicName,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	topics := make([]*TopicInfo, 0)
+	for rows.Next() {
+		info := &TopicInfo{}
+		err = rows.Scan(
+			&info.TopicId,
+			&info.TopicName,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, info)
+	}
+
+	return topics, nil
+}
+
 // GetAllUserTopicStats gets all the topic stats for a user.
 func GetAllUserTopicStats(userId string) ([]*UserTopicStat, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
@@ -87,7 +116,7 @@ func GetAllUserTopicStats(userId string) ([]*UserTopicStat, error) {
 }
 
 // GetUserTopicStat gets the topic stat for a user and a topic.
-func GetUserTopicStat(userId, topicId int) (*UserTopicStat, error) {
+func GetUserTopicStat(userId string, topicId int) (*UserTopicStat, error) {
 	stat := &UserTopicStat{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT user_id, topic_id, current_exp, total_exp, current_level, last_visited

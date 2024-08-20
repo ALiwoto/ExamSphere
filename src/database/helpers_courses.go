@@ -39,13 +39,14 @@ func GetCourseInfo(courseId int) (*CourseInfo, error) {
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT course_id, course_name, course_description, added_by
+		`SELECT course_id, course_name, course_description, created_at, added_by
 		FROM course_info WHERE course_id = $1`,
 		courseId,
 	).Scan(
 		&info.CourseId,
 		&info.CourseName,
 		&info.CourseDescription,
+		&info.CreatedAt,
 		&info.AddedBy,
 	)
 	if err != nil {
@@ -56,14 +57,90 @@ func GetCourseInfo(courseId int) (*CourseInfo, error) {
 		return nil, err
 	}
 
+	coursesInfoMap.Add(info.CourseId, info)
+	coursesInfoByNameMap.Add(strings.ToLower(info.CourseName), info)
 	return info, nil
+}
+
+// GetCourseByName gets a course from the database by its name.
+func GetCourseByName(courseName string) (*CourseInfo, error) {
+	courseName = strings.TrimSpace(strings.ToLower(courseName))
+	info := coursesInfoByNameMap.Get(courseName)
+	if info != nil && info != valueCourseNotFound &&
+		strings.EqualFold(info.CourseName, courseName) {
+		return info, nil
+	}
+
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT course_id, course_name, course_description, created_at, added_by
+		FROM course_info WHERE LOWER(course_name) = $1`,
+		courseName,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, ErrCourseNotFound
+	}
+
+	info = &CourseInfo{}
+	err = rows.Scan(
+		&info.CourseId,
+		&info.CourseName,
+		&info.CourseDescription,
+		&info.CreatedAt,
+		&info.AddedBy,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	coursesInfoMap.Add(info.CourseId, info)
+	coursesInfoByNameMap.Add(strings.ToLower(info.CourseName), info)
+	return info, nil
+}
+
+// SearchCourseByName searches for courses in the database.
+func SearchCourseByName(courseName string) ([]*CourseInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT course_id, course_name, course_description, created_at, added_by
+			FROM course_info WHERE course_name ILIKE '%' || $1 || '%'
+			ORDER BY created_at DESC;`,
+		courseName,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var courses []*CourseInfo
+	for rows.Next() {
+		info := &CourseInfo{}
+		err = rows.Scan(
+			&info.CourseId,
+			&info.CourseName,
+			&info.CourseDescription,
+			&info.CreatedAt,
+			&info.AddedBy,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		courses = append(courses, info)
+	}
+
+	return courses, nil
 }
 
 // GetCreatedCoursesByUser gets all courses created by a user.
 func GetCreatedCoursesByUser(userId string) ([]*CourseInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT course_id, course_name, course_description, added_by
-		FROM course_info WHERE added_by = $1`,
+		`SELECT course_id, course_name, course_description, created_at, added_by
+			FROM course_info WHERE added_by = $1
+			ORDER BY created_at DESC;`,
 		userId,
 	)
 	if err != nil {
@@ -78,6 +155,7 @@ func GetCreatedCoursesByUser(userId string) ([]*CourseInfo, error) {
 			&info.CourseId,
 			&info.CourseName,
 			&info.CourseDescription,
+			&info.CreatedAt,
 			&info.AddedBy,
 		)
 		if err != nil {

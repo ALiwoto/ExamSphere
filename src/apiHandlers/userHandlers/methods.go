@@ -43,3 +43,34 @@ func (e *changePasswordRequestEntry) Verify(data *ConfirmChangePasswordData) boo
 
 	return true
 }
+
+//---------------------------------------------------------
+
+func (e *confirmAccountRequestEntry) GetRedirectAddress(baseAddr string) string {
+	// URL encode the query parameters
+	encodedConfirmToken := url.QueryEscape(e.ConfirmToken)
+	encodedRLToken := url.QueryEscape(e.RLToken)
+
+	// Construct the full URL with query parameters
+	fullURL := fmt.Sprintf(
+		"%s?confirmToken=%s&rlToken=%s&lt=%s",
+		baseAddr,
+		encodedConfirmToken,
+		encodedRLToken,
+
+		// later on we should change this; if the user is not confirming
+		// their account through the email.
+		"emailConfirmation",
+	)
+
+	return fullURL
+}
+
+//-------------------------------------------------------------
+
+func (d *ConfirmAccountData) IsValid() bool {
+	return d != nil &&
+		d.ConfirmToken != "" &&
+		d.RLToken != "" &&
+		d.LTToken != ""
+}

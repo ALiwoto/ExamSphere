@@ -169,3 +169,11 @@ func GetChangePasswordBaseURL() string {
 
 	return TheConfig.ChangePassBaseUrl
 }
+
+func GetConfirmAccountBaseURL() string {
+	if TheConfig == nil {
+		return ""
+	}
+
+	return TheConfig.ConfirmAccountBaseUrl
+}

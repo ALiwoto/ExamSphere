@@ -376,3 +376,25 @@ func UpdateUserPassword(data *UpdateUserPasswordData) error {
 	)
 	return err
 }
+
+// ConfirmUserAccount confirms a user's account.
+func ConfirmUserAccount(userId string) error {
+	userId = appValues.NormalizeUserId(userId)
+	if userId == "" {
+		return ErrUserNotFound
+	}
+
+	info, err := GetUserByUserId(userId)
+	if err != nil {
+		return err
+	}
+
+	info.SetupCompleted = true
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`UPDATE user_info
+		SET setup_completed = true
+		WHERE user_id = $1`,
+		userId,
+	)
+	return err
+}

@@ -44,7 +44,9 @@ const (
 	ErrQueryParameterNotProvided     = "Query parameter required but not provided: %s"
 	ErrTooManyPasswordChangeAttempts = "Too many password change attempts. Please try again later"
 	ErrRequestExpired                = "Request expired. Please try again later"
-	ErrInvalidEmail                  = "Invalid email provided: %s"
+	ErrInvalidEmail                  = "Invalid email provided"
+	ErrCourseAlreadyExists           = "A course with this name already exists"
+	ErrCourseNotFound                = "Course not found"
 )
 
 // error codes
@@ -92,4 +94,6 @@ const (
 	ErrCodeTooManyPasswordChangeAttempts
 	ErrCodeRequestExpired
 	ErrCodeInvalidEmail
+	ErrCodeCourseAlreadyExists
+	ErrCodeCourseNotFound
 )

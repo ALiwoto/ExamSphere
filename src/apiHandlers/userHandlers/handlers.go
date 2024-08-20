@@ -199,12 +199,43 @@ func CreateUserV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidUsername(c)
 	}
 
-	newUserInfo, err = database.CreateNewUser(newUserData)
+	newUserInfo, err = database.CreateNewUser(&database.NewUserData{
+		UserId:         newUserData.UserId,
+		FullName:       newUserData.FullName,
+		Email:          newUserData.Email,
+		RawPassword:    newUserData.RawPassword,
+		Role:           newUserData.Role,
+		UserAddress:    newUserData.UserAddress,
+		PhoneNumber:    newUserData.PhoneNumber,
+		SetupCompleted: newUserData.SetupCompleted,
+	})
 	if err != nil {
 		logging.Error("CreateUserV1: failed to create new user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	} else if newUserInfo == nil {
 		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if !newUserInfo.SetupCompleted && emailUtils.IsEmailClientLoaded() {
+		// we need to send account confirmation email for them
+		entry, err := newConfirmAccountRequest(newUserInfo)
+		if err != nil {
+			logging.Error("CreateUserV1: failed to create confirm account request: ", err)
+			return apiHandlers.SendErrInternalServerError(c)
+		} else if entry == nil {
+			return apiHandlers.SendErrInternalServerError(c)
+		}
+
+		err = emailUtils.SendConfirmAccountEmail(&emailUtils.ConfirmAccountEmailData{
+			UserFullName: newUserInfo.FullName,
+			ChangeLink:   entry.GetRedirectAddress(appConfig.GetConfirmAccountBaseURL()),
+			EmailTo:      newUserInfo.Email,
+			Lang:         newUserData.PrimaryLanguage,
+		})
+		if err != nil {
+			logging.Error("CreateUserV1: failed to send confirm account email: ", err)
+			return apiHandlers.SendErrInternalServerError(c)
+		}
 	}
 
 	return apiHandlers.SendResult(c, &CreateUserResult{
@@ -449,7 +480,7 @@ func BanUserV1(c *fiber.Ctx) error {
 // @Produce json
 // @Param Authorization header string true "Authorization token"
 // @Param changePasswordData body ChangePasswordData true "Change password data"
-// @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
+// @Success 200 {object} apiHandlers.EndpointResponse{result=ChangePasswordResult}
 // @Router /api/v1/user/changePassword [post]
 func ChangePasswordV1(c *fiber.Ctx) error {
 	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
@@ -502,11 +533,21 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 			return apiHandlers.SendErrInternalServerError(c)
 		}
 
-		emailUtils.SendChangePassword(&emailUtils.ChangePasswordEmailData{
+		err = emailUtils.SendChangePasswordEmail(&emailUtils.ChangePasswordEmailData{
 			UserFullName: userInfo.FullName,
 			ChangeLink:   entry.GetRedirectAddress(appConfig.GetChangePasswordBaseURL()),
 			EmailTo:      userInfo.Email,
 			Lang:         newPasswordData.Lang,
+		})
+		if err != nil {
+			logging.Error("ChangePasswordV1: failed to send change password email: ", err)
+			return apiHandlers.SendErrInternalServerError(c)
+		}
+
+		return apiHandlers.SendResult(c, &ChangePasswordResult{
+			EmailSent:       true,
+			PasswordChanged: false,
+			Lang:            newPasswordData.Lang,
 		})
 	}
 	if !userInfo.CanChangePassword(targetUserInfo) {
@@ -522,7 +563,11 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
-	return apiHandlers.SendResult(c, true)
+	return apiHandlers.SendResult(c, &ChangePasswordResult{
+		EmailSent:       false,
+		PasswordChanged: true,
+		Lang:            newPasswordData.Lang,
+	})
 }
 
 // ConfirmChangePasswordV1 godoc
@@ -567,6 +612,56 @@ func ConfirmChangePasswordV1(c *fiber.Ctx) error {
 	})
 	if err != nil {
 		logging.Error("ConfirmChangePasswordV1: failed to update password: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, true)
+}
+
+// ConfirmAccountV1 godoc
+// @Summary Confirm account
+// @Description Allows a user to confirm their account
+// @ID confirmAccountV1
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param confirmAccountData body ConfirmAccountData true "Confirm account data"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
+// @Router /api/v1/user/confirmAccount [post]
+func ConfirmAccountV1(c *fiber.Ctx) error {
+	confirmData := &ConfirmAccountData{}
+	if err := c.BodyParser(confirmData); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if !confirmData.IsValid() {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	userInfo, err := database.GetUserByUserId(confirmData.UserId)
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	if !verifyAccountConfirmation(userInfo, confirmData) {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if confirmData.RawPassword != "" {
+		// all is fine, we can now update the password in the database
+		err = database.UpdateUserPassword(&database.UpdateUserPasswordData{
+			UserId:      userInfo.UserId,
+			RawPassword: confirmData.RawPassword,
+		})
+		if err != nil {
+			logging.Error("ConfirmAccountV1: failed to update password: ", err)
+			return apiHandlers.SendErrInternalServerError(c)
+		}
+	}
+
+	err = database.ConfirmUserAccount(userInfo.UserId)
+	if err != nil {
+		logging.Error("ConfirmAccountV1: failed to confirm account: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 

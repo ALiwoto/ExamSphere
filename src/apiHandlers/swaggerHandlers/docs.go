@@ -600,7 +600,8 @@ const docTemplate = `{
                 2138,
                 2139,
                 2140,
-                2141
+                2141,
+                2142
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -644,7 +645,8 @@ const docTemplate = `{
                 "ErrCodeInvalidCaptcha",
                 "ErrCodeQueryParameterNotProvided",
                 "ErrCodeTooManyPasswordChangeAttempts",
-                "ErrCodeRequestExpired"
+                "ErrCodeRequestExpired",
+                "ErrCodeInvalidEmail"
             ]
         },
         "AuthResult": {
@@ -733,6 +735,25 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateNewTopicData": {
+            "type": "object",
+            "properties": {
+                "topicName": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateNewTopicResult": {
+            "type": "object",
+            "properties": {
+                "topicID": {
+                    "type": "integer"
+                },
+                "topicName": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateUserData": {
             "type": "object",
             "properties": {
@@ -745,8 +766,17 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "phone_number": {
+                    "type": "string"
+                },
                 "role": {
                     "$ref": "#/definitions/UserRole"
+                },
+                "setup_completed": {
+                    "type": "boolean"
+                },
+                "user_address": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"
@@ -777,6 +807,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "full_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "user_address": {
                     "type": "string"
                 },
                 "user_id": {

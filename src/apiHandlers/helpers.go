@@ -467,3 +467,19 @@ func SendErrInvalidEmail(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrCourseAlreadyExists(c *fiber.Ctx) error {
+	return SendError(fiber.StatusConflict, c, &EndpointError{
+		ErrorCode: ErrCodeCourseAlreadyExists,
+		Message:   ErrCourseAlreadyExists,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrCourseNotFound(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeCourseNotFound,
+		Message:   ErrCourseNotFound,
+		Origin:    c.Path(),
+	})
+}

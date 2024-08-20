@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamSphere Account Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .email-el-h1 {
+            color: #333;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+        }
+        .email-confirm-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://aliwoto.is-a.dev:8080/examsphere-intro.gif" alt="Welcome to ExamSphere" style="display: block; margin: 0 auto;">
+        <h1 class="email-el-h1">ExamSphere Account Confirmation</h1>
+        <p>Hello Dear %s,</p>
+        <p>Welcome to ExamSphere! We hope you the best experience in our site. Click the link below to confirm your account creation:</p>
+        <a class="email-confirm-button" href="%s">Confirm Account</a>
+
+        <hr />
+        <p>If you are experiencing any difficulties with your account, feel free to reach out to our support team.</p>
+        <p>Best regards,<br>ExamSphere Team</p>
+    </div>
+</body>
+</html>

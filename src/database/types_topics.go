@@ -8,6 +8,11 @@ type TopicInfo struct {
 	TopicName string `json:"topic_name"`
 }
 
+// NewTopicData is a struct that holds the data needed to create a new topic.
+type NewTopicData struct {
+	TopicName string `json:"topic_name"`
+}
+
 // UserTopicStat is a struct that holds the user's statistics
 // about a specific topic.
 type UserTopicStat struct {
@@ -17,4 +22,8 @@ type UserTopicStat struct {
 	TotalExp     int       `json:"total_exp"`
 	CurrentLevel int       `json:"current_level"`
 	LastVisited  time.Time `json:"last_visited"`
+}
+
+type SearchTopicData struct {
+	TopicName string `json:"topic_name"`
 }

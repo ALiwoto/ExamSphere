@@ -3,8 +3,10 @@ package masterServer
 import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/apiHandlers/captchaHandlers"
+	"ExamSphere/src/apiHandlers/courseHandlers"
 	"ExamSphere/src/apiHandlers/sudoHandlers"
 	"ExamSphere/src/apiHandlers/swaggerHandlers"
+	"ExamSphere/src/apiHandlers/topicHandlers"
 	"ExamSphere/src/apiHandlers/userHandlers"
 	"ExamSphere/src/core/appConfig"
 	"ExamSphere/src/core/appValues"
@@ -70,10 +72,23 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/user/edit", authProtection, userHandlers.EditUserV1)
 	v1.Post("/user/ban", authProtection, userHandlers.BanUserV1)
 	v1.Post("/user/changePassword", authProtection, userHandlers.ChangePasswordV1)
-	v1.Post("/user/confirmChangePassword", authProtection, userHandlers.ConfirmChangePasswordV1)
+	v1.Post("/user/confirmChangePassword", userHandlers.ConfirmChangePasswordV1)
+	v1.Post("user/confirmAccount", userHandlers.ConfirmAccountV1)
 
 	// captcha handlers
 	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)
+
+	// topic handlers
+	v1.Post("/topic/create", authProtection, topicHandlers.CreateTopicV1)
+	v1.Post("/topic/search", authProtection, topicHandlers.SearchTopicV1)
+	v1.Post("/topic/info", authProtection, topicHandlers.GetTopicInfoV1)
+	v1.Post("/topic/userTopicStat", authProtection, topicHandlers.GetUserTopicStatV1)
+	v1.Post("/topic/allUserTopicStats", authProtection, topicHandlers.GetAllUserTopicStatsV1)
+
+	// course handlers
+	v1.Post("/course/create", authProtection, courseHandlers.CreateCourseV1)
+	v1.Get("/course/info", authProtection, courseHandlers.GetCourseInfoV1)
+	v1.Post("/course/search", authProtection, courseHandlers.SearchCourseV1)
 
 	// sudo handlers
 	v1.Post("/sudo/exit", sudoHandlers.ExitV1)

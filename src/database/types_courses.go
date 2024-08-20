@@ -1,10 +1,13 @@
 package database
 
+import "time"
+
 type CourseInfo struct {
-	CourseId          int    `json:"course_id"`
-	CourseName        string `json:"course_name"`
-	CourseDescription string `json:"course_description"`
-	AddedBy           string `json:"added_by"`
+	CourseId          int       `json:"course_id"`
+	CourseName        string    `json:"course_name"`
+	CourseDescription string    `json:"course_description"`
+	CreatedAt         time.Time `json:"created_at"`
+	AddedBy           string    `json:"added_by"`
 }
 
 type UserParticipatedCourse struct {

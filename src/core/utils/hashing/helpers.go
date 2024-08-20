@@ -2,6 +2,7 @@ package hashing
 
 import (
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -27,8 +28,18 @@ func CompareSHA256(hash, value string) bool {
 	return hash == HashSHA256(value)
 }
 
+func CompareSHA512(hash, value string) bool {
+	return hash == HashSHA512(value)
+}
+
 func HashSHA256(value string) string {
 	hash := sha256.New()
+	hash.Write([]byte(value))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func HashSHA512(value string) string {
+	hash := sha512.New()
 	hash.Write([]byte(value))
 	return hex.EncodeToString(hash.Sum(nil))
 }

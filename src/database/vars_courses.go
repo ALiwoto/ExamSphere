@@ -15,6 +15,14 @@ var (
 
 		return m
 	}()
+	coursesInfoByNameMap = func() *ssg.SafeEMap[string, CourseInfo] {
+		m := ssg.NewSafeEMap[string, CourseInfo]()
+		m.SetExpiration(time.Hour * 3)
+		m.SetInterval(time.Hour * 12)
+		m.EnableChecking()
+
+		return m
+	}()
 )
 
 var (

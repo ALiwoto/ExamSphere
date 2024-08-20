@@ -124,6 +124,29 @@ func (i *UserInfo) CanChangePassword(targetUser *UserInfo) bool {
 	return false
 }
 
+func (i *UserInfo) CanCreateNewTopic() bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	return i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
+}
+
+func (i *UserInfo) CanSearchTopic() bool {
+	return i != nil && i.Role != appValues.UserRoleUnknown
+}
+
+func (i *UserInfo) CanGetTopicInfo() bool {
+	return i != nil && i.Role != appValues.UserRoleUnknown
+}
+
+func (i *UserInfo) CanCreateNewCourse() bool {
+	return i != nil && i.Role == appValues.UserRoleAdmin ||
+		i.Role == appValues.UserRoleOwner
+}
+
 //---------------------------------------------------------
 
 func (d *UpdateUserData) IsEmpty() bool {
