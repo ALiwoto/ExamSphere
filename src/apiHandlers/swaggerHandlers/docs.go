@@ -57,6 +57,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/course/courseParticipants": {
+            "post": {
+                "description": "Allows a user to get all participants of a course.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get course participants",
+                "parameters": [
+                    {
+                        "description": "Data needed to get course participants",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetCourseParticipantsData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetCourseParticipantsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/course/create": {
             "post": {
                 "description": "Allows a user to create a new course.",
@@ -101,6 +154,59 @@ const docTemplate = `{
                                     "properties": {
                                         "result": {
                                             "$ref": "#/definitions/CreateCourseResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/course/createdCourses": {
+            "post": {
+                "description": "Allows a user to get all courses created by a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get created courses",
+                "parameters": [
+                    {
+                        "description": "Data needed to get created courses",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetCreatedCoursesData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetCreatedCoursesResult"
                                         }
                                     }
                                 }
@@ -205,6 +311,59 @@ const docTemplate = `{
                                     "properties": {
                                         "result": {
                                             "$ref": "#/definitions/SearchCourseResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/course/userCourses": {
+            "post": {
+                "description": "Allows a user to get all courses participated by a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get user courses",
+                "parameters": [
+                    {
+                        "description": "Data needed to get user courses",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetUserCoursesData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUserCoursesResult"
                                         }
                                     }
                                 }
@@ -1232,6 +1391,17 @@ const docTemplate = `{
                 }
             }
         },
+        "CourseParticipantInfo": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateCourseData": {
             "type": "object",
             "properties": {
@@ -1428,6 +1598,44 @@ const docTemplate = `{
                 }
             }
         },
+        "GetCourseParticipantsData": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "GetCourseParticipantsResult": {
+            "type": "object",
+            "properties": {
+                "participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CourseParticipantInfo"
+                    }
+                }
+            }
+        },
+        "GetCreatedCoursesData": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetCreatedCoursesResult": {
+            "type": "object",
+            "properties": {
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SearchedCourseInfo"
+                    }
+                }
+            }
+        },
         "GetMeResult": {
             "type": "object",
             "properties": {
@@ -1450,6 +1658,25 @@ const docTemplate = `{
                 },
                 "topic_name": {
                     "type": "string"
+                }
+            }
+        },
+        "GetUserCoursesData": {
+            "type": "object",
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetUserCoursesResult": {
+            "type": "object",
+            "properties": {
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UserParticipatedCourse"
+                    }
                 }
             }
         },
@@ -1658,6 +1885,17 @@ const docTemplate = `{
                     "$ref": "#/definitions/UserRole"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserParticipatedCourse": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
                     "type": "string"
                 }
             }

@@ -81,14 +81,17 @@ func LoadHandlersV1(app *fiber.App) {
 	// topic handlers
 	v1.Post("/topic/create", authProtection, topicHandlers.CreateTopicV1)
 	v1.Post("/topic/search", authProtection, topicHandlers.SearchTopicV1)
-	v1.Post("/topic/info", authProtection, topicHandlers.GetTopicInfoV1)
+	v1.Get("/topic/info", authProtection, topicHandlers.GetTopicInfoV1)
 	v1.Post("/topic/userTopicStat", authProtection, topicHandlers.GetUserTopicStatV1)
-	v1.Post("/topic/allUserTopicStats", authProtection, topicHandlers.GetAllUserTopicStatsV1)
+	v1.Get("/topic/allUserTopicStats", authProtection, topicHandlers.GetAllUserTopicStatsV1)
 
 	// course handlers
 	v1.Post("/course/create", authProtection, courseHandlers.CreateCourseV1)
 	v1.Get("/course/info", authProtection, courseHandlers.GetCourseInfoV1)
 	v1.Post("/course/search", authProtection, courseHandlers.SearchCourseV1)
+	v1.Post("/course/CreatedCourses", authProtection, courseHandlers.GetCreatedCoursesV1)
+	v1.Post("/course/userCourses", authProtection, courseHandlers.GetUserCoursesV1)
+	v1.Post("/course/courseParticipants", authProtection, courseHandlers.GetCourseParticipantsV1)
 
 	// sudo handlers
 	v1.Post("/sudo/exit", sudoHandlers.ExitV1)

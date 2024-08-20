@@ -200,7 +200,7 @@ func GetAllUserCourses(userId string) ([]*UserParticipatedCourse, error) {
 }
 
 // GetAllParticipantsOfCourse gets all participants of a course.
-func GetAllParticipantsOfCourse(courseId string) ([]*CourseParticipantInfo, error) {
+func GetAllParticipantsOfCourse(courseId int) ([]*CourseParticipantInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
 		`SELECT user_id, full_name
 		FROM course_participants

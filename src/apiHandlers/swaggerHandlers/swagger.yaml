@@ -172,6 +172,13 @@ definitions:
       rt_verifier:
         type: string
     type: object
+  CourseParticipantInfo:
+    properties:
+      full_name:
+        type: string
+      user_id:
+        type: string
+    type: object
   CreateCourseData:
     properties:
       course_description:
@@ -299,6 +306,30 @@ definitions:
       created_at:
         type: string
     type: object
+  GetCourseParticipantsData:
+    properties:
+      course_id:
+        type: integer
+    type: object
+  GetCourseParticipantsResult:
+    properties:
+      participants:
+        items:
+          $ref: '#/definitions/CourseParticipantInfo'
+        type: array
+    type: object
+  GetCreatedCoursesData:
+    properties:
+      user_id:
+        type: string
+    type: object
+  GetCreatedCoursesResult:
+    properties:
+      courses:
+        items:
+          $ref: '#/definitions/SearchedCourseInfo'
+        type: array
+    type: object
   GetMeResult:
     properties:
       full_name:
@@ -314,6 +345,18 @@ definitions:
         type: integer
       topic_name:
         type: string
+    type: object
+  GetUserCoursesData:
+    properties:
+      user_id:
+        type: string
+    type: object
+  GetUserCoursesResult:
+    properties:
+      courses:
+        items:
+          $ref: '#/definitions/UserParticipatedCourse'
+        type: array
     type: object
   GetUserInfoResult:
     properties:
@@ -450,6 +493,13 @@ definitions:
       user_id:
         type: string
     type: object
+  UserParticipatedCourse:
+    properties:
+      course_id:
+        type: integer
+      course_name:
+        type: string
+    type: object
   UserRole:
     description: UserRole is the role of the user.
     enum:
@@ -520,6 +570,38 @@ paths:
       summary: Get a captcha
       tags:
       - User
+  /api/v1/course/courseParticipants:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to get all participants of a course.
+      parameters:
+      - description: Data needed to get course participants
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/GetCourseParticipantsData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetCourseParticipantsResult'
+              type: object
+      summary: Get course participants
+      tags:
+      - Course
   /api/v1/course/create:
     post:
       consumes:
@@ -550,6 +632,38 @@ paths:
                   $ref: '#/definitions/CreateCourseResult'
               type: object
       summary: Create a new course
+      tags:
+      - Course
+  /api/v1/course/createdCourses:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to get all courses created by a user.
+      parameters:
+      - description: Data needed to get created courses
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/GetCreatedCoursesData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetCreatedCoursesResult'
+              type: object
+      summary: Get created courses
       tags:
       - Course
   /api/v1/course/info:
@@ -613,6 +727,38 @@ paths:
                   $ref: '#/definitions/SearchCourseResult'
               type: object
       summary: Search for courses
+      tags:
+      - Course
+  /api/v1/course/userCourses:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to get all courses participated by a user.
+      parameters:
+      - description: Data needed to get user courses
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/GetUserCoursesData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetUserCoursesResult'
+              type: object
+      summary: Get user courses
       tags:
       - Course
   /api/v1/topic/allUserTopicStats:

@@ -146,3 +146,156 @@ func SearchCourseV1(c *fiber.Ctx) error {
 		Courses: coursesInfo,
 	})
 }
+
+// GetCreatedCoursesV1 godoc
+// @Summary Get created courses
+// @Description Allows a user to get all courses created by a user.
+// @Tags Course
+// @Accept json
+// @Produce json
+// @Param data body GetCreatedCoursesData true "Data needed to get created courses"
+// @Param Authorization header string true "Authorization token"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetCreatedCoursesResult}
+// @Router /api/v1/course/createdCourses [post]
+func GetCreatedCoursesV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &GetCreatedCoursesData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.UserId == "" {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	courses, err := database.GetCreatedCoursesByUser(data.UserId)
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	var coursesInfo []*SearchedCourseInfo
+	for _, course := range courses {
+		coursesInfo = append(coursesInfo, &SearchedCourseInfo{
+			CourseId:          course.CourseId,
+			CourseName:        course.CourseName,
+			CourseDescription: course.CourseDescription,
+			CreatedAt:         course.CreatedAt,
+			AddedBy:           course.AddedBy,
+		})
+	}
+
+	return apiHandlers.SendResult(c, &GetCreatedCoursesResult{
+		Courses: coursesInfo,
+	})
+}
+
+// GetUserCoursesV1 godoc
+// @Summary Get user courses
+// @Description Allows a user to get all courses participated by a user.
+// @Tags Course
+// @Accept json
+// @Produce json
+// @Param data body GetUserCoursesData true "Data needed to get user courses"
+// @Param Authorization header string true "Authorization token"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserCoursesResult}
+// @Router /api/v1/course/userCourses [post]
+func GetUserCoursesV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &GetUserCoursesData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.UserId == "" {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	courses, err := database.GetAllUserCourses(data.UserId)
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	var coursesInfo []*UserParticipatedCourseInfo
+	for _, course := range courses {
+		coursesInfo = append(coursesInfo, &UserParticipatedCourseInfo{
+			CourseId:   course.CourseId,
+			CourseName: course.CourseName,
+		})
+	}
+
+	return apiHandlers.SendResult(c, &GetUserCoursesResult{
+		Courses: coursesInfo,
+	})
+}
+
+// GetCourseParticipantsV1 godoc
+// @Summary Get course participants
+// @Description Allows a user to get all participants of a course.
+// @Tags Course
+// @Accept json
+// @Produce json
+// @Param data body GetCourseParticipantsData true "Data needed to get course participants"
+// @Param Authorization header string true "Authorization token"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetCourseParticipantsResult}
+// @Router /api/v1/course/courseParticipants [post]
+func GetCourseParticipantsV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &GetCourseParticipantsData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.CourseId == 0 {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	participants, err := database.GetAllParticipantsOfCourse(data.CourseId)
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	var participantsInfo []*CourseParticipantInfo
+	for _, participant := range participants {
+		participantsInfo = append(participantsInfo, &CourseParticipantInfo{
+			UserId:   participant.UserId,
+			FullName: participant.FullName,
+		})
+	}
+
+	return apiHandlers.SendResult(c, &GetCourseParticipantsResult{
+		Participants: participantsInfo,
+	})
+}
