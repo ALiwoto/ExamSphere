@@ -44,6 +44,8 @@ definitions:
     - 2140
     - 2141
     - 2142
+    - 2143
+    - 2144
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -89,6 +91,8 @@ definitions:
     - ErrCodeTooManyPasswordChangeAttempts
     - ErrCodeRequestExpired
     - ErrCodeInvalidEmail
+    - ErrCodeCourseAlreadyExists
+    - ErrCodeCourseNotFound
   AuthResult:
     properties:
       access_token:
@@ -132,6 +136,29 @@ definitions:
       user_id:
         type: string
     type: object
+  ChangePasswordResult:
+    properties:
+      email_sent:
+        type: boolean
+      lang:
+        default: en
+        type: string
+      password_changed:
+        type: boolean
+    type: object
+  ConfirmAccountData:
+    properties:
+      confirm_token:
+        type: string
+      lt_token:
+        type: string
+      raw_password:
+        type: string
+      rl_token:
+        type: string
+      user_id:
+        type: string
+    type: object
   ConfirmChangePasswordData:
     properties:
       new_password:
@@ -143,6 +170,24 @@ definitions:
       rt_param:
         type: string
       rt_verifier:
+        type: string
+    type: object
+  CreateCourseData:
+    properties:
+      course_description:
+        type: string
+      course_name:
+        type: string
+    type: object
+  CreateCourseResult:
+    properties:
+      added_by:
+        type: string
+      course_description:
+        type: string
+      course_id:
+        type: integer
+      course_name:
         type: string
     type: object
   CreateNewTopicData:
@@ -166,6 +211,8 @@ definitions:
       password:
         type: string
       phone_number:
+        type: string
+      primary_language:
         type: string
       role:
         $ref: '#/definitions/UserRole'
@@ -230,6 +277,28 @@ definitions:
       success:
         type: boolean
     type: object
+  GetAllUserTopicStatsResult:
+    properties:
+      stats:
+        items:
+          $ref: '#/definitions/UserTopicStatInfo'
+        type: array
+      user_id:
+        type: string
+    type: object
+  GetCourseInfoResult:
+    properties:
+      added_by:
+        type: string
+      course_description:
+        type: string
+      course_id:
+        type: integer
+      course_name:
+        type: string
+      created_at:
+        type: string
+    type: object
   GetMeResult:
     properties:
       full_name:
@@ -237,6 +306,13 @@ definitions:
       role:
         $ref: '#/definitions/UserRole'
       user_id:
+        type: string
+    type: object
+  GetTopicInfoResult:
+    properties:
+      topic_id:
+        type: integer
+      topic_name:
         type: string
     type: object
   GetUserInfoResult:
@@ -255,6 +331,18 @@ definitions:
         $ref: '#/definitions/UserRole'
       user_id:
         type: string
+    type: object
+  GetUserTopicStatData:
+    properties:
+      topic_id:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  GetUserTopicStatResult:
+    properties:
+      stat:
+        $ref: '#/definitions/UserTopicStatInfo'
     type: object
   LoginData:
     properties:
@@ -284,6 +372,30 @@ definitions:
       user_id:
         type: string
     type: object
+  SearchCourseData:
+    properties:
+      course_name:
+        type: string
+    type: object
+  SearchCourseResult:
+    properties:
+      courses:
+        items:
+          $ref: '#/definitions/SearchedCourseInfo'
+        type: array
+    type: object
+  SearchTopicData:
+    properties:
+      topicName:
+        type: string
+    type: object
+  SearchTopicResult:
+    properties:
+      topics:
+        items:
+          $ref: '#/definitions/SearchedTopicInfo'
+        type: array
+    type: object
   SearchUserData:
     properties:
       limit:
@@ -300,6 +412,26 @@ definitions:
         items:
           $ref: '#/definitions/SearchedUserInfo'
         type: array
+    type: object
+  SearchedCourseInfo:
+    properties:
+      added_by:
+        type: string
+      course_description:
+        type: string
+      course_id:
+        type: integer
+      course_name:
+        type: string
+      created_at:
+        type: string
+    type: object
+  SearchedTopicInfo:
+    properties:
+      topic_id:
+        type: integer
+      topic_name:
+        type: string
     type: object
   SearchedUserInfo:
     properties:
@@ -333,6 +465,21 @@ definitions:
     - UserRoleStudent
     - UserRoleTeacher
     - UserRoleUnknown
+  UserTopicStatInfo:
+    properties:
+      current_exp:
+        type: integer
+      current_level:
+        type: integer
+      last_visited:
+        type: string
+      topic_id:
+        type: integer
+      total_exp:
+        type: integer
+      user_id:
+        type: string
+    type: object
   captchaHandlers.GetCaptchaResult:
     properties:
       captcha:
@@ -373,6 +520,254 @@ paths:
       summary: Get a captcha
       tags:
       - User
+  /api/v1/course/create:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to create a new course.
+      parameters:
+      - description: Data needed to create a new course
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/CreateCourseData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/CreateCourseResult'
+              type: object
+      summary: Create a new course
+      tags:
+      - Course
+  /api/v1/course/info:
+    get:
+      consumes:
+      - application/json
+      description: Allows a user to get information about a course by its id.
+      parameters:
+      - description: Course ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetCourseInfoResult'
+              type: object
+      summary: Get course information
+      tags:
+      - Course
+  /api/v1/course/search:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to search for courses by their name.
+      parameters:
+      - description: Data needed to search for courses
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/SearchCourseData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/SearchCourseResult'
+              type: object
+      summary: Search for courses
+      tags:
+      - Course
+  /api/v1/topic/allUserTopicStats:
+    get:
+      consumes:
+      - application/json
+      description: Get all user topic stats
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetAllUserTopicStatsResult'
+              type: object
+      summary: Get all user topic stats
+      tags:
+      - Topic
+  /api/v1/topic/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new topic
+      parameters:
+      - description: Data needed to create a new topic
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/CreateNewTopicData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/CreateNewTopicResult'
+              type: object
+      summary: Create a new topic
+      tags:
+      - Topic
+  /api/v1/topic/info:
+    get:
+      consumes:
+      - application/json
+      description: Get topic info
+      parameters:
+      - description: Topic ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetTopicInfoResult'
+              type: object
+      summary: Get topic info
+      tags:
+      - Topic
+  /api/v1/topic/search:
+    post:
+      consumes:
+      - application/json
+      description: Search for topics
+      parameters:
+      - description: Data needed to search for topics
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/SearchTopicData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/SearchTopicResult'
+              type: object
+      summary: Search for topics
+      tags:
+      - Topic
+  /api/v1/topic/userTopicStat:
+    post:
+      consumes:
+      - application/json
+      description: Get user topic stat
+      parameters:
+      - description: Data needed to get user topic stat
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/GetUserTopicStatData'
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetUserTopicStatResult'
+              type: object
+      summary: Get user topic stat
+      tags:
+      - Topic
   /api/v1/user/ban:
     post:
       consumes:
@@ -434,9 +829,37 @@ paths:
             - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  type: boolean
+                  $ref: '#/definitions/ChangePasswordResult'
               type: object
       summary: Change a user's password
+      tags:
+      - User
+  /api/v1/user/confirmAccount:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to confirm their account
+      operationId: confirmAccountV1
+      parameters:
+      - description: Confirm account data
+        in: body
+        name: confirmAccountData
+        required: true
+        schema:
+          $ref: '#/definitions/ConfirmAccountData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  type: boolean
+              type: object
+      summary: Confirm account
       tags:
       - User
   /api/v1/user/confirmChangePassword:

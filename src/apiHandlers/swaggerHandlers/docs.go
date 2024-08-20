@@ -57,6 +57,417 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/course/create": {
+            "post": {
+                "description": "Allows a user to create a new course.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create a new course",
+                "parameters": [
+                    {
+                        "description": "Data needed to create a new course",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateCourseData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/CreateCourseResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/course/info": {
+            "get": {
+                "description": "Allows a user to get information about a course by its id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get course information",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Course ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetCourseInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/course/search": {
+            "post": {
+                "description": "Allows a user to search for courses by their name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Search for courses",
+                "parameters": [
+                    {
+                        "description": "Data needed to search for courses",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchCourseData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/SearchCourseResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/topic/allUserTopicStats": {
+            "get": {
+                "description": "Get all user topic stats",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Get all user topic stats",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetAllUserTopicStatsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/topic/create": {
+            "post": {
+                "description": "Create a new topic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Create a new topic",
+                "parameters": [
+                    {
+                        "description": "Data needed to create a new topic",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateNewTopicData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/CreateNewTopicResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/topic/info": {
+            "get": {
+                "description": "Get topic info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Get topic info",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetTopicInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/topic/search": {
+            "post": {
+                "description": "Search for topics",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Search for topics",
+                "parameters": [
+                    {
+                        "description": "Data needed to search for topics",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchTopicData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/SearchTopicResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/topic/userTopicStat": {
+            "post": {
+                "description": "Get user topic stat",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Get user topic stat",
+                "parameters": [
+                    {
+                        "description": "Data needed to get user topic stat",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetUserTopicStatData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUserTopicStatResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/ban": {
             "post": {
                 "description": "Allows a user to ban another user",
@@ -140,6 +551,53 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/ChangePasswordData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/ChangePasswordResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/confirmAccount": {
+            "post": {
+                "description": "Allows a user to confirm their account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Confirm account",
+                "operationId": "confirmAccountV1",
+                "parameters": [
+                    {
+                        "description": "Confirm account data",
+                        "name": "confirmAccountData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ConfirmAccountData"
                         }
                     }
                 ],
@@ -601,7 +1059,9 @@ const docTemplate = `{
                 2139,
                 2140,
                 2141,
-                2142
+                2142,
+                2143,
+                2144
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -646,7 +1106,9 @@ const docTemplate = `{
                 "ErrCodeQueryParameterNotProvided",
                 "ErrCodeTooManyPasswordChangeAttempts",
                 "ErrCodeRequestExpired",
-                "ErrCodeInvalidEmail"
+                "ErrCodeInvalidEmail",
+                "ErrCodeCourseAlreadyExists",
+                "ErrCodeCourseNotFound"
             ]
         },
         "AuthResult": {
@@ -715,6 +1177,41 @@ const docTemplate = `{
                 }
             }
         },
+        "ChangePasswordResult": {
+            "type": "object",
+            "properties": {
+                "email_sent": {
+                    "type": "boolean"
+                },
+                "lang": {
+                    "type": "string",
+                    "default": "en"
+                },
+                "password_changed": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ConfirmAccountData": {
+            "type": "object",
+            "properties": {
+                "confirm_token": {
+                    "type": "string"
+                },
+                "lt_token": {
+                    "type": "string"
+                },
+                "raw_password": {
+                    "type": "string"
+                },
+                "rl_token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "ConfirmChangePasswordData": {
             "type": "object",
             "properties": {
@@ -731,6 +1228,34 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rt_verifier": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateCourseData": {
+            "type": "object",
+            "properties": {
+                "course_description": {
+                    "type": "string"
+                },
+                "course_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateCourseResult": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "course_description": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
                     "type": "string"
                 }
             }
@@ -767,6 +1292,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone_number": {
+                    "type": "string"
+                },
+                "primary_language": {
                     "type": "string"
                 },
                 "role": {
@@ -866,6 +1394,40 @@ const docTemplate = `{
                 }
             }
         },
+        "GetAllUserTopicStatsResult": {
+            "type": "object",
+            "properties": {
+                "stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UserTopicStatInfo"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetCourseInfoResult": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "course_description": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                }
+            }
+        },
         "GetMeResult": {
             "type": "object",
             "properties": {
@@ -876,6 +1438,17 @@ const docTemplate = `{
                     "$ref": "#/definitions/UserRole"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetTopicInfoResult": {
+            "type": "object",
+            "properties": {
+                "topic_id": {
+                    "type": "integer"
+                },
+                "topic_name": {
                     "type": "string"
                 }
             }
@@ -903,6 +1476,25 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "GetUserTopicStatData": {
+            "type": "object",
+            "properties": {
+                "topic_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetUserTopicStatResult": {
+            "type": "object",
+            "properties": {
+                "stat": {
+                    "$ref": "#/definitions/UserTopicStatInfo"
                 }
             }
         },
@@ -949,6 +1541,44 @@ const docTemplate = `{
                 }
             }
         },
+        "SearchCourseData": {
+            "type": "object",
+            "properties": {
+                "course_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "SearchCourseResult": {
+            "type": "object",
+            "properties": {
+                "courses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SearchedCourseInfo"
+                    }
+                }
+            }
+        },
+        "SearchTopicData": {
+            "type": "object",
+            "properties": {
+                "topicName": {
+                    "type": "string"
+                }
+            }
+        },
+        "SearchTopicResult": {
+            "type": "object",
+            "properties": {
+                "topics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SearchedTopicInfo"
+                    }
+                }
+            }
+        },
         "SearchUserData": {
             "type": "object",
             "properties": {
@@ -972,6 +1602,37 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/SearchedUserInfo"
                     }
+                }
+            }
+        },
+        "SearchedCourseInfo": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "course_description": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "SearchedTopicInfo": {
+            "type": "object",
+            "properties": {
+                "topic_id": {
+                    "type": "integer"
+                },
+                "topic_name": {
+                    "type": "string"
                 }
             }
         },
@@ -1018,6 +1679,29 @@ const docTemplate = `{
                 "UserRoleTeacher",
                 "UserRoleUnknown"
             ]
+        },
+        "UserTopicStatInfo": {
+            "type": "object",
+            "properties": {
+                "current_exp": {
+                    "type": "integer"
+                },
+                "current_level": {
+                    "type": "integer"
+                },
+                "last_visited": {
+                    "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
+                },
+                "total_exp": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
         },
         "captchaHandlers.GetCaptchaResult": {
             "type": "object",
