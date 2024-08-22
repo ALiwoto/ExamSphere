@@ -2,6 +2,22 @@
 
 This folder contains the SQL scripts to create the database schema and populate the tables with data.
 
+## Run the migrations
+Run migrations from 1 to 3 in the given order to create the database schema.
+
+```bash
+psql -U postgres --dbname examspheredb -a -f migration1.sql
+psql -U postgres --dbname examspheredb -a -f migration2.sql
+psql -U postgres --dbname examspheredb -a -f migration3.sql
+```
+
+## Drop the defined types and functions
+Run the following commands to drop the defined types and functions.
+
+```bash
+psql -U postgres --dbname examspheredb -a -f drop_all.sql
+```
+
 ## SQL Features used in the scripts
   - [x] DDL (Data Definition Language) commands like CREATE, ALTER, DROP, TRUNCATE
   - [x] DML (Data Manipulation Language) commands like INSERT, UPDATE, DELETE
