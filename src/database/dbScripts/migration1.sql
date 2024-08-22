@@ -226,7 +226,7 @@ COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is publi
 -- );
 CREATE OR REPLACE FUNCTION create_exam_info(
     p_course_id INTEGER,
-    p_exam_title VARCHAR(63) NOT NULL,
+    p_exam_title VARCHAR(63),
     p_exam_description VARCHAR(63),
     p_created_by UserIdType,
     p_price VARCHAR(16) DEFAULT '0T',

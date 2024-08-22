@@ -637,7 +637,7 @@ func AnswerQuestion(data *AnswerQuestionData) (*GivenAnswerInfo, error) {
 // GetUserOngoingExams gets the ongoing exams of a user.
 func GetUserOngoingExams(userId string) ([]*UserOngoingExamInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT exam_id, exam_title, start_time
+		`SELECT exam_id, exam_title, exam_date
 		FROM user_ongoing_exams WHERE user_id = $1`,
 		userId,
 	)
@@ -678,7 +678,7 @@ func GetUserOngoingExamsOrNil(userId string) []*UserOngoingExamInfo {
 // GetUserExamsHistory gets the past exams of a user.
 func GetUserExamsHistory(opts *GetUserExamsHistoryOptions) ([]*UserPastExamInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT exam_id, exam_title, start_time
+		`SELECT exam_id, exam_title, exam_date
 		FROM user_exams_history WHERE user_id = $1 LIMIT $2 OFFSET $3`,
 		opts.UserId, opts.Limit, opts.Offset,
 	)

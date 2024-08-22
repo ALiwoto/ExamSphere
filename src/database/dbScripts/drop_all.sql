@@ -25,8 +25,27 @@ BEGIN
              JOIN pg_namespace n ON p.pronamespace = n.oid
              WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
              AND pg_function_is_visible(p.oid)
+             AND p.prokind = 'f'
     LOOP
         EXECUTE format('DROP FUNCTION IF EXISTS %I(%s);', r.proname, r.args);
+    END LOOP;
+END
+$$;
+
+-- Drops all procedures in the information schema
+DO
+$$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN SELECT proname, pg_get_function_identity_arguments(p.oid) AS args
+             FROM pg_proc p
+             JOIN pg_namespace n ON p.pronamespace = n.oid
+             WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
+             AND pg_function_is_visible(p.oid)
+             AND p.prokind = 'p'
+    LOOP
+        EXECUTE format('DROP PROCEDURE IF EXISTS %I(%s);', r.proname, r.args);
     END LOOP;
 END
 $$;
@@ -43,3 +62,20 @@ BEGIN
     END LOOP;
 END
 $do$;
+
+-- Drops all user-defined DOMAIN types in the current database
+DO $$
+DECLARE
+    domain_rec RECORD;
+BEGIN
+    FOR domain_rec IN 
+        SELECT domain_schema, domain_name
+        FROM information_schema.domains
+        WHERE domain_schema NOT IN ('pg_catalog', 'information_schema')
+    LOOP
+        EXECUTE format('DROP DOMAIN IF EXISTS %I.%I CASCADE;', 
+                       domain_rec.domain_schema, domain_rec.domain_name);
+        RAISE NOTICE 'Dropped domain: %.%', 
+                     domain_rec.domain_schema, domain_rec.domain_name;
+    END LOOP;
+END $$;
