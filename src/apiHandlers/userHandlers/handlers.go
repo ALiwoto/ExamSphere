@@ -226,16 +226,23 @@ func CreateUserV1(c *fiber.Ctx) error {
 			return apiHandlers.SendErrInternalServerError(c)
 		}
 
-		err = emailUtils.SendConfirmAccountEmail(&emailUtils.ConfirmAccountEmailData{
-			UserFullName: newUserInfo.FullName,
-			ChangeLink:   entry.GetRedirectAddress(appConfig.GetConfirmAccountBaseURL()),
-			EmailTo:      newUserInfo.Email,
-			Lang:         newUserData.PrimaryLanguage,
-		})
-		if err != nil {
-			logging.Error("CreateUserV1: failed to send confirm account email: ", err)
-			return apiHandlers.SendErrInternalServerError(c)
-		}
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					logging.Error("CreateUserV1: failed to send confirm account email: ", r)
+				}
+			}()
+
+			err := emailUtils.SendConfirmAccountEmail(&emailUtils.ConfirmAccountEmailData{
+				UserFullName: newUserInfo.FullName,
+				ChangeLink:   entry.GetRedirectAddress(appConfig.GetConfirmAccountBaseURL()),
+				EmailTo:      newUserInfo.Email,
+				Lang:         newUserData.PrimaryLanguage,
+			})
+			if err != nil {
+				logging.Error("CreateUserV1: failed to send confirm account email: ", err)
+			}
+		}()
 	}
 
 	return apiHandlers.SendResult(c, &CreateUserResult{

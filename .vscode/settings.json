@@ -4,6 +4,7 @@
         "godoc",
         "gofiber",
         "jackc",
-        "jwtware"
+        "jwtware",
+        "roundcube"
     ]
 }

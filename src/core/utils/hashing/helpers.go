@@ -100,6 +100,14 @@ func RandomString(n int64) string {
 	return string(b)
 }
 
+func RandomCommonString(n int64) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = commonCharacterRunes[rand.Intn(len(commonCharacterRunes))]
+	}
+	return string(b)
+}
+
 func EncodeValueToBase64(value any) string {
 	b, _ := json.Marshal(value)
 	if len(b) == 0 {
