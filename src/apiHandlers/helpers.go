@@ -477,9 +477,65 @@ func SendErrCourseAlreadyExists(c *fiber.Ctx) error {
 }
 
 func SendErrCourseNotFound(c *fiber.Ctx) error {
-	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+	return SendError(fiber.StatusNotFound, c, &EndpointError{
 		ErrorCode: ErrCodeCourseNotFound,
 		Message:   ErrCourseNotFound,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrExamNotFound(c *fiber.Ctx) error {
+	return SendError(fiber.StatusNotFound, c, &EndpointError{
+		ErrorCode: ErrCodeExamNotFound,
+		Message:   ErrExamNotFound,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrNotParticipatedInExam(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeNotParticipatedInExam,
+		Message:   ErrNotParticipatedInExam,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrExamNotStarted(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeExamNotStarted,
+		Message:   ErrExamNotStarted,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrExamFinished(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeExamFinished,
+		Message:   ErrExamFinished,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrExamQuestionNotFound(c *fiber.Ctx) error {
+	return SendError(fiber.StatusNotFound, c, &EndpointError{
+		ErrorCode: ErrCodeExamQuestionNotFound,
+		Message:   ErrExamQuestionNotFound,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrInvalidAnswerOption(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeInvalidAnswerOption,
+		Message:   ErrInvalidAnswerOption,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrGivenExamNotFound(c *fiber.Ctx) error {
+	return SendError(fiber.StatusNotFound, c, &EndpointError{
+		ErrorCode: ErrCodeGivenExamNotFound,
+		Message:   ErrGivenExamNotFound,
 		Origin:    c.Path(),
 	})
 }

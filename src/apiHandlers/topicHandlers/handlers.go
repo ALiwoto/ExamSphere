@@ -10,6 +10,7 @@ import (
 // CreateTopicV1 godoc
 // @Summary Create a new topic
 // @Description Create a new topic
+// @ID createTopicV1
 // @Tags Topic
 // @Accept json
 // @Produce json
@@ -57,6 +58,7 @@ func CreateTopicV1(c *fiber.Ctx) error {
 // SearchTopicV1 godoc
 // @Summary Search for topics
 // @Description Search for topics
+// @ID searchTopicV1
 // @Tags Topic
 // @Accept json
 // @Produce json
@@ -109,6 +111,7 @@ func SearchTopicV1(c *fiber.Ctx) error {
 // GetTopicInfoV1 godoc
 // @Summary Get topic info
 // @Description Get topic info
+// @ID getTopicInfoV1
 // @Tags Topic
 // @Accept json
 // @Produce json
@@ -150,6 +153,7 @@ func GetTopicInfoV1(c *fiber.Ctx) error {
 // GetUserTopicStatV1 godoc
 // @Summary Get user topic stat
 // @Description Get user topic stat
+// @ID getUserTopicStatV1
 // @Tags Topic
 // @Accept json
 // @Produce json
@@ -199,6 +203,7 @@ func GetUserTopicStatV1(c *fiber.Ctx) error {
 // GetAllUserTopicStatsV1 godoc
 // @Summary Get all user topic stats
 // @Description Get all user topic stats
+// @ID getAllUserTopicStatsV1
 // @Tags Topic
 // @Accept json
 // @Produce json

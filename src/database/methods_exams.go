@@ -1,6 +1,10 @@
 package database
 
-import "github.com/ALiwoto/ssg/ssg"
+import (
+	"time"
+
+	"github.com/ALiwoto/ssg/ssg"
+)
 
 func (e *ExamInfo) lock() {
 	e.mut.Lock()
@@ -51,6 +55,36 @@ func (e *ExamInfo) GetQuestions() []*ExamQuestion {
 	defer e.RUnlock()
 
 	return e.Questions
+}
+
+func (e *ExamInfo) HasExamStarted() bool {
+	return time.Now().After(e.ExamDate)
+}
+
+func (e *ExamInfo) HasExamFinished() bool {
+	return time.Now().After(e.ExamDate.Add(time.Minute * time.Duration(e.Duration)))
+}
+
+func (e *ExamInfo) ExamStartsIn() int {
+	return int(time.Until(e.ExamDate).Minutes())
+}
+
+func (e *ExamInfo) ExamFinishesIn() int {
+	return int(time.Until(e.ExamDate.Add(time.Minute * time.Duration(e.Duration))).Minutes())
+}
+
+//-------------------------------------------------------------
+
+func (e *ExamQuestion) GetUniqueId() string {
+	return ssg.ToBase10(e.ExamId) + KeySepChar + ssg.ToBase10(e.QuestionId)
+}
+
+// HasOption checks if the given option is one of the options of the question.
+func (e *ExamQuestion) HasOption(option string) bool {
+	return (e.Option1 != nil && *e.Option1 == option) ||
+		(e.Option2 != nil && *e.Option2 == option) ||
+		(e.Option3 != nil && *e.Option3 == option) ||
+		(e.Option4 != nil && *e.Option4 == option)
 }
 
 //-------------------------------------------------------------

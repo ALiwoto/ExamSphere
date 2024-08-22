@@ -189,11 +189,13 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS "exam_info" (
     exam_id SERIAL PRIMARY KEY,
     course_id INTEGER NOT NULL,
+    exam_title VARCHAR(63) NOT NULL,
+    exam_description VARCHAR(63),
     price VARCHAR(16) DEFAULT '0T',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     exam_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     duration INTEGER NOT NULL DEFAULT 60, -- Duration in minutes (e.g. 120)
-    created_by UserIdType NOT NULL,
+    created_by UserIdType,
     is_public BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES "user_info"(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -214,6 +216,8 @@ COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is publi
 -- examples for calling this function:
 -- SELECT create_exam_info(
 --     p_course_id := 2,
+--     p_exam_title := 'Math Midterm Exam 1403',
+--     p_exam_description := 'This is a midterm exam for the Math course.',
 --     p_price := 149.99,
 --     p_created_by := 101,
 --     p_is_public := TRUE,
@@ -222,7 +226,9 @@ COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is publi
 -- );
 CREATE OR REPLACE FUNCTION create_exam_info(
     p_course_id INTEGER,
-    p_created_by INTEGER,
+    p_exam_title VARCHAR(63) NOT NULL,
+    p_exam_description VARCHAR(63),
+    p_created_by UserIdType,
     p_price VARCHAR(16) DEFAULT '0T',
     p_is_public BOOLEAN DEFAULT FALSE,
     p_duration INTEGER DEFAULT 60,
@@ -231,19 +237,57 @@ CREATE OR REPLACE FUNCTION create_exam_info(
 DECLARE
     new_exam_id INTEGER;
 BEGIN
-    BEGIN
-        INSERT INTO "exam_info" (course_id, price, exam_date, created_by, is_public, duration)
-        VALUES (p_course_id, p_price, p_exam_date, p_created_by, p_is_public, p_duration)
-        RETURNING exam_id INTO new_exam_id;
-        
-        RETURN new_exam_id;
-    EXCEPTION
-        WHEN OTHERS THEN
-            ROLLBACK;
-            RAISE;
-    END;
+    INSERT INTO "exam_info" (
+        course_id,
+        exam_title,
+        exam_description,
+        price,
+        exam_date,
+        created_by,
+        is_public,
+        duration
+    )
+    VALUES (
+        p_course_id,
+        p_exam_title,
+        p_exam_description,
+        p_price,
+        p_exam_date, 
+        p_created_by, 
+        p_is_public, 
+        p_duration
+    )
+    RETURNING exam_id INTO new_exam_id;
+    
+    RETURN new_exam_id;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- View to get the most recent exams.
+-- The results this view returns are ordered by exam_date in ascending order,
+-- meaning the exams that are going to happen soon will be shown first.
+-- Example usage:
+--   SELECT * FROM most_recent_exams_view LIMIT 10 OFFSET 0;
+-- It is strongly recommended that you use pagination when querying this view.
+CREATE OR REPLACE VIEW most_recent_exams_view AS
+SELECT 
+    ei.exam_id,
+    ei.course_id,
+    ei.exam_title,
+    ei.exam_description,
+    ei.price,
+    ei.created_at,
+    ei.exam_date,
+    ei.duration,
+    ei.created_by,
+    ei.is_public
+FROM 
+    exam_info ei
+WHERE 
+    ei.exam_date >= CURRENT_TIMESTAMP AND ei.is_public = TRUE
+ORDER BY 
+    ei.exam_date ASC;
 
 -- is_started returns true if the exam is started and false otherwise
 CREATE OR REPLACE FUNCTION has_exam_started(p_exam_id INTEGER)

@@ -14,4 +14,6 @@ var (
 	ErrExamNotFound          = errors.New("exam not found")
 	ErrExamQuestionNotFound  = errors.New("exam question not found")
 	ErrGivenExamNotFound     = errors.New("given exam not found")
+	ErrGivenAnswerNotFound   = errors.New("given answer not found")
+	ErrInvalidAnswer         = errors.New("invalid answer")
 )

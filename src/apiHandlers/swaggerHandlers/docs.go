@@ -70,6 +70,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Get course participants",
+                "operationId": "getCourseParticipantsV1",
                 "parameters": [
                     {
                         "description": "Data needed to get course participants",
@@ -123,6 +124,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Create a new course",
+                "operationId": "createCourseV1",
                 "parameters": [
                     {
                         "description": "Data needed to create a new course",
@@ -176,6 +178,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Get created courses",
+                "operationId": "getCreatedCoursesV1",
                 "parameters": [
                     {
                         "description": "Data needed to get created courses",
@@ -229,6 +232,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Get course information",
+                "operationId": "getCourseInfoV1",
                 "parameters": [
                     {
                         "type": "integer",
@@ -280,6 +284,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Search for courses",
+                "operationId": "searchCourseV1",
                 "parameters": [
                     {
                         "description": "Data needed to search for courses",
@@ -333,6 +338,7 @@ const docTemplate = `{
                     "Course"
                 ],
                 "summary": "Get user courses",
+                "operationId": "getUserCoursesV1",
                 "parameters": [
                     {
                         "description": "Data needed to get user courses",
@@ -373,6 +379,433 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exam/answer": {
+            "post": {
+                "description": "Allows the user to answer a question of an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Answer a question of an exam",
+                "operationId": "answerExamQuestionV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to answer a question of an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AnswerQuestionData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/AnswerQuestionResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/create": {
+            "post": {
+                "description": "Allows the user to create a new exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Create a new exam",
+                "operationId": "createExamV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to create a new exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateExamData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/CreateExamResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/givenExam": {
+            "post": {
+                "description": "Allows the user to get information about an exam that a user has participated in.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get information about an exam that a user has participated in",
+                "operationId": "getGivenExamV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to get information about an exam that a user has participated in",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetGivenExamData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetGivenExamData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/info": {
+            "get": {
+                "description": "Allows the user to get information about an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get information about an exam",
+                "operationId": "getExamInfoV1",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Exam ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetExamInfoResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/questions": {
+            "post": {
+                "description": "Allows the user to get questions of an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get questions of an exam",
+                "operationId": "getExamQuestionsV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to get questions of an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetExamQuestionsData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetExamQuestionsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/setScore": {
+            "post": {
+                "description": "Allows the user to set score for a user in an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Set score for a user in an exam",
+                "operationId": "setScoreV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to set score for a user in an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SetScoreData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/SetScoreResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/userExamsHistory": {
+            "post": {
+                "description": "Allows the user to get history of exams of a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get history of exams of a user",
+                "operationId": "getUserExamsHistoryV1",
+                "parameters": [
+                    {
+                        "description": "Data needed to get history of exams of a user",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetUsersExamHistoryData"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUsersExamHistoryResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exam/userOngoingExams": {
+            "get": {
+                "description": "Allows the user to get ongoing exams of a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get ongoing exams of a user",
+                "operationId": "getUserOngoingExamsV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Target user id",
+                        "name": "targetId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUserOngoingExamsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/topic/allUserTopicStats": {
             "get": {
                 "description": "Get all user topic stats",
@@ -386,6 +819,7 @@ const docTemplate = `{
                     "Topic"
                 ],
                 "summary": "Get all user topic stats",
+                "operationId": "getAllUserTopicStatsV1",
                 "parameters": [
                     {
                         "type": "string",
@@ -430,6 +864,7 @@ const docTemplate = `{
                     "Topic"
                 ],
                 "summary": "Create a new topic",
+                "operationId": "createTopicV1",
                 "parameters": [
                     {
                         "description": "Data needed to create a new topic",
@@ -483,6 +918,7 @@ const docTemplate = `{
                     "Topic"
                 ],
                 "summary": "Get topic info",
+                "operationId": "getTopicInfoV1",
                 "parameters": [
                     {
                         "type": "integer",
@@ -534,6 +970,7 @@ const docTemplate = `{
                     "Topic"
                 ],
                 "summary": "Search for topics",
+                "operationId": "searchTopicV1",
                 "parameters": [
                     {
                         "description": "Data needed to search for topics",
@@ -587,6 +1024,7 @@ const docTemplate = `{
                     "Topic"
                 ],
                 "summary": "Get user topic stat",
+                "operationId": "getUserTopicStatV1",
                 "parameters": [
                     {
                         "description": "Data needed to get user topic stat",
@@ -1220,7 +1658,14 @@ const docTemplate = `{
                 2141,
                 2142,
                 2143,
-                2144
+                2144,
+                2145,
+                2146,
+                2147,
+                2148,
+                2149,
+                2150,
+                2151
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1267,8 +1712,69 @@ const docTemplate = `{
                 "ErrCodeRequestExpired",
                 "ErrCodeInvalidEmail",
                 "ErrCodeCourseAlreadyExists",
-                "ErrCodeCourseNotFound"
+                "ErrCodeCourseNotFound",
+                "ErrCodeExamNotFound",
+                "ErrCodeNotParticipatedInExam",
+                "ErrCodeExamNotStarted",
+                "ErrCodeExamFinished",
+                "ErrCodeExamQuestionNotFound",
+                "ErrCodeInvalidAnswerOption",
+                "ErrCodeGivenExamNotFound"
             ]
+        },
+        "AnswerQuestionData": {
+            "type": "object",
+            "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
+                "chosen_option": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "seconds_taken": {
+                    "type": "integer"
+                }
+            }
+        },
+        "AnswerQuestionResult": {
+            "type": "object",
+            "properties": {
+                "answered_at": {
+                    "type": "string"
+                },
+                "answered_by": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "question_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "AnsweredQuestionInfo": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "chosen_option": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "seconds_taken": {
+                    "type": "integer"
+                }
+            }
         },
         "AuthResult": {
             "type": "object",
@@ -1430,6 +1936,64 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateExamData": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer",
+                    "default": 60
+                },
+                "exam_date": {
+                    "type": "integer"
+                },
+                "exam_description": {
+                    "type": "string"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "is_public": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "price": {
+                    "type": "string",
+                    "default": "0T"
+                }
+            }
+        },
+        "CreateExamResult": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "exam_date": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "is_public": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateNewTopicData": {
             "type": "object",
             "properties": {
@@ -1564,6 +2128,38 @@ const docTemplate = `{
                 }
             }
         },
+        "ExamQuestionInfo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_title": {
+                    "type": "string"
+                },
+                "user_answer": {
+                    "$ref": "#/definitions/AnsweredQuestionInfo"
+                }
+            }
+        },
         "GetAllUserTopicStatsResult": {
             "type": "object",
             "properties": {
@@ -1633,6 +2229,104 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/SearchedCourseInfo"
                     }
+                }
+            }
+        },
+        "GetExamInfoResult": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "exam_date": {
+                    "type": "string"
+                },
+                "exam_description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "finishes_in": {
+                    "type": "integer"
+                },
+                "has_finished": {
+                    "type": "boolean"
+                },
+                "has_started": {
+                    "type": "boolean"
+                },
+                "is_public": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "question_count": {
+                    "type": "integer"
+                },
+                "starts_in": {
+                    "type": "integer"
+                }
+            }
+        },
+        "GetExamQuestionsData": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "GetExamQuestionsResult": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ExamQuestionInfo"
+                    }
+                }
+            }
+        },
+        "GetGivenExamData": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "final_score": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "scored_by": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -1706,6 +2400,17 @@ const docTemplate = `{
                 }
             }
         },
+        "GetUserOngoingExamsResult": {
+            "type": "object",
+            "properties": {
+                "exams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UserOngoingExamInfo"
+                    }
+                }
+            }
+        },
         "GetUserTopicStatData": {
             "type": "object",
             "properties": {
@@ -1722,6 +2427,31 @@ const docTemplate = `{
             "properties": {
                 "stat": {
                     "$ref": "#/definitions/UserTopicStatInfo"
+                }
+            }
+        },
+        "GetUsersExamHistoryData": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "GetUsersExamHistoryResult": {
+            "type": "object",
+            "properties": {
+                "exams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UserExamHistoryInfo"
+                    }
                 }
             }
         },
@@ -1885,6 +2615,68 @@ const docTemplate = `{
                     "$ref": "#/definitions/UserRole"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "SetScoreData": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "description": "ExamId is the exam we are trying to give this score to.",
+                    "type": "integer"
+                },
+                "score": {
+                    "description": "Score is the score we are trying to give to the user.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserId is the person we are trying to give this score to.",
+                    "type": "string"
+                }
+            }
+        },
+        "SetScoreResult": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "string"
+                },
+                "scored_by": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserExamHistoryInfo": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "UserOngoingExamInfo": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "start_time": {
                     "type": "string"
                 }
             }

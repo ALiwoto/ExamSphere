@@ -13,8 +13,8 @@ import (
 
 // GetCaptchaV1 godoc
 // @Summary Get a captcha
-// @ID GenerateCaptchaV1
 // @Description Allows a client (with Client-R-ID) to generate a captcha
+// @ID GenerateCaptchaV1
 // @Tags User
 // @Produce json
 // @Param Client-R-ID header string true "Client-R-ID"

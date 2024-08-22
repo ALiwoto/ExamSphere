@@ -10,6 +10,7 @@ import (
 // CreateCourseV1 godoc
 // @Summary Create a new course
 // @Description Allows a user to create a new course.
+// @ID createCourseV1
 // @Tags Course
 // @Accept json
 // @Produce json
@@ -62,6 +63,7 @@ func CreateCourseV1(c *fiber.Ctx) error {
 // GetCourseInfoV1 godoc
 // @Summary Get course information
 // @Description Allows a user to get information about a course by its id.
+// @ID getCourseInfoV1
 // @Tags Course
 // @Accept json
 // @Produce json
@@ -101,6 +103,7 @@ func GetCourseInfoV1(c *fiber.Ctx) error {
 // SearchCourseV1 godoc
 // @Summary Search for courses
 // @Description Allows a user to search for courses by their name.
+// @ID searchCourseV1
 // @Tags Course
 // @Accept json
 // @Produce json
@@ -150,6 +153,7 @@ func SearchCourseV1(c *fiber.Ctx) error {
 // GetCreatedCoursesV1 godoc
 // @Summary Get created courses
 // @Description Allows a user to get all courses created by a user.
+// @ID getCreatedCoursesV1
 // @Tags Course
 // @Accept json
 // @Produce json
@@ -203,6 +207,7 @@ func GetCreatedCoursesV1(c *fiber.Ctx) error {
 // GetUserCoursesV1 godoc
 // @Summary Get user courses
 // @Description Allows a user to get all courses participated by a user.
+// @ID getUserCoursesV1
 // @Tags Course
 // @Accept json
 // @Produce json
@@ -253,6 +258,7 @@ func GetUserCoursesV1(c *fiber.Ctx) error {
 // GetCourseParticipantsV1 godoc
 // @Summary Get course participants
 // @Description Allows a user to get all participants of a course.
+// @ID getCourseParticipantsV1
 // @Tags Course
 // @Accept json
 // @Produce json

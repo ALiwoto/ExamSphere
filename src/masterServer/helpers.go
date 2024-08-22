@@ -4,6 +4,7 @@ import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/apiHandlers/captchaHandlers"
 	"ExamSphere/src/apiHandlers/courseHandlers"
+	"ExamSphere/src/apiHandlers/examHandlers"
 	"ExamSphere/src/apiHandlers/sudoHandlers"
 	"ExamSphere/src/apiHandlers/swaggerHandlers"
 	"ExamSphere/src/apiHandlers/topicHandlers"
@@ -73,7 +74,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/user/ban", authProtection, userHandlers.BanUserV1)
 	v1.Post("/user/changePassword", authProtection, userHandlers.ChangePasswordV1)
 	v1.Post("/user/confirmChangePassword", userHandlers.ConfirmChangePasswordV1)
-	v1.Post("user/confirmAccount", userHandlers.ConfirmAccountV1)
+	v1.Post("/user/confirmAccount", userHandlers.ConfirmAccountV1)
 
 	// captcha handlers
 	v1.Get("/captcha/generate", captchaHandlers.GenerateCaptchaV1)
@@ -92,6 +93,16 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/course/CreatedCourses", authProtection, courseHandlers.GetCreatedCoursesV1)
 	v1.Post("/course/userCourses", authProtection, courseHandlers.GetUserCoursesV1)
 	v1.Post("/course/courseParticipants", authProtection, courseHandlers.GetCourseParticipantsV1)
+
+	// exam handlers
+	v1.Post("/exam/create", authProtection, examHandlers.CreateExamV1)
+	v1.Get("/exam/info", authProtection, examHandlers.GetExamInfoV1)
+	v1.Post("/exam/questions", authProtection, examHandlers.GetExamQuestionsV1)
+	v1.Post("/exam/answer", authProtection, examHandlers.AnswerExamQuestionV1)
+	v1.Post("/exam/setScore", authProtection, examHandlers.SetScoreV1)
+	v1.Post("/exam/givenExam", authProtection, examHandlers.GetGivenExamV1)
+	v1.Get("/exam/userOngoingExams", authProtection, examHandlers.GetUserOngoingExamsV1)
+	v1.Post("/exam/userExamsHistory", authProtection, examHandlers.GetUserExamsHistoryV1)
 
 	// sudo handlers
 	v1.Post("/sudo/exit", sudoHandlers.ExitV1)

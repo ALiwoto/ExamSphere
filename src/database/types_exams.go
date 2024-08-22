@@ -7,14 +7,16 @@ import (
 
 // ExamInfo is a struct that represents the information of an exam.
 type ExamInfo struct {
-	ExamId    int       `json:"exam_id"`
-	CourseId  int       `json:"course_id"`
-	Price     string    `json:"price"`
-	CreatedAt time.Time `json:"created_at"`
-	ExamDate  time.Time `json:"exam_date"`
-	Duration  int       `json:"duration"`
-	CreatedBy string    `json:"created_by"`
-	IsPublic  bool      `json:"is_public"`
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExamDate        time.Time `json:"exam_date"`
+	Duration        int       `json:"duration"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
 
 	mut *sync.RWMutex `json:"-"`
 	// Questions is a slice of exam questions.
@@ -23,12 +25,14 @@ type ExamInfo struct {
 
 // NewExamData is a struct that represents the data needed to create a new exam.
 type NewExamData struct {
-	CourseId  int    `json:"course_id"`
-	Price     string `json:"price"`
-	CreatedBy string `json:"created_by"`
-	IsPublic  bool   `json:"is_public"`
-	Duration  int    `json:"duration"`
-	ExamDate  string `json:"exam_date"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
+	Duration        int       `json:"duration"`
+	ExamDate        time.Time `json:"exam_date"`
 }
 
 // ExamQuestion is a struct that represents the information of an exam question.
@@ -87,4 +91,65 @@ type NewGivenExamData struct {
 	ExamId  int     `json:"exam_id"`
 	Price   string  `json:"price"`
 	AddedBy *string `json:"added_by"`
+}
+
+type GetMostRecentExamsData struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
+
+type MostRecentExamInfo struct {
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExamDate        time.Time `json:"exam_date"`
+	Duration        int       `json:"duration"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
+}
+
+type GetGivenAnswerData struct {
+	ExamId     int    `json:"exam_id"`
+	QuestionId int    `json:"question_id"`
+	UserId     string `json:"user_id"`
+}
+
+type GivenAnswerInfo struct {
+	ExamId       int       `json:"exam_id"`
+	QuestionId   int       `json:"question_id"`
+	AnsweredBy   string    `json:"answered_by"`
+	ChosenOption *string   `json:"chosen_option"`
+	SecondsTaken int       `json:"seconds_taken"`
+	AnswerText   *string   `json:"answer_text"`
+	AnsweredAt   time.Time `json:"answered_at"`
+}
+
+type AnswerQuestionData struct {
+	ExamId       int     `json:"exam_id"`
+	QuestionId   int     `json:"question_id"`
+	AnsweredBy   string  `json:"answered_by"`
+	ChosenOption *string `json:"chosen_option"`
+	SecondsTaken int     `json:"seconds_taken"`
+	AnswerText   *string `json:"answer_text"`
+}
+
+type GetUserExamsHistoryOptions struct {
+	UserId string `json:"user_id"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
+}
+
+type UserOngoingExamInfo struct {
+	ExamId    int       `json:"exam_id"`
+	ExamTitle int       `json:"course_id"`
+	StartTime time.Time `json:"start_time"`
+}
+
+type UserPastExamInfo struct {
+	ExamId    int       `json:"exam_id"`
+	ExamTitle string    `json:"exam_title"`
+	StartedAt time.Time `json:"started_at"`
 }

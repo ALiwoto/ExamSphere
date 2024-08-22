@@ -47,6 +47,13 @@ const (
 	ErrInvalidEmail                  = "Invalid email provided"
 	ErrCourseAlreadyExists           = "A course with this name already exists"
 	ErrCourseNotFound                = "Course not found"
+	ErrExamNotFound                  = "Exam not found"
+	ErrNotParticipatedInExam         = "User has not participated in this exam"
+	ErrExamNotStarted                = "Exam has not started yet"
+	ErrExamFinished                  = "Exam has already finished"
+	ErrExamQuestionNotFound          = "Exam question not found"
+	ErrInvalidAnswerOption           = "Invalid answer option provided"
+	ErrGivenExamNotFound             = "Given exam not found"
 )
 
 // error codes
@@ -96,4 +103,11 @@ const (
 	ErrCodeInvalidEmail
 	ErrCodeCourseAlreadyExists
 	ErrCodeCourseNotFound
+	ErrCodeExamNotFound
+	ErrCodeNotParticipatedInExam
+	ErrCodeExamNotStarted
+	ErrCodeExamFinished
+	ErrCodeExamQuestionNotFound
+	ErrCodeInvalidAnswerOption
+	ErrCodeGivenExamNotFound
 )

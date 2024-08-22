@@ -18,7 +18,7 @@ This folder contains the SQL scripts to create the database schema and populate 
 ## SQL Statements used in the scripts
   - [x] CREATE DATABASE
   - [x] CREATE TABLE
-  - [ ] ALTER TABLE
+  - [x] ALTER TABLE
   - [x] DROP TABLE
   - [ ] TRUNCATE TABLE
   - [x] INSERT INTO
@@ -26,8 +26,8 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [x] DELETE
   - [ ] GRANT
   - [ ] REVOKE
-  - [ ] COMMIT
-  - [ ] ROLLBACK
+  - [x] COMMIT
+  - [x] ROLLBACK
   - [ ] SAVEPOINT
   - [x] SELECT
   - [x] WHERE
@@ -47,9 +47,10 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [x] NOT EXISTS
   - [ ] ANY
   - [ ] ALL
-  - [ ] CASE
+  - [x] WHEN, CASE
   - [ ] COALESCE
   - [ ] CAST
+  - [x] COMMENT
   - [ ] IS NULL, IS NOT NULL, NULLIF, NOT NULL
   - [ ] IS DISTINCT FROM, IS NOT DISTINCT FROM
   - [x] VIEW, CREATE VIEW, DROP VIEW
@@ -69,7 +70,7 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [x] NUMERIC
   - [x] REAL
   - [x] DOUBLE PRECISION
-  - [x] CHAR
+  - [ ] CHAR
   - [x] VARCHAR
   - [x] TEXT
   - [x] DATE
@@ -96,7 +97,7 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [ ] INT2
   - [ ] INT4
   - [ ] INT8
-  - [ ] SERIAL
+  - [x] SERIAL
   - [ ] BIGSERIAL
   - [ ] MONEY
   - [ ] OID
@@ -109,7 +110,7 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [x] UNIQUE
   - [x] CHECK
   - [x] NOT NULL
-  - [ ] DEFAULT
+  - [x] DEFAULT
   - [ ] INDEX
   - [ ] EXCLUSION
   - [ ] PARTIAL
@@ -117,15 +118,13 @@ This folder contains the SQL scripts to create the database schema and populate 
   - [ ] INITIALLY DEFERRED
   - [ ] INITIALLY IMMEDIATE
   - [ ] MATCH
-  - [ ] ON DELETE
-  - [ ] ON UPDATE
-  - [ ] REFERENCES
-  - [ ] TRIGGER
-  - [ ] VIEW
-  - [ ] STORED PROCEDURE
-  - [ ] STORED FUNCTION
-  - [ ] STORED TRIGGER
-  - [ ] STORED PACKAGE
+  - [x] ON DELETE
+  - [x] ON UPDATE
+  - [x] REFERENCES
+  - [x] TRIGGER
+  - [x] VIEW
+  - [x] STORED PROCEDURE
+  - [x] FUNCTION
 
 ## Resources used (Useful links)
   - [PostgreSQL Documentation](https://www.postgresql.org/docs/)

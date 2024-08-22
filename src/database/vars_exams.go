@@ -33,10 +33,20 @@ var (
 
 		return m
 	}()
+
+	givenAnswersMap = func() *ssg.SafeEMap[string, GivenAnswerInfo] {
+		m := ssg.NewSafeEMap[string, GivenAnswerInfo]()
+		m.SetExpiration(time.Hour * 3)
+		m.SetInterval(time.Hour * 12)
+		m.EnableChecking()
+
+		return m
+	}()
 )
 
 var (
 	valueExamNotFound         = &ExamInfo{}
 	valueExamQuestionNotFound = &ExamQuestion{}
 	valueGivenExamNotFound    = &GivenExam{}
+	valueGivenAnswerNotFound  = &GivenAnswerInfo{}
 )

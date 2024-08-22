@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS "given_answer" (
     question_id INTEGER NOT NULL,
     answered_by UserIdType,
     chosen_option TEXT DEFAULT NULL,
+    seconds_taken INTEGER DEFAULT 0,
     answer_text TEXT,
     answered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
@@ -99,14 +100,27 @@ COMMENT ON COLUMN given_answer.exam_id IS 'ID of the exam';
 COMMENT ON COLUMN given_answer.question_id IS 'ID of the question';
 COMMENT ON COLUMN given_answer.answered_by IS 'ID of the user who answered';
 COMMENT ON COLUMN given_answer.chosen_option IS 'The title of option chosen by the user';
+COMMENT ON COLUMN given_answer.seconds_taken IS 'Time taken (seconds) by the user to answer the question';
 COMMENT ON COLUMN given_answer.answer_text IS 'Text answer provided by the user, if applicable';
 COMMENT ON COLUMN given_answer.answered_at IS 'Timestamp when the answer was submitted';
 
+-- give_answer_to_exam_question function is used to insert or update
+-- an answer given by a user to an exam question.
+-- Example usage:
+--      SELECT give_answer_to_exam_question(
+--          p_exam_id := 1,
+--          p_question_id := 1,
+--          p_answered_by := '1234',
+--          p_chosen_option := 'A',
+--          p_seconds_taken := 30,
+--          p_answer_text := NULL
+--      );
 CREATE OR REPLACE FUNCTION give_answer_to_exam_question(
     p_exam_id INTEGER,
     p_question_id INTEGER,
     p_answered_by INTEGER,
     p_chosen_option TEXT DEFAULT NULL,
+    p_seconds_taken INTEGER DEFAULT 0,
     p_answer_text TEXT DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
@@ -121,8 +135,22 @@ BEGIN
     END IF;
 
     -- If the exam is ongoing, proceed with inserting or updating the answer
-    INSERT INTO given_answer (exam_id, question_id, answered_by, chosen_option, answer_text)
-    VALUES (p_exam_id, p_question_id, p_answered_by, p_chosen_option, p_answer_text)
+    INSERT INTO given_answer (
+        exam_id,
+        question_id,
+        answered_by,
+        chosen_option,
+        seconds_taken,
+        answer_text
+    )
+    VALUES (
+        p_exam_id,
+        p_question_id,
+        p_answered_by,
+        p_chosen_option,
+        p_seconds_taken,
+        p_answer_text
+    )
     ON CONFLICT (exam_id, question_id, answered_by)
     DO UPDATE SET -- Just update the answer if it already exists
         chosen_option = EXCLUDED.chosen_option,

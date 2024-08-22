@@ -1,7 +1,11 @@
 package database
 
 import (
+	"ExamSphere/src/core/utils/logging"
 	"context"
+	"strings"
+	"sync"
+	"time"
 
 	"github.com/ALiwoto/ssg/ssg"
 	"github.com/jackc/pgx/v5"
@@ -12,29 +16,42 @@ func CreateNewExam(data *NewExamData) (*ExamInfo, error) {
 	if data.Price == "" {
 		data.Price = DefaultExamPrice
 	}
+
+	data.ExamTitle = strings.TrimSpace(data.ExamTitle)
+	data.ExamDescription = strings.TrimSpace(data.ExamDescription)
+
 	info := &ExamInfo{
-		CourseId:  data.CourseId,
-		Price:     data.Price,
-		CreatedBy: data.CreatedBy,
-		IsPublic:  data.IsPublic,
-		Duration:  data.Duration,
+		CourseId:        data.CourseId,
+		ExamTitle:       data.ExamTitle,
+		ExamDescription: data.ExamDescription,
+		Price:           data.Price,
+		CreatedBy:       data.CreatedBy,
+		IsPublic:        data.IsPublic,
+		Duration:        data.Duration,
+		ExamDate:        data.ExamDate,
+		CreatedAt:       time.Now(),
+		mut:             &sync.RWMutex{},
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT create_exam_info(
 			p_course_id := $1,
-			p_price := $2,
-			p_created_by := $3,
-			p_is_public := $4,
-			p_duration := $5,
-			p_exam_date := $6
+			p_exam_title := $2,
+			p_exam_description := $3,
+			p_price := $4,
+			p_created_by := $5,
+			p_is_public := $6,
+			p_duration := $7,
+			p_exam_date := $8
 		)`,
 		info.CourseId,
+		info.ExamTitle,
+		info.ExamDescription,
 		info.Price,
 		info.CreatedBy,
 		info.IsPublic,
 		info.Duration,
-		data.ExamDate,
+		data.ExamDate.Format(ExamDateLayout),
 	).Scan(&info.ExamId)
 	if err != nil {
 		return nil, err
@@ -52,12 +69,23 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT exam_id, course_id, price, created_at, exam_date, duration, created_by, is_public
+		`SELECT exam_id,
+			course_id, 
+			exam_title,
+			exam_description,
+			price, 
+			created_at, 
+			exam_date, 
+			duration, 
+			created_by, 
+			is_public
 		FROM exam_info WHERE exam_id = $1`,
 		examId,
 	).Scan(
 		&info.ExamId,
 		&info.CourseId,
+		&info.ExamTitle,
+		&info.ExamDescription,
 		&info.Price,
 		&info.CreatedAt,
 		&info.ExamDate,
@@ -76,6 +104,17 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 
 	examsInfoMap.Add(info.ExamId, info)
 	return info, nil
+}
+
+// GetExamInfoOrNil gets the exam info or nil if not found.
+func GetExamInfoOrNil(examId int) *ExamInfo {
+	info, err := GetExamInfo(examId)
+	if err != nil && err != ErrExamNotFound {
+		logging.UnexpectedError("GetExamInfoOrNil: failed to get exam info:", err)
+		return nil
+	}
+
+	return info
 }
 
 // HasExamStarted returns true if the exam has started.
@@ -132,6 +171,21 @@ func GetExamFinishesIn(examId int) (int, error) {
 	}
 
 	return finishesIn, nil
+}
+
+// GetExamQuestionsCount returns the count of questions in the exam.
+func GetExamQuestionsCount(examId int) int {
+	var count int
+	err := DefaultContainer.db.QueryRow(context.Background(),
+		`SELECT COUNT(*) FROM exam_question WHERE exam_id = $1`,
+		examId,
+	).Scan(&count)
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetExamQuestionsCount: failed to query database:", err)
+		return 0
+	}
+
+	return count
 }
 
 // CreateNewExamQuestion creates a new exam question in the database,
@@ -198,7 +252,7 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 
 	err = DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT question_id, exam_id, question_title, description, option1, option2, option3, option4, created_at
-		FROM exam_questions WHERE question_id = $1`,
+		FROM exam_question WHERE question_id = $1`,
 		questionId,
 	).Scan(
 		&info.QuestionId,
@@ -243,8 +297,16 @@ func GetExamQuestions(examId int) ([]*ExamQuestion, error) {
 	}
 
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT question_id, exam_id, question_title, description, option1, option2, option3, option4, created_at
-		FROM exam_questions WHERE exam_id = $1`,
+		`SELECT question_id, 
+			exam_id, 
+			question_title, 
+			description, 
+			option1, 
+			option2, 
+			option3, 
+			option4, 
+			created_at
+		FROM exam_question WHERE exam_id = $1`,
 		examId,
 	)
 	if err != nil {
@@ -280,7 +342,7 @@ func GetExamQuestions(examId int) ([]*ExamQuestion, error) {
 
 // HasParticipatedInExam returns true if the user has participated in the exam.
 // It uses the plpgsql function has_participated_in_exam.
-func HasParticipatedInExam(examId int, userId string) (bool, error) {
+func HasParticipatedInExam(userId string, examId int) bool {
 	var hasParticipated bool
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT has_participated_in_exam($1, $2)`,
@@ -288,14 +350,15 @@ func HasParticipatedInExam(examId int, userId string) (bool, error) {
 		userId,
 	).Scan(&hasParticipated)
 	if err != nil {
-		return false, err
+		logging.UnexpectedError("HasParticipatedInExam: failed to query database:", err)
+		return false
 	}
 
-	return hasParticipated, nil
+	return hasParticipated
 }
 
 // CanParticipateInExam returns true if the user can participate in the exam.
-func CanParticipateInExam(examId int, userId string) (bool, error) {
+func CanParticipateInExam(userId string, examId int) (bool, error) {
 	var canParticipate bool
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT can_participate_in_exam($1, $2)`,
@@ -310,7 +373,7 @@ func CanParticipateInExam(examId int, userId string) (bool, error) {
 }
 
 // GetGivenExam gets the information of a given exam.
-func GetGivenExam(examId int, userId string) (*GivenExam, error) {
+func GetGivenExam(userId string, examId int) (*GivenExam, error) {
 	uniqueId := userId + KeySepChar + ssg.ToBase10(examId)
 	info := givenExamsMap.Get(uniqueId)
 	if info != nil && info != valueGivenExamNotFound &&
@@ -380,9 +443,9 @@ func AddUserInExam(data *NewGivenExamData) (*GivenExam, error) {
 }
 
 // SetScoreForUserInExam sets the final score for a user in an exam.
-// It uses the plpgsql function set_score_for_user_in_exam.
+// It uses the sp set_score_for_user_in_exam.
 func SetScoreForUserInExam(data *NewScoreData) (*GivenExam, error) {
-	info, err := GetGivenExam(data.ExamId, data.UserId)
+	info, err := GetGivenExam(data.UserId, data.ExamId)
 	if err != nil {
 		return nil, err
 	} else if info == nil {
@@ -393,7 +456,7 @@ func SetScoreForUserInExam(data *NewScoreData) (*GivenExam, error) {
 	info.ScoredBy = ssg.Clone(&data.ScoredBy)
 
 	_, err = DefaultContainer.db.Exec(context.Background(),
-		`SELECT set_score_for_user_in_exam(
+		`CALL set_score_for_user_in_exam(
 			p_exam_id := $1,
 			p_user_id := $2,
 			p_final_score := $3,
@@ -409,4 +472,291 @@ func SetScoreForUserInExam(data *NewScoreData) (*GivenExam, error) {
 	}
 
 	return info, nil
+}
+
+// GetMostRecentExams returns the most recent exams.
+// It uses this sql command (just an example):
+// --   SELECT * FROM most_recent_exams_view LIMIT 10 OFFSET 0;
+func GetMostRecentExams(data *GetMostRecentExamsData) ([]*MostRecentExamInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT exam_id,
+			course_id,
+			exam_title,
+			exam_description,
+			price,
+			created_at,
+			exam_date,
+			duration,
+			created_by,
+			is_public
+		FROM most_recent_exams_view LIMIT $1 OFFSET $2`,
+		data.Limit,
+		data.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*MostRecentExamInfo
+	for rows.Next() {
+		info := &MostRecentExamInfo{}
+		err = rows.Scan(
+			&info.ExamId,
+			&info.CourseId,
+			&info.ExamTitle,
+			&info.ExamDescription,
+			&info.Price,
+			&info.CreatedAt,
+			&info.ExamDate,
+			&info.Duration,
+			&info.CreatedBy,
+			&info.IsPublic,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return exams, nil
+}
+
+// GetGivenAnswer gets the given answer of a user for a question in an exam.
+func GetGivenAnswer(data *GetGivenAnswerData) (*GivenAnswerInfo, error) {
+	uniqueId := ssg.ToBase10(data.ExamId) + KeySepChar +
+		ssg.ToBase10(data.QuestionId) + KeySepChar +
+		data.UserId
+	info := givenAnswersMap.Get(uniqueId)
+	if info != nil && info != valueGivenAnswerNotFound &&
+		info.ExamId == data.ExamId &&
+		info.QuestionId == data.QuestionId &&
+		info.AnsweredBy == data.UserId {
+		return info, nil
+	} else if info == valueGivenAnswerNotFound {
+		return nil, ErrGivenAnswerNotFound
+	}
+
+	info = &GivenAnswerInfo{}
+	err := DefaultContainer.db.QueryRow(context.Background(),
+		`SELECT exam_id, 
+			question_id, 
+			answered_by, 
+			chosen_option,
+			seconds_taken,
+			answer_text,
+			answered_at
+		FROM given_answers WHERE exam_id = $1 AND question_id = $2 AND answered_by = $3`,
+		data.ExamId,
+		data.QuestionId,
+		data.UserId,
+	).Scan(
+		&info.ExamId,
+		&info.QuestionId,
+		&info.AnsweredBy,
+		&info.ChosenOption,
+		&info.SecondsTaken,
+		&info.AnswerText,
+		&info.AnsweredAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			givenAnswersMap.Add(uniqueId, valueGivenAnswerNotFound)
+			return nil, ErrGivenAnswerNotFound
+		}
+
+		return nil, err
+	}
+
+	givenAnswersMap.Add(uniqueId, info)
+	return info, nil
+}
+
+// GetGivenAnswerOrNil gets the given answer or nil if not found.
+// It will also log the error if the error is something unexpected.
+func GetGivenAnswerOrNil(data *GetGivenAnswerData) *GivenAnswerInfo {
+	info, err := GetGivenAnswer(data)
+	if err != nil && err != ErrGivenAnswerNotFound {
+		logging.UnexpectedError("GetGivenAnswerOrNil: failed to get given answer:", err)
+		return nil
+	}
+
+	return info
+}
+
+// AnswerQuestion answers a question in an exam.
+// It uses the plpgsql function give_answer_to_exam_question.
+func AnswerQuestion(data *AnswerQuestionData) (*GivenAnswerInfo, error) {
+	if data.ChosenOption == nil && data.AnswerText == nil {
+		return nil, ErrInvalidAnswer
+	}
+
+	uniqueId := ssg.ToBase10(data.ExamId) + KeySepChar +
+		ssg.ToBase10(data.QuestionId) + KeySepChar +
+		data.AnsweredBy
+	info := givenAnswersMap.Get(uniqueId)
+	if info == nil {
+		info = &GivenAnswerInfo{
+			ExamId:     data.ExamId,
+			QuestionId: data.QuestionId,
+			AnsweredBy: data.AnsweredBy,
+		}
+	}
+
+	info.ChosenOption = ssg.Clone(data.ChosenOption)
+	info.SecondsTaken = data.SecondsTaken
+	info.AnswerText = ssg.Clone(data.AnswerText)
+	info.AnsweredAt = time.Now()
+
+	_, err := DefaultContainer.db.Exec(context.Background(),
+		`SELECT give_answer_to_exam_question(
+			p_exam_id := $1,
+			p_question_id := $2,
+			p_answered_by := $3,
+			p_chosen_option := $4,
+			p_seconds_taken := $5,
+			p_answer_text := $6
+		)`,
+		info.ExamId,
+		info.QuestionId,
+		info.AnsweredBy,
+		info.ChosenOption,
+		info.SecondsTaken,
+		info.AnswerText,
+	)
+	if err != nil {
+		logging.UnexpectedError("AnswerQuestion: failed to answer question:", err)
+		return nil, err
+	}
+
+	givenAnswersMap.Add(uniqueId, info)
+	return info, nil
+}
+
+// GetUserOngoingExams gets the ongoing exams of a user.
+func GetUserOngoingExams(userId string) ([]*UserOngoingExamInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT exam_id, exam_title, start_time
+		FROM user_ongoing_exams WHERE user_id = $1`,
+		userId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*UserOngoingExamInfo
+	for rows.Next() {
+		info := &UserOngoingExamInfo{}
+		err = rows.Scan(
+			&info.ExamId,
+			&info.ExamTitle,
+			&info.StartTime,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return exams, nil
+}
+
+// GetUserOngoingExamsOrNil gets the ongoing exams of a user or nil if not found.
+func GetUserOngoingExamsOrNil(userId string) []*UserOngoingExamInfo {
+	exams, err := GetUserOngoingExams(userId)
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetUserOngoingExamsOrNil: failed to get ongoing exams:", err)
+		return nil
+	}
+
+	return exams
+}
+
+// GetUserExamsHistory gets the past exams of a user.
+func GetUserExamsHistory(opts *GetUserExamsHistoryOptions) ([]*UserPastExamInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT exam_id, exam_title, start_time
+		FROM user_exams_history WHERE user_id = $1 LIMIT $2 OFFSET $3`,
+		opts.UserId, opts.Limit, opts.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*UserPastExamInfo
+	for rows.Next() {
+		info := &UserPastExamInfo{}
+		err = rows.Scan(
+			&info.ExamId,
+			&info.ExamTitle,
+			&info.StartedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return exams, nil
+}
+
+// GetUserExamsHistoryOrNil gets the past exams of a user or nil if not found.
+func GetUserExamsHistoryOrNil(opts *GetUserExamsHistoryOptions) []*UserPastExamInfo {
+	exams, err := GetUserExamsHistory(opts)
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetUserOngoingExamsOrNil: failed to get ongoing exams:", err)
+		return nil
+	}
+
+	return exams
+}
+
+// GetExamParticipants gets all the participants of an exam.
+func GetExamParticipants(examId int) ([]*GivenExam, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT user_id, exam_id, price, added_by, scored_by, created_at, final_score
+		FROM given_exams WHERE exam_id = $1`,
+		examId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*GivenExam
+	for rows.Next() {
+		info := &GivenExam{}
+		err = rows.Scan(
+			&info.UserId,
+			&info.ExamId,
+			&info.Price,
+			&info.AddedBy,
+			&info.ScoredBy,
+			&info.CreatedAt,
+			&info.FinalScore,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return exams, nil
+}
+
+// GetExamParticipantsOrNil gets the participants of an exam or nil if not found.
+func GetExamParticipantsOrNil(examId int) []*GivenExam {
+	exams, err := GetExamParticipants(examId)
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetExamParticipantsOrNil: failed to get exam participants:", err)
+		return nil
+	}
+
+	return exams
 }

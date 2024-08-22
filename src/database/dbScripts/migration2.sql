@@ -129,10 +129,10 @@ $$ LANGUAGE plpgsql;
 -- Sets final_score and scored_by for a user in a given_exam.
 -- Example usage:
 --    CALL set_score_for_user_in_exam(
---        1001,           -- p_exam_id: The ID of the exam
---        'user123',      -- p_user_id: The ID of the user (assuming UserIdType is a string)
---        '85/100',       -- p_final_score: The final score as a string
---        5               -- p_scored_by: The ID of the user who scored the exam
+--        p_exam_id := 1001,           -- p_exam_id: The ID of the exam
+--        p_user_id := 'user123',      -- p_user_id: The ID of the user (assuming UserIdType is a string)
+--        p_final_score := '85/100',   -- p_final_score: The final score as a string
+--        p_scored_by := 5             -- p_scored_by: The ID of the user who scored the exam
 --    );
 CREATE OR REPLACE PROCEDURE set_score_for_user_in_exam(
     p_exam_id INTEGER,
@@ -247,5 +247,58 @@ JOIN "user_info" u ON g.user_id = u.user_id
 ORDER BY c.course_id, u.user_id;
 
 COMMENT ON VIEW course_participants IS 'View to get user_id and full_name of all users who have ever participated in any exam related to a certain course.';
+
+
+-- View to get all exams (exam_id and exam_title and when it starts) that a user has ever participated in
+-- and are not finished
+-- An example of using this view would be:
+--      SELECT exam_id, exam_title, start_time
+--          FROM user_ongoing_exams
+--          WHERE user_id = '1234';
+CREATE OR REPLACE VIEW user_ongoing_exams AS
+SELECT DISTINCT
+    u.user_id,
+    e.exam_id,
+    e.exam_title,
+    e.start_time
+FROM "exam_info" e
+JOIN "given_exam" g ON e.exam_id = g.exam_id
+JOIN "user_info" u ON g.user_id = u.user_id
+WHERE CURRENT_TIMESTAMP < (e.exam_date + (e.duration || ' minutes')::INTERVAL);
+
+-- View to get all exams (exam_id and exam_title and when it starts) that a user
+-- has participated in the past and now are finished.
+-- An example of using this view would be:
+--      SELECT exam_id, exam_title, start_time
+--          FROM user_exams_history
+--          WHERE user_id = '1234';
+CREATE OR REPLACE VIEW user_exams_history AS
+SELECT DISTINCT
+    u.user_id,
+    e.exam_id,
+    e.exam_title,
+    e.start_time
+FROM "exam_info" e
+JOIN "given_exam" g ON e.exam_id = g.exam_id
+JOIN "user_info" u ON g.user_id = u.user_id
+WHERE CURRENT_TIMESTAMP > (e.exam_date + (e.duration || ' minutes')::INTERVAL);
+
+COMMENT ON VIEW user_ongoing_exams IS 'View to get all exams (exam_id and exam_title and when it starts) that a user has ever participated in and are not finished';
+
+-- View to get all participants (user_id, full_name, etc) of an exam.
+-- An example of using this view would be:
+--      SELECT user_id, full_name
+--          FROM exam_participants
+--          WHERE exam_id = 1234;
+CREATE OR REPLACE VIEW exam_participants AS
+SELECT DISTINCT
+    u.user_id,
+    u.full_name,
+    e.exam_id,
+    e.exam_title
+FROM "exam_info" e
+JOIN "given_exam" g ON e.exam_id = g.exam_id
+JOIN "user_info" u ON g.user_id = u.user_id
+WHERE e.exam_id = g.exam_id;
 
 ---------------------------------------------------------------
