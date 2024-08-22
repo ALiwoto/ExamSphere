@@ -1997,7 +1997,7 @@ const docTemplate = `{
         "CreateNewTopicData": {
             "type": "object",
             "properties": {
-                "topicName": {
+                "topic_name": {
                     "type": "string"
                 }
             }
@@ -2005,10 +2005,10 @@ const docTemplate = `{
         "CreateNewTopicResult": {
             "type": "object",
             "properties": {
-                "topicID": {
+                "topic_id": {
                     "type": "integer"
                 },
-                "topicName": {
+                "topic_name": {
                     "type": "string"
                 }
             }
@@ -2520,7 +2520,7 @@ const docTemplate = `{
         "SearchTopicData": {
             "type": "object",
             "properties": {
-                "topicName": {
+                "topic_name": {
                     "type": "string"
                 }
             }

@@ -3,12 +3,12 @@ package topicHandlers
 import "time"
 
 type CreateNewTopicData struct {
-	TopicName string `json:"topicName"`
+	TopicName string `json:"topic_name"`
 } // @name CreateNewTopicData
 
 type CreateNewTopicResult struct {
-	TopicId   int    `json:"topicID"`
-	TopicName string `json:"topicName"`
+	TopicId   int    `json:"topic_id"`
+	TopicName string `json:"topic_name"`
 } // @name CreateNewTopicResult
 
 type UserTopicStatInfo struct {
@@ -35,7 +35,7 @@ type GetAllUserTopicStatsResult struct {
 } // @name GetAllUserTopicStatsResult
 
 type SearchTopicData struct {
-	TopicName string `json:"topicName"`
+	TopicName string `json:"topic_name"`
 } // @name SearchTopicData
 
 type SearchTopicResult struct {

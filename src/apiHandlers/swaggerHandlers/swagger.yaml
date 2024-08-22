@@ -287,14 +287,14 @@ definitions:
     type: object
   CreateNewTopicData:
     properties:
-      topicName:
+      topic_name:
         type: string
     type: object
   CreateNewTopicResult:
     properties:
-      topicID:
+      topic_id:
         type: integer
-      topicName:
+      topic_name:
         type: string
     type: object
   CreateUserData:
@@ -625,7 +625,7 @@ definitions:
     type: object
   SearchTopicData:
     properties:
-      topicName:
+      topic_name:
         type: string
     type: object
   SearchTopicResult:
