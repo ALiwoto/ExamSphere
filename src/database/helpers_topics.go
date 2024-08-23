@@ -87,12 +87,25 @@ func GetTopicInfoByName(topicName string) ([]*TopicInfo, error) {
 }
 
 // SearchTopics searches for topics in the database.
+// You can also pass empty string to get a list of all topics.
 func SearchTopics(topicName string) ([]*TopicInfo, error) {
-	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT topic_id, topic_name
-		FROM topic_info WHERE topic_name ILIKE '%' || $1 || '%'`,
-		topicName,
-	)
+	var rows pgx.Rows
+	var err error
+
+	if topicName == "" {
+		// just list all topics
+		rows, err = DefaultContainer.db.Query(context.Background(),
+			`SELECT topic_id, topic_name
+				FROM topic_info`,
+		)
+
+	} else {
+		rows, err = DefaultContainer.db.Query(context.Background(),
+			`SELECT topic_id, topic_name
+				FROM topic_info WHERE topic_name ILIKE '%' || $1 || '%'`,
+			topicName,
+		)
+	}
 	if err != nil {
 		return nil, err
 	}

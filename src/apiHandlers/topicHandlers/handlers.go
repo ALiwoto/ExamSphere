@@ -93,10 +93,6 @@ func SearchTopicV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	if data.TopicName == "" {
-		return apiHandlers.SendErrInvalidBodyData(c)
-	}
-
 	topicsInfo, err := database.SearchTopics(data.TopicName)
 	if err != nil {
 		return apiHandlers.SendErrInternalServerError(c)
