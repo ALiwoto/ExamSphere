@@ -2045,6 +2045,9 @@
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2340,6 +2343,9 @@
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2734,6 +2740,9 @@
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
                 }
             }
         },

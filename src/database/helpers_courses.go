@@ -45,7 +45,7 @@ func EditCourseInfo(data *EditCourseInfoData) (*CourseInfo, error) {
 	_, err := DefaultContainer.db.Exec(context.Background(),
 		`UPDATE course_info
 		SET course_name = $1,
-			course_description = $2
+			course_description = $2,
 			topic_id = $3
 		WHERE course_id = $4`,
 		data.CourseName,
@@ -78,10 +78,10 @@ func GetCourseInfo(courseId int) (*CourseInfo, error) {
 	info = &CourseInfo{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT course_id, 
-			course_name, 
+			course_name,
 			course_description,
-			topic_id, 
-			created_at, 
+			topic_id,
+			created_at,
 			added_by
 		FROM course_info WHERE course_id = $1`,
 		courseId,
@@ -164,10 +164,10 @@ func SearchCourseByName(data *SearchCourseByNameData) ([]*CourseInfo, error) {
 	if data.CourseName == "" {
 		rows, err = DefaultContainer.db.Query(context.Background(),
 			`SELECT course_id,
-				course_name, 
+				course_name,
 				course_description,
 				topic_id,
-				created_at, 
+				created_at,
 				added_by
 			FROM course_info 
 			ORDER BY created_at DESC
@@ -221,7 +221,7 @@ func SearchCourseByName(data *SearchCourseByNameData) ([]*CourseInfo, error) {
 // GetCreatedCoursesByUser gets all courses created by a user.
 func GetCreatedCoursesByUser(userId string) ([]*CourseInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT course_id, 
+		`SELECT course_id,
 			course_name,
 			course_description,
 			topic_id,

@@ -257,6 +257,8 @@ definitions:
         type: string
       created_at:
         type: string
+      topic_id:
+        type: integer
     type: object
   CreateExamData:
     properties:
@@ -450,6 +452,8 @@ definitions:
         type: string
       created_at:
         type: string
+      topic_id:
+        type: integer
     type: object
   GetCourseParticipantsData:
     properties:
@@ -704,6 +708,8 @@ definitions:
         type: string
       created_at:
         type: string
+      topic_id:
+        type: integer
     type: object
   SearchedTopicInfo:
     properties:
