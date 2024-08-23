@@ -196,7 +196,7 @@ func CreateUserV1(c *fiber.Ctx) error {
 	if newUserInfo != nil {
 		return apiHandlers.SendErrUsernameExists(c)
 	} else if !appValues.IsUserIdValid(newUserData.UserId) {
-		return apiHandlers.SendErrInvalidUsername(c)
+		return apiHandlers.SendErrInvalidUserID(c)
 	}
 
 	newUserInfo, err = database.CreateNewUser(&database.NewUserData{
@@ -339,7 +339,7 @@ func EditUserV1(c *fiber.Ctx) error {
 	targetUserInfo, err := database.GetUserByUserId(updateUserData.UserId)
 	if err != nil {
 		if err == database.ErrUserNotFound {
-			return apiHandlers.SendErrInvalidUsername(c)
+			return apiHandlers.SendErrInvalidUserID(c)
 		}
 
 		logging.Error("EditUserV1: failed to get user: ", err)
@@ -399,7 +399,7 @@ func GetUserInfoV1(c *fiber.Ctx) error {
 	targetUserInfo, err := database.GetUserByUserId(targetUserId)
 	if err != nil {
 		if err == database.ErrUserNotFound {
-			return apiHandlers.SendErrInvalidUsername(c)
+			return apiHandlers.SendErrInvalidUserID(c)
 		}
 
 		logging.Error("GetUserInfoV1: failed to get user: ", err)
@@ -450,7 +450,7 @@ func BanUserV1(c *fiber.Ctx) error {
 	targetUserInfo, err := database.GetUserByUserId(banData.UserId)
 	if err != nil {
 		if err == database.ErrUserNotFound {
-			return apiHandlers.SendErrInvalidUsername(c)
+			return apiHandlers.SendErrInvalidUserID(c)
 		}
 
 		logging.Error("BanUserV1: failed to get user: ", err)
@@ -514,7 +514,7 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 	targetUserInfo, err := database.GetUserByUserId(newPasswordData.UserId)
 	if err != nil {
 		if err == database.ErrUserNotFound {
-			return apiHandlers.SendErrInvalidUsername(c)
+			return apiHandlers.SendErrInvalidUserID(c)
 		}
 
 		logging.Error("ChangePasswordV1: failed to get user: ", err)
@@ -647,7 +647,17 @@ func ConfirmAccountV1(c *fiber.Ctx) error {
 
 	userInfo, err := database.GetUserByUserId(confirmData.UserId)
 	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUserID(c)
+		}
+
 		return apiHandlers.SendErrInternalServerError(c)
+	} else if userInfo == nil {
+		return apiHandlers.SendErrInvalidUserID(c)
+	}
+
+	if userInfo.SetupCompleted {
+		return apiHandlers.SendErrAccountAlreadyConfirmed(c)
 	}
 
 	if !verifyAccountConfirmation(userInfo, confirmData) {

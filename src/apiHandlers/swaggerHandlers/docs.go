@@ -1665,7 +1665,8 @@ const docTemplate = `{
                 2148,
                 2149,
                 2150,
-                2151
+                2151,
+                2152
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1680,7 +1681,7 @@ const docTemplate = `{
                 "ErrCodeInvalidFileData",
                 "ErrCodeInvalidPhoneNumber",
                 "ErrCodePhoneNumberAlreadyImported",
-                "ErrCodeInvalidUsername",
+                "ErrCodeInvalidUserID",
                 "ErrCodeNoPhonesDonated",
                 "ErrCodeAgentNotConnected",
                 "ErrCodeInvalidPagination",
@@ -1719,7 +1720,8 @@ const docTemplate = `{
                 "ErrCodeExamFinished",
                 "ErrCodeExamQuestionNotFound",
                 "ErrCodeInvalidAnswerOption",
-                "ErrCodeGivenExamNotFound"
+                "ErrCodeGivenExamNotFound",
+                "ErrCodeAccountAlreadyConfirmed"
             ]
         },
         "AnswerQuestionData": {

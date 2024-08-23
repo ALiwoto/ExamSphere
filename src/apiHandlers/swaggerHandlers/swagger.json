@@ -1657,7 +1657,8 @@
                 2148,
                 2149,
                 2150,
-                2151
+                2151,
+                2152
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1672,7 +1673,7 @@
                 "ErrCodeInvalidFileData",
                 "ErrCodeInvalidPhoneNumber",
                 "ErrCodePhoneNumberAlreadyImported",
-                "ErrCodeInvalidUsername",
+                "ErrCodeInvalidUserID",
                 "ErrCodeNoPhonesDonated",
                 "ErrCodeAgentNotConnected",
                 "ErrCodeInvalidPagination",
@@ -1711,7 +1712,8 @@
                 "ErrCodeExamFinished",
                 "ErrCodeExamQuestionNotFound",
                 "ErrCodeInvalidAnswerOption",
-                "ErrCodeGivenExamNotFound"
+                "ErrCodeGivenExamNotFound",
+                "ErrCodeAccountAlreadyConfirmed"
             ]
         },
         "AnswerQuestionData": {

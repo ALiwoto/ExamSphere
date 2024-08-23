@@ -14,7 +14,7 @@ const (
 	ErrInvalidFileData               = "Invalid file data provided"
 	ErrInvalidPhoneNumber            = "Invalid phone number provided: %s"
 	ErrPhoneNumberAlreadyImported    = "Phone number already imported: %s"
-	ErrInvalidUsername               = "Invalid username/userId provided"
+	ErrInvalidUserID                 = "Invalid userId provided"
 	ErrNoPhonesDonated               = "No phones donated by this account"
 	ErrAgentNotConnected             = "Agent is not connected; try again later"
 	ErrInvalidPagination             = "Invalid pagination parameters provided"
@@ -54,6 +54,7 @@ const (
 	ErrExamQuestionNotFound          = "Exam question not found"
 	ErrInvalidAnswerOption           = "Invalid answer option provided"
 	ErrGivenExamNotFound             = "Given exam not found"
+	ErrAccountAlreadyConfirmed       = "Account already confirmed"
 )
 
 // error codes
@@ -70,7 +71,7 @@ const (
 	ErrCodeInvalidFileData
 	ErrCodeInvalidPhoneNumber
 	ErrCodePhoneNumberAlreadyImported
-	ErrCodeInvalidUsername
+	ErrCodeInvalidUserID
 	ErrCodeNoPhonesDonated
 	ErrCodeAgentNotConnected
 	ErrCodeInvalidPagination
@@ -110,4 +111,5 @@ const (
 	ErrCodeExamQuestionNotFound
 	ErrCodeInvalidAnswerOption
 	ErrCodeGivenExamNotFound
+	ErrCodeAccountAlreadyConfirmed
 )

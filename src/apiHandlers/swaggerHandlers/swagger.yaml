@@ -53,6 +53,7 @@ definitions:
     - 2149
     - 2150
     - 2151
+    - 2152
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -67,7 +68,7 @@ definitions:
     - ErrCodeInvalidFileData
     - ErrCodeInvalidPhoneNumber
     - ErrCodePhoneNumberAlreadyImported
-    - ErrCodeInvalidUsername
+    - ErrCodeInvalidUserID
     - ErrCodeNoPhonesDonated
     - ErrCodeAgentNotConnected
     - ErrCodeInvalidPagination
@@ -107,6 +108,7 @@ definitions:
     - ErrCodeExamQuestionNotFound
     - ErrCodeInvalidAnswerOption
     - ErrCodeGivenExamNotFound
+    - ErrCodeAccountAlreadyConfirmed
   AnswerQuestionData:
     properties:
       answer_text:

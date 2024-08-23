@@ -220,10 +220,10 @@ func SendErrPhoneNumberAlreadyImported(c *fiber.Ctx, phone string) error {
 	})
 }
 
-func SendErrInvalidUsername(c *fiber.Ctx) error {
+func SendErrInvalidUserID(c *fiber.Ctx) error {
 	return SendError(fiber.StatusBadRequest, c, &EndpointError{
-		ErrorCode: ErrCodeInvalidUsername,
-		Message:   ErrInvalidUsername,
+		ErrorCode: ErrCodeInvalidUserID,
+		Message:   ErrInvalidUserID,
 		Origin:    c.Path(),
 	})
 }
@@ -536,6 +536,14 @@ func SendErrGivenExamNotFound(c *fiber.Ctx) error {
 	return SendError(fiber.StatusNotFound, c, &EndpointError{
 		ErrorCode: ErrCodeGivenExamNotFound,
 		Message:   ErrGivenExamNotFound,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrAccountAlreadyConfirmed(c *fiber.Ctx) error {
+	return SendError(fiber.StatusConflict, c, &EndpointError{
+		ErrorCode: ErrCodeAccountAlreadyConfirmed,
+		Message:   ErrAccountAlreadyConfirmed,
 		Origin:    c.Path(),
 	})
 }
