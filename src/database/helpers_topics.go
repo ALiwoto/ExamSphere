@@ -34,6 +34,7 @@ func GetTopicInfo(topicId int) (*TopicInfo, error) {
 		return info, nil
 	}
 
+	info = &TopicInfo{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT topic_id, topic_name
 		FROM topic_info WHERE topic_id = $1`,
