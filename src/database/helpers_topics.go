@@ -61,7 +61,7 @@ func GetTopicInfoByName(topicName string) ([]*TopicInfo, error) {
 	topicName = strings.ToLower(strings.TrimSpace(topicName))
 	rows, err := DefaultContainer.db.Query(context.Background(),
 		`SELECT topic_id, topic_name
-		FROM topic_info WHERE topic_name = $1`,
+		FROM topic_info WHERE LOWER(topic_name) = $1`,
 		topicName,
 	)
 	if err != nil {
