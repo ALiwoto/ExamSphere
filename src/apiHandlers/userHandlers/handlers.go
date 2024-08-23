@@ -664,7 +664,7 @@ func ConfirmAccountV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	if appValues.IsPasswordValid(confirmData.RawPassword) {
+	if !appValues.IsPasswordValid(confirmData.RawPassword) {
 		return apiHandlers.SendErrInvalidInputPass(c)
 	}
 
