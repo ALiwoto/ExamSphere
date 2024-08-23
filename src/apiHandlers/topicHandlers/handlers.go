@@ -15,8 +15,8 @@ import (
 // @Tags Topic
 // @Accept json
 // @Produce json
-// @Param data body CreateNewTopicData true "Data needed to create a new topic"
 // @Param Authorization header string true "Authorization token"
+// @Param data body CreateNewTopicData true "Data needed to create a new topic"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=CreateNewTopicResult}
 // @Router /api/v1/topic/create [post]
 func CreateTopicV1(c *fiber.Ctx) error {
@@ -69,8 +69,8 @@ func CreateTopicV1(c *fiber.Ctx) error {
 // @Tags Topic
 // @Accept json
 // @Produce json
-// @Param data body SearchTopicData true "Data needed to search for topics"
 // @Param Authorization header string true "Authorization token"
+// @Param data body SearchTopicData true "Data needed to search for topics"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SearchTopicResult}
 // @Router /api/v1/topic/search [post]
 func SearchTopicV1(c *fiber.Ctx) error {
@@ -118,8 +118,8 @@ func SearchTopicV1(c *fiber.Ctx) error {
 // @Tags Topic
 // @Accept json
 // @Produce json
-// @Param id query int true "Topic ID"
 // @Param Authorization header string true "Authorization token"
+// @Param id query int true "Topic ID"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetTopicInfoResult}
 // @Router /api/v1/topic/info [get]
 func GetTopicInfoV1(c *fiber.Ctx) error {
@@ -160,8 +160,8 @@ func GetTopicInfoV1(c *fiber.Ctx) error {
 // @Tags Topic
 // @Accept json
 // @Produce json
-// @Param data body GetUserTopicStatData true "Data needed to get user topic stat"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetUserTopicStatData true "Data needed to get user topic stat"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserTopicStatResult}
 // @Router /api/v1/topic/userTopicStat [post]
 func GetUserTopicStatV1(c *fiber.Ctx) error {
@@ -256,8 +256,8 @@ func GetAllUserTopicStatsV1(c *fiber.Ctx) error {
 // @Tags Topic
 // @Accept json
 // @Produce json
-// @Param id query int true "Topic ID"
 // @Param Authorization header string true "Authorization token"
+// @Param id query int true "Topic ID"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
 // @Router /api/v1/topic/delete [delete]
 func DeleteTopicV1(c *fiber.Ctx) error {

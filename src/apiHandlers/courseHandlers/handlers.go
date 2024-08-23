@@ -14,8 +14,8 @@ import (
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param data body CreateCourseData true "Data needed to create a new course"
 // @Param Authorization header string true "Authorization token"
+// @Param data body CreateCourseData true "Data needed to create a new course"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=CreateCourseResult}
 // @Router /api/v1/course/create [post]
 func CreateCourseV1(c *fiber.Ctx) error {
@@ -67,8 +67,8 @@ func CreateCourseV1(c *fiber.Ctx) error {
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param id query int true "Course ID"
 // @Param Authorization header string true "Authorization token"
+// @Param id query int true "Course ID"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetCourseInfoResult}
 // @Router /api/v1/course/info [get]
 func GetCourseInfoV1(c *fiber.Ctx) error {
@@ -107,8 +107,8 @@ func GetCourseInfoV1(c *fiber.Ctx) error {
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param data body SearchCourseData true "Data needed to search for courses"
 // @Param Authorization header string true "Authorization token"
+// @Param data body SearchCourseData true "Data needed to search for courses"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SearchCourseResult}
 // @Router /api/v1/course/search [post]
 func SearchCourseV1(c *fiber.Ctx) error {
@@ -157,8 +157,8 @@ func SearchCourseV1(c *fiber.Ctx) error {
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param data body GetCreatedCoursesData true "Data needed to get created courses"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetCreatedCoursesData true "Data needed to get created courses"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetCreatedCoursesResult}
 // @Router /api/v1/course/createdCourses [post]
 func GetCreatedCoursesV1(c *fiber.Ctx) error {
@@ -211,8 +211,8 @@ func GetCreatedCoursesV1(c *fiber.Ctx) error {
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param data body GetUserCoursesData true "Data needed to get user courses"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetUserCoursesData true "Data needed to get user courses"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserCoursesResult}
 // @Router /api/v1/course/userCourses [post]
 func GetUserCoursesV1(c *fiber.Ctx) error {
@@ -262,8 +262,8 @@ func GetUserCoursesV1(c *fiber.Ctx) error {
 // @Tags Course
 // @Accept json
 // @Produce json
-// @Param data body GetCourseParticipantsData true "Data needed to get course participants"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetCourseParticipantsData true "Data needed to get course participants"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetCourseParticipantsResult}
 // @Router /api/v1/course/courseParticipants [post]
 func GetCourseParticipantsV1(c *fiber.Ctx) error {

@@ -820,17 +820,17 @@ paths:
       description: Allows a user to get all participants of a course.
       operationId: getCourseParticipantsV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get course participants
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetCourseParticipantsData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -853,17 +853,17 @@ paths:
       description: Allows a user to create a new course.
       operationId: createCourseV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to create a new course
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/CreateCourseData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -886,17 +886,17 @@ paths:
       description: Allows a user to get all courses created by a user.
       operationId: getCreatedCoursesV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get created courses
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetCreatedCoursesData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -919,16 +919,16 @@ paths:
       description: Allows a user to get information about a course by its id.
       operationId: getCourseInfoV1
       parameters:
-      - description: Course ID
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
+      - description: Course ID
+        in: query
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -951,17 +951,17 @@ paths:
       description: Allows a user to search for courses by their name.
       operationId: searchCourseV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to search for courses
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/SearchCourseData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -984,17 +984,17 @@ paths:
       description: Allows a user to get all courses participated by a user.
       operationId: getUserCoursesV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get user courses
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetUserCoursesData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1017,17 +1017,17 @@ paths:
       description: Allows the user to answer a question of an exam.
       operationId: answerExamQuestionV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to answer a question of an exam
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/AnswerQuestionData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1050,17 +1050,17 @@ paths:
       description: Allows the user to create a new exam.
       operationId: createExamV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to create a new exam
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/CreateExamData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1084,6 +1084,11 @@ paths:
         participated in.
       operationId: getGivenExamV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get information about an exam that a user has
           participated in
         in: body
@@ -1091,11 +1096,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/GetGivenExamData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1118,16 +1118,16 @@ paths:
       description: Allows the user to get information about an exam.
       operationId: getExamInfoV1
       parameters:
-      - description: Exam ID
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
+      - description: Exam ID
+        in: query
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -1150,17 +1150,17 @@ paths:
       description: Allows the user to get questions of an exam.
       operationId: getExamQuestionsV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get questions of an exam
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetExamQuestionsData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1183,17 +1183,17 @@ paths:
       description: Allows the user to set score for a user in an exam.
       operationId: setScoreV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to set score for a user in an exam
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/SetScoreData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1216,17 +1216,17 @@ paths:
       description: Allows the user to get history of exams of a user.
       operationId: getUserExamsHistoryV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get history of exams of a user
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetUsersExamHistoryData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1307,17 +1307,17 @@ paths:
       description: Create a new topic
       operationId: createTopicV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to create a new topic
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/CreateNewTopicData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1341,16 +1341,16 @@ paths:
         to the topic will be deleted as well.
       operationId: deleteTopicV1
       parameters:
-      - description: Topic ID
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
+      - description: Topic ID
+        in: query
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -1373,16 +1373,16 @@ paths:
       description: Get topic info
       operationId: getTopicInfoV1
       parameters:
-      - description: Topic ID
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: Authorization token
         in: header
         name: Authorization
         required: true
         type: string
+      - description: Topic ID
+        in: query
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -1405,17 +1405,17 @@ paths:
       description: Search for topics
       operationId: searchTopicV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to search for topics
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/SearchTopicData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1438,17 +1438,17 @@ paths:
       description: Get user topic stat
       operationId: getUserTopicStatV1
       parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Data needed to get user topic stat
         in: body
         name: data
         required: true
         schema:
           $ref: '#/definitions/GetUserTopicStatData'
-      - description: Authorization token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:

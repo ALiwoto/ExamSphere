@@ -73,6 +73,13 @@ const docTemplate = `{
                 "operationId": "getCourseParticipantsV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get course participants",
                         "name": "data",
                         "in": "body",
@@ -80,13 +87,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetCourseParticipantsData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -127,6 +127,13 @@ const docTemplate = `{
                 "operationId": "createCourseV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to create a new course",
                         "name": "data",
                         "in": "body",
@@ -134,13 +141,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/CreateCourseData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -181,6 +181,13 @@ const docTemplate = `{
                 "operationId": "getCreatedCoursesV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get created courses",
                         "name": "data",
                         "in": "body",
@@ -188,13 +195,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetCreatedCoursesData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -235,17 +235,17 @@ const docTemplate = `{
                 "operationId": "getCourseInfoV1",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Course ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "Authorization token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Course ID",
+                        "name": "id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -287,6 +287,13 @@ const docTemplate = `{
                 "operationId": "searchCourseV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to search for courses",
                         "name": "data",
                         "in": "body",
@@ -294,13 +301,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/SearchCourseData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -341,6 +341,13 @@ const docTemplate = `{
                 "operationId": "getUserCoursesV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get user courses",
                         "name": "data",
                         "in": "body",
@@ -348,13 +355,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetUserCoursesData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -395,6 +395,13 @@ const docTemplate = `{
                 "operationId": "answerExamQuestionV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to answer a question of an exam",
                         "name": "data",
                         "in": "body",
@@ -402,13 +409,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/AnswerQuestionData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -449,6 +449,13 @@ const docTemplate = `{
                 "operationId": "createExamV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to create a new exam",
                         "name": "data",
                         "in": "body",
@@ -456,13 +463,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/CreateExamData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -503,6 +503,13 @@ const docTemplate = `{
                 "operationId": "getGivenExamV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get information about an exam that a user has participated in",
                         "name": "data",
                         "in": "body",
@@ -510,13 +517,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetGivenExamData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -557,17 +557,17 @@ const docTemplate = `{
                 "operationId": "getExamInfoV1",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Exam ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "Authorization token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Exam ID",
+                        "name": "id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -609,6 +609,13 @@ const docTemplate = `{
                 "operationId": "getExamQuestionsV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get questions of an exam",
                         "name": "data",
                         "in": "body",
@@ -616,13 +623,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetExamQuestionsData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -663,6 +663,13 @@ const docTemplate = `{
                 "operationId": "setScoreV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to set score for a user in an exam",
                         "name": "data",
                         "in": "body",
@@ -670,13 +677,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/SetScoreData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -717,6 +717,13 @@ const docTemplate = `{
                 "operationId": "getUserExamsHistoryV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get history of exams of a user",
                         "name": "data",
                         "in": "body",
@@ -724,13 +731,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetUsersExamHistoryData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -867,6 +867,13 @@ const docTemplate = `{
                 "operationId": "createTopicV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to create a new topic",
                         "name": "data",
                         "in": "body",
@@ -874,13 +881,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/CreateNewTopicData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -921,17 +921,17 @@ const docTemplate = `{
                 "operationId": "deleteTopicV1",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Topic ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "Authorization token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -973,17 +973,17 @@ const docTemplate = `{
                 "operationId": "getTopicInfoV1",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Topic ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "Authorization token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -1025,6 +1025,13 @@ const docTemplate = `{
                 "operationId": "searchTopicV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to search for topics",
                         "name": "data",
                         "in": "body",
@@ -1032,13 +1039,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/SearchTopicData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1079,6 +1079,13 @@ const docTemplate = `{
                 "operationId": "getUserTopicStatV1",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Data needed to get user topic stat",
                         "name": "data",
                         "in": "body",
@@ -1086,13 +1093,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/GetUserTopicStatData"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {

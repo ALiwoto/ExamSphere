@@ -18,8 +18,8 @@ import (
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body CreateExamData true "Data needed to create a new exam"
 // @Param Authorization header string true "Authorization token"
+// @Param data body CreateExamData true "Data needed to create a new exam"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=CreateExamResult}
 // @Router /api/v1/exam/create [post]
 func CreateExamV1(c *fiber.Ctx) error {
@@ -81,8 +81,8 @@ func CreateExamV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param id query int true "Exam ID"
 // @Param Authorization header string true "Authorization token"
+// @Param id query int true "Exam ID"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetExamInfoResult}
 // @Router /api/v1/exam/info [get]
 func GetExamInfoV1(c *fiber.Ctx) error {
@@ -139,8 +139,8 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body GetExamQuestionsData true "Data needed to get questions of an exam"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetExamQuestionsData true "Data needed to get questions of an exam"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetExamQuestionsResult}
 // @Router /api/v1/exam/questions [post]
 func GetExamQuestionsV1(c *fiber.Ctx) error {
@@ -226,8 +226,8 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body AnswerQuestionData true "Data needed to answer a question of an exam"
 // @Param Authorization header string true "Authorization token"
+// @Param data body AnswerQuestionData true "Data needed to answer a question of an exam"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=AnswerQuestionResult}
 // @Router /api/v1/exam/answer [post]
 func AnswerExamQuestionV1(c *fiber.Ctx) error {
@@ -318,8 +318,8 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body SetScoreData true "Data needed to set score for a user in an exam"
 // @Param Authorization header string true "Authorization token"
+// @Param data body SetScoreData true "Data needed to set score for a user in an exam"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SetScoreResult}
 // @Router /api/v1/exam/setScore [post]
 func SetScoreV1(c *fiber.Ctx) error {
@@ -395,8 +395,8 @@ func SetScoreV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body GetGivenExamData true "Data needed to get information about an exam that a user has participated in"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetGivenExamData true "Data needed to get information about an exam that a user has participated in"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetGivenExamResult}
 // @Router /api/v1/exam/givenExam [post]
 func GetGivenExamV1(c *fiber.Ctx) error {
@@ -498,8 +498,8 @@ func GetUserOngoingExamsV1(c *fiber.Ctx) error {
 // @Tags Exam
 // @Accept json
 // @Produce json
-// @Param data body GetUsersExamHistoryData true "Data needed to get history of exams of a user"
 // @Param Authorization header string true "Authorization token"
+// @Param data body GetUsersExamHistoryData true "Data needed to get history of exams of a user"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetUsersExamHistoryResult}
 // @Router /api/v1/exam/userExamsHistory [post]
 func GetUserExamsHistoryV1(c *fiber.Ctx) error {
