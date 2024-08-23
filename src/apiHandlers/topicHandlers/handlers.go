@@ -3,6 +3,7 @@ package topicHandlers
 import (
 	"ExamSphere/src/apiHandlers"
 	"ExamSphere/src/database"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -42,6 +43,7 @@ func CreateTopicV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
+	data.TopicName = strings.TrimSpace(data.TopicName)
 	topics, _ := database.GetTopicInfoByName(data.TopicName)
 	if len(topics) > 0 {
 		return apiHandlers.SendErrTopicNameExists(c)
