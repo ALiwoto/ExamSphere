@@ -56,6 +56,7 @@ const (
 	ErrGivenExamNotFound             = "Given exam not found"
 	ErrAccountAlreadyConfirmed       = "Account already confirmed"
 	ErrEmailAlreadyExists            = "Email already exists"
+	ErrTopicNameExists               = "A topic with this name already exists"
 )
 
 // error codes
@@ -114,4 +115,5 @@ const (
 	ErrCodeGivenExamNotFound
 	ErrCodeAccountAlreadyConfirmed
 	ErrCodeEmailAlreadyExists
+	ErrCodeTopicNameExists
 )

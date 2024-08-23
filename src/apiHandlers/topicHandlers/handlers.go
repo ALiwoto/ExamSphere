@@ -42,6 +42,11 @@ func CreateTopicV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
+	topics, _ := database.GetTopicInfoByName(data.TopicName)
+	if len(topics) > 0 {
+		return apiHandlers.SendErrTopicNameExists(c)
+	}
+
 	topicInfo, err := database.CreateNewTopic(&database.NewTopicData{
 		TopicName: data.TopicName,
 	})

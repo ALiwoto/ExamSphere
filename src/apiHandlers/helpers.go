@@ -555,3 +555,11 @@ func SendErrEmailAlreadyExists(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrTopicNameExists(c *fiber.Ctx) error {
+	return SendError(fiber.StatusConflict, c, &EndpointError{
+		ErrorCode: ErrCodeTopicNameExists,
+		Message:   ErrTopicNameExists,
+		Origin:    c.Path(),
+	})
+}

@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -51,6 +52,38 @@ func GetTopicInfo(topicId int) (*TopicInfo, error) {
 
 	topicsInfoMap.Add(info.TopicId, info)
 	return info, nil
+}
+
+// GetTopicInfoByName searches for topics in the database.
+// the only difference between this function and SearchTopics
+// is that this function does not use LIKE at all.
+func GetTopicInfoByName(topicName string) ([]*TopicInfo, error) {
+	topicName = strings.ToLower(strings.TrimSpace(topicName))
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT topic_id, topic_name
+		FROM topic_info WHERE topic_name = $1`,
+		topicName,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	topics := make([]*TopicInfo, 0)
+	for rows.Next() {
+		info := &TopicInfo{}
+		err = rows.Scan(
+			&info.TopicId,
+			&info.TopicName,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, info)
+	}
+
+	return topics, nil
 }
 
 // SearchTopics searches for topics in the database.
