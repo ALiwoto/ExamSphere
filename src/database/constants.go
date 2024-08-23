@@ -5,8 +5,9 @@ const (
 )
 
 const (
-	DefaultExamPrice = "0T"
-	KeySepChar       = "_"
+	DefaultExamPrice       = "0T"
+	DefaultPaginationLimit = 10
+	KeySepChar             = "_"
 )
 
 const (
