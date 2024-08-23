@@ -7,6 +7,7 @@ import (
 	"ExamSphere/src/core/utils/emailUtils"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
+	"strings"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -210,6 +211,11 @@ func CreateUserV1(c *fiber.Ctx) error {
 		SetupCompleted: newUserData.SetupCompleted,
 	})
 	if err != nil {
+		errStr := strings.ToLower(err.Error())
+		if strings.Contains(errStr, "unique key") && strings.Contains(errStr, "email") {
+			return apiHandlers.SendErrEmailAlreadyExists(c)
+		}
+
 		logging.Error("CreateUserV1: failed to create new user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	} else if newUserInfo == nil {
@@ -356,6 +362,11 @@ func EditUserV1(c *fiber.Ctx) error {
 
 	targetUserInfo, err = database.UpdateUserInfo(updateUserData)
 	if err != nil {
+		errStr := strings.ToLower(err.Error())
+		if strings.Contains(errStr, "unique key") && strings.Contains(errStr, "email") {
+			return apiHandlers.SendErrEmailAlreadyExists(c)
+		}
+
 		logging.Error("EditUserV1: failed to update user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}

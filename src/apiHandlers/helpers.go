@@ -547,3 +547,11 @@ func SendErrAccountAlreadyConfirmed(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrEmailAlreadyExists(c *fiber.Ctx) error {
+	return SendError(fiber.StatusConflict, c, &EndpointError{
+		ErrorCode: ErrCodeEmailAlreadyExists,
+		Message:   ErrEmailAlreadyExists,
+		Origin:    c.Path(),
+	})
+}

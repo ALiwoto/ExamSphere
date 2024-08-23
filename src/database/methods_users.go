@@ -113,8 +113,12 @@ func (i *UserInfo) CanChangePassword(targetUser *UserInfo) bool {
 	if i == nil || i.Role == appValues.UserRoleUnknown {
 		// looks like an uninitialized user to me, just in case
 		return false
-	} else if targetUser == nil || targetUser.Role == appValues.UserRoleUnknown {
+	} else if targetUser == nil ||
+		targetUser.Role == appValues.UserRoleUnknown ||
+		targetUser.Role == appValues.UserRoleOwner {
 		// looks like an uninitialized user to me, just in case
+		// The 'owner' user can never have its password changed from
+		// the application. It should be done inside of the config file.
 		return false
 	}
 
@@ -123,8 +127,7 @@ func (i *UserInfo) CanChangePassword(targetUser *UserInfo) bool {
 		return true
 	} else if i.Role == appValues.UserRoleAdmin {
 		// admins can change anyone's password below themselves
-		return targetUser.Role != appValues.UserRoleOwner &&
-			targetUser.Role != appValues.UserRoleAdmin
+		return targetUser.Role != appValues.UserRoleAdmin
 	}
 
 	return false

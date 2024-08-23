@@ -13,10 +13,18 @@ func (e *changePasswordRequestEntry) GetRedirectAddress(baseAddr string) string 
 	// URL encode the query parameters
 	encodedRq := url.QueryEscape(e.RqId)
 	encodedRt := url.QueryEscape(e.RTParam)
+	encodedUId := url.QueryEscape(hex.EncodeToString([]byte(e.UserId)))
 	encodedLt := url.QueryEscape(hex.EncodeToString([]byte(ssg.ToBase16(e.LTNum))))
 
 	// Construct the full URL with query parameters
-	fullURL := fmt.Sprintf("%s?rq=%s&rt=%s&lt=%s", baseAddr, encodedRq, encodedRt, encodedLt)
+	fullURL := fmt.Sprintf(
+		"%s?rq=%s&rt=%s&uid=%s&lt=%s",
+		baseAddr,
+		encodedRq,
+		encodedRt,
+		encodedUId,
+		encodedLt,
+	)
 
 	return fullURL
 }

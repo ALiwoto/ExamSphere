@@ -55,6 +55,7 @@ const (
 	ErrInvalidAnswerOption           = "Invalid answer option provided"
 	ErrGivenExamNotFound             = "Given exam not found"
 	ErrAccountAlreadyConfirmed       = "Account already confirmed"
+	ErrEmailAlreadyExists            = "Email already exists"
 )
 
 // error codes
@@ -112,4 +113,5 @@ const (
 	ErrCodeInvalidAnswerOption
 	ErrCodeGivenExamNotFound
 	ErrCodeAccountAlreadyConfirmed
+	ErrCodeEmailAlreadyExists
 )
