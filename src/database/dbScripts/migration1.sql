@@ -167,6 +167,14 @@ COMMENT ON COLUMN "course_info".course_description IS 'Description of the course
 COMMENT ON COLUMN "course_info".created_at IS 'Timestamp when the course was created';
 COMMENT ON COLUMN "course_info".added_by IS 'ID of the user who added the course';
 
+-- Creates a new course info in the database.
+-- Example of calling this function:
+-- SELECT create_course_info(
+--    p_course_name := 'Mathematics 101',
+--    p_topic_id := 1,
+--    p_course_description := 'This is an introductory course to mathematics.',
+--    p_added_by := '101'
+-- );
 CREATE OR REPLACE FUNCTION create_course_info(
     p_course_name VARCHAR(127),
     p_topic_id INTEGER,

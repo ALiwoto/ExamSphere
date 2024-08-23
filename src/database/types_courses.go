@@ -24,6 +24,7 @@ type CourseParticipantInfo struct {
 
 type NewCourseData struct {
 	CourseName        string `json:"course_name"`
+	TopicId           int    `json:"topic_id"`
 	CourseDescription string `json:"course_description"`
 	AddedBy           string `json:"added_by"`
 }

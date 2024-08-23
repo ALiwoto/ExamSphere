@@ -57,6 +57,7 @@ const (
 	ErrAccountAlreadyConfirmed       = "Account already confirmed"
 	ErrEmailAlreadyExists            = "Email already exists"
 	ErrTopicNameExists               = "A topic with this name already exists"
+	ErrTopicNotFound                 = "Topic not found"
 )
 
 // error codes
@@ -116,4 +117,5 @@ const (
 	ErrCodeAccountAlreadyConfirmed
 	ErrCodeEmailAlreadyExists
 	ErrCodeTopicNameExists
+	ErrCodeTopicNotFound
 )

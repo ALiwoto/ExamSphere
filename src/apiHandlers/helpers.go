@@ -563,3 +563,11 @@ func SendErrTopicNameExists(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrTopicNotFound(c *fiber.Ctx) error {
+	return SendError(fiber.StatusNotFound, c, &EndpointError{
+		ErrorCode: ErrCodeTopicNotFound,
+		Message:   ErrTopicNotFound,
+		Origin:    c.Path(),
+	})
+}

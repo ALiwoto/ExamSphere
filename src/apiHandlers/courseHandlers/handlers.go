@@ -44,8 +44,14 @@ func CreateCourseV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrCourseAlreadyExists(c)
 	}
 
+	topicInfo, _ := database.GetTopicInfo(data.TopicId)
+	if topicInfo == nil {
+		return apiHandlers.SendErrTopicNotFound(c)
+	}
+
 	courseInfo, err = database.CreateNewCourse(&database.NewCourseData{
 		CourseName:        data.CourseName,
+		TopicId:           data.TopicId,
 		CourseDescription: data.CourseDescription,
 		AddedBy:           userInfo.UserId,
 	})

@@ -56,6 +56,7 @@ definitions:
     - 2152
     - 2153
     - 2154
+    - 2155
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -113,6 +114,7 @@ definitions:
     - ErrCodeAccountAlreadyConfirmed
     - ErrCodeEmailAlreadyExists
     - ErrCodeTopicNameExists
+    - ErrCodeTopicNotFound
   AnswerQuestionData:
     properties:
       answer_text:
@@ -240,6 +242,8 @@ definitions:
         type: string
       course_name:
         type: string
+      topic_id:
+        type: integer
     type: object
   CreateCourseResult:
     properties:
@@ -250,6 +254,8 @@ definitions:
       course_id:
         type: integer
       course_name:
+        type: string
+      created_at:
         type: string
     type: object
   CreateExamData:
@@ -333,6 +339,28 @@ definitions:
       role:
         type: string
       user_id:
+        type: string
+    type: object
+  EditCourseData:
+    properties:
+      course_description:
+        type: string
+      course_id:
+        type: integer
+      course_name:
+        type: string
+    type: object
+  EditCourseResult:
+    properties:
+      added_by:
+        type: string
+      course_description:
+        type: string
+      course_id:
+        type: integer
+      course_name:
+        type: string
+      created_at:
         type: string
     type: object
   EditUserData:
@@ -910,6 +938,39 @@ paths:
                   $ref: '#/definitions/GetCreatedCoursesResult'
               type: object
       summary: Get created courses
+      tags:
+      - Course
+  /api/v1/course/edit:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to edit a course.
+      operationId: editCourseV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to edit a course
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/EditCourseData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/EditCourseResult'
+              type: object
+      summary: Edit a course
       tags:
       - Course
   /api/v1/course/info:

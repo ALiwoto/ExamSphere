@@ -4,6 +4,7 @@ import "time"
 
 type CreateCourseData struct {
 	CourseName        string `json:"course_name"`
+	TopicId           int    `json:"topic_id"`
 	CourseDescription string `json:"course_description"`
 } // @name CreateCourseData
 

@@ -19,8 +19,14 @@ func CreateNewCourse(data *NewCourseData) (*CourseInfo, error) {
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT create_course_info($1, $2, $3)`,
+		`SELECT create_course_info(
+			p_course_name := $1,
+			p_topic_id := $2,
+			p_course_description := $3,
+			p_added_by := $4
+		)`,
 		info.CourseName,
+		data.TopicId,
 		info.CourseDescription,
 		info.AddedBy,
 	).Scan(&info.CourseId)

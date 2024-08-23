@@ -219,6 +219,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/course/edit": {
+            "post": {
+                "description": "Allows a user to edit a course.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Edit a course",
+                "operationId": "editCourseV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to edit a course",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EditCourseData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/EditCourseResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/course/info": {
             "get": {
                 "description": "Allows a user to get information about a course by its id.",
@@ -1720,7 +1774,8 @@ const docTemplate = `{
                 2151,
                 2152,
                 2153,
-                2154
+                2154,
+                2155
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1777,7 +1832,8 @@ const docTemplate = `{
                 "ErrCodeGivenExamNotFound",
                 "ErrCodeAccountAlreadyConfirmed",
                 "ErrCodeEmailAlreadyExists",
-                "ErrCodeTopicNameExists"
+                "ErrCodeTopicNameExists",
+                "ErrCodeTopicNotFound"
             ]
         },
         "AnswerQuestionData": {
@@ -1974,6 +2030,9 @@ const docTemplate = `{
                 },
                 "course_name": {
                     "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1990,6 +2049,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "course_name": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 }
             }
@@ -2116,6 +2178,40 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "EditCourseData": {
+            "type": "object",
+            "properties": {
+                "course_description": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "EditCourseResult": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "course_description": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_name": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 }
             }
