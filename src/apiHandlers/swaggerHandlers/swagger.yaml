@@ -349,6 +349,8 @@ definitions:
         type: integer
       course_name:
         type: string
+      topic_id:
+        type: integer
     type: object
   EditCourseResult:
     properties:
@@ -1013,7 +1015,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Allows a user to search for courses by their name.
+      description: Allows a user to search for courses by their name. Pass empty string
+        to get all courses.
       operationId: searchCourseV1
       parameters:
       - description: Authorization token

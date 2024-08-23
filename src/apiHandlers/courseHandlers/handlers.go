@@ -62,6 +62,7 @@ func CreateCourseV1(c *fiber.Ctx) error {
 
 	return apiHandlers.SendResult(c, &CreateCourseResult{
 		CourseId:          courseInfo.CourseId,
+		TopicId:           courseInfo.TopicId,
 		CourseName:        courseInfo.CourseName,
 		CourseDescription: courseInfo.CourseDescription,
 		AddedBy:           courseInfo.AddedBy,
@@ -112,8 +113,14 @@ func EditCourseV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrCourseNotFound(c)
 	}
 
+	topicInfo, _ := database.GetTopicInfo(data.TopicId)
+	if topicInfo == nil {
+		return apiHandlers.SendErrTopicNotFound(c)
+	}
+
 	courseInfo, err = database.EditCourseInfo(&database.EditCourseInfoData{
 		CourseId:          data.CourseId,
+		TopicId:           data.TopicId,
 		CourseName:        data.CourseName,
 		CourseDescription: data.CourseDescription,
 	})
@@ -166,6 +173,7 @@ func GetCourseInfoV1(c *fiber.Ctx) error {
 		CourseId:          courseInfo.CourseId,
 		CourseName:        courseInfo.CourseName,
 		CourseDescription: courseInfo.CourseDescription,
+		TopicId:           courseInfo.TopicId,
 		CreatedAt:         courseInfo.CreatedAt,
 		AddedBy:           courseInfo.AddedBy,
 	})
@@ -216,6 +224,7 @@ func SearchCourseV1(c *fiber.Ctx) error {
 			CourseId:          course.CourseId,
 			CourseName:        course.CourseName,
 			CourseDescription: course.CourseDescription,
+			TopicId:           course.TopicId,
 			CreatedAt:         course.CreatedAt,
 			AddedBy:           course.AddedBy,
 		})
@@ -271,6 +280,7 @@ func GetCreatedCoursesV1(c *fiber.Ctx) error {
 			CourseId:          course.CourseId,
 			CourseName:        course.CourseName,
 			CourseDescription: course.CourseDescription,
+			TopicId:           course.TopicId,
 			CreatedAt:         course.CreatedAt,
 			AddedBy:           course.AddedBy,
 		})

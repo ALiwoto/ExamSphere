@@ -10,6 +10,7 @@ type CreateCourseData struct {
 
 type CreateCourseResult struct {
 	CourseId          int       `json:"course_id"`
+	TopicId           int       `json:"topic_id"`
 	CourseName        string    `json:"course_name"`
 	CourseDescription string    `json:"course_description"`
 	AddedBy           string    `json:"added_by"`
@@ -18,6 +19,7 @@ type CreateCourseResult struct {
 
 type EditCourseData struct {
 	CourseId          int    `json:"course_id"`
+	TopicId           int    `json:"topic_id"`
 	CourseName        string `json:"course_name"`
 	CourseDescription string `json:"course_description"`
 } // @name EditCourseData
@@ -34,6 +36,7 @@ type GetCourseInfoResult struct {
 	CourseId          int       `json:"course_id"`
 	CourseName        string    `json:"course_name"`
 	CourseDescription string    `json:"course_description"`
+	TopicId           int       `json:"topic_id"`
 	AddedBy           string    `json:"added_by"`
 	CreatedAt         time.Time `json:"created_at"`
 } // @name GetCourseInfoResult
@@ -52,6 +55,7 @@ type SearchedCourseInfo struct {
 	CourseId          int       `json:"course_id"`
 	CourseName        string    `json:"course_name"`
 	CourseDescription string    `json:"course_description"`
+	TopicId           int       `json:"topic_id"`
 	CreatedAt         time.Time `json:"created_at"`
 	AddedBy           string    `json:"added_by"`
 } // @name SearchedCourseInfo
@@ -63,14 +67,6 @@ type GetCreatedCoursesData struct {
 type GetCreatedCoursesResult struct {
 	Courses []*SearchedCourseInfo `json:"courses"`
 } // @name GetCreatedCoursesResult
-
-type CreatedCourseInfo struct {
-	CourseId          int       `json:"course_id"`
-	CourseName        string    `json:"course_name"`
-	CourseDescription string    `json:"course_description"`
-	CreatedAt         time.Time `json:"created_at"`
-	AddedBy           string    `json:"added_by"`
-} // @name CreatedCourseInfo
 
 type GetUserCoursesData struct {
 	UserId string `json:"user_id"`

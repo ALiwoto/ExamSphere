@@ -327,7 +327,7 @@ const docTemplate = `{
         },
         "/api/v1/course/search": {
             "post": {
-                "description": "Allows a user to search for courses by their name.",
+                "description": "Allows a user to search for courses by their name. Pass empty string to get all courses.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2193,6 +2193,9 @@ const docTemplate = `{
                 },
                 "course_name": {
                     "type": "string"
+                },
+                "topic_id": {
+                    "type": "integer"
                 }
             }
         },

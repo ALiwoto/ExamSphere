@@ -4,6 +4,7 @@ import "time"
 
 type CourseInfo struct {
 	CourseId          int       `json:"course_id"`
+	TopicId           int       `json:"topic_id"`
 	CourseName        string    `json:"course_name"`
 	CourseDescription string    `json:"course_description"`
 	CreatedAt         time.Time `json:"created_at"`
@@ -37,6 +38,7 @@ type NewCourseData struct {
 
 type EditCourseInfoData struct {
 	CourseId          int    `json:"course_id"`
+	TopicId           int    `json:"topic_id"`
 	CourseName        string `json:"course_name"`
 	CourseDescription string `json:"course_description"`
 }
