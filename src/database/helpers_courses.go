@@ -75,6 +75,7 @@ func GetCourseInfo(courseId int) (*CourseInfo, error) {
 		return info, nil
 	}
 
+	info = &CourseInfo{}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT course_id, 
 			course_name, 
