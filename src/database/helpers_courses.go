@@ -136,10 +136,19 @@ func GetCourseByName(courseName string) (*CourseInfo, error) {
 
 // SearchCourseByName searches for courses in the database.
 func SearchCourseByName(data *SearchCourseByNameData) ([]*CourseInfo, error) {
+	var whereCondition string
+	if data.CourseName != "" {
+		whereCondition = "WHERE course_name ILIKE '%' || $1 || '%' "
+	}
+
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT course_id, course_name, course_description, created_at, added_by
-			FROM course_info WHERE course_name ILIKE '%' || $1 || '%'
-			ORDER BY created_at DESC
+		`SELECT course_id, 
+			course_name, 
+			course_description, 
+			created_at, 
+			added_by
+		FROM course_info `+whereCondition+
+			`ORDER BY created_at DESC
 			LIMIT $2 OFFSET $3;`,
 		data.CourseName,
 		data.Limit,

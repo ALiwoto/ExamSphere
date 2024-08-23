@@ -171,7 +171,7 @@ func GetCourseInfoV1(c *fiber.Ctx) error {
 
 // SearchCourseV1 godoc
 // @Summary Search for courses
-// @Description Allows a user to search for courses by their name.
+// @Description Allows a user to search for courses by their name. Pass empty string to get all courses.
 // @ID searchCourseV1
 // @Tags Course
 // @Accept json

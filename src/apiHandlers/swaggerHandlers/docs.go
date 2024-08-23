@@ -2657,6 +2657,12 @@ const docTemplate = `{
             "properties": {
                 "course_name": {
                     "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
                 }
             }
         },
