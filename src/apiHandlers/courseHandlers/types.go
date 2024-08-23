@@ -8,11 +8,26 @@ type CreateCourseData struct {
 } // @name CreateCourseData
 
 type CreateCourseResult struct {
+	CourseId          int       `json:"course_id"`
+	CourseName        string    `json:"course_name"`
+	CourseDescription string    `json:"course_description"`
+	AddedBy           string    `json:"added_by"`
+	CreatedAt         time.Time `json:"created_at"`
+} // @name CreateCourseResult
+
+type EditCourseData struct {
 	CourseId          int    `json:"course_id"`
 	CourseName        string `json:"course_name"`
 	CourseDescription string `json:"course_description"`
-	AddedBy           string `json:"added_by"`
-} // @name CreateCourseResult
+} // @name EditCourseData
+
+type EditCourseResult struct {
+	CourseId          int       `json:"course_id"`
+	CourseName        string    `json:"course_name"`
+	CourseDescription string    `json:"course_description"`
+	AddedBy           string    `json:"added_by"`
+	CreatedAt         time.Time `json:"created_at"`
+} // @name EditCourseResult
 
 type GetCourseInfoResult struct {
 	CourseId          int       `json:"course_id"`

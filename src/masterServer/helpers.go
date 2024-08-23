@@ -89,6 +89,7 @@ func LoadHandlersV1(app *fiber.App) {
 
 	// course handlers
 	v1.Post("/course/create", authProtection, courseHandlers.CreateCourseV1)
+	v1.Post("/course/edit", authProtection, courseHandlers.EditCourseV1)
 	v1.Get("/course/info", authProtection, courseHandlers.GetCourseInfoV1)
 	v1.Post("/course/search", authProtection, courseHandlers.SearchCourseV1)
 	v1.Post("/course/CreatedCourses", authProtection, courseHandlers.GetCreatedCoursesV1)

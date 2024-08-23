@@ -178,6 +178,13 @@ func (i *UserInfo) CanCreateNewCourse() bool {
 		i.Role == appValues.UserRoleOwner
 }
 
+// CanEditCourse returns true if and only if the current user has
+// the permission to edit a course.
+func (i *UserInfo) CanEditCourse() bool {
+	return i != nil && i.Role == appValues.UserRoleAdmin ||
+		i.Role == appValues.UserRoleOwner
+}
+
 // CanCreateNewExam returns true if and only if the current user has
 // the permission to create a new exam.
 // Owners, admins, and teachers can create new exams.

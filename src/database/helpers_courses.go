@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -14,6 +15,7 @@ func CreateNewCourse(data *NewCourseData) (*CourseInfo, error) {
 		CourseName:        strings.TrimSpace(data.CourseName),
 		CourseDescription: strings.TrimSpace(data.CourseDescription),
 		AddedBy:           data.AddedBy,
+		CreatedAt:         time.Now(),
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
@@ -29,6 +31,30 @@ func CreateNewCourse(data *NewCourseData) (*CourseInfo, error) {
 	coursesInfoMap.Add(info.CourseId, info)
 
 	return info, nil
+}
+
+// EditCourseInfo edits a course in the database.
+func EditCourseInfo(data *EditCourseInfoData) (*CourseInfo, error) {
+	_, err := DefaultContainer.db.Exec(context.Background(),
+		`UPDATE course_info
+		SET course_name = $2, course_description = $3
+			WHERE course_id = $1`,
+		data.CourseId,
+		data.CourseName,
+		data.CourseDescription,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	info := coursesInfoMap.Get(data.CourseId)
+	if info != nil {
+		info.CourseName = data.CourseName
+		info.CourseDescription = data.CourseDescription
+		return info, nil
+	}
+
+	return GetCourseInfo(data.CourseId)
 }
 
 // GetCourseInfo gets a course from the database.

@@ -27,3 +27,9 @@ type NewCourseData struct {
 	CourseDescription string `json:"course_description"`
 	AddedBy           string `json:"added_by"`
 }
+
+type EditCourseInfoData struct {
+	CourseId          int    `json:"course_id"`
+	CourseName        string `json:"course_name"`
+	CourseDescription string `json:"course_description"`
+}

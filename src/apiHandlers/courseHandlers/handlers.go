@@ -2,6 +2,7 @@ package courseHandlers
 
 import (
 	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
 
 	"github.com/gofiber/fiber/v2"
@@ -57,6 +58,68 @@ func CreateCourseV1(c *fiber.Ctx) error {
 		CourseName:        courseInfo.CourseName,
 		CourseDescription: courseInfo.CourseDescription,
 		AddedBy:           courseInfo.AddedBy,
+		CreatedAt:         courseInfo.CreatedAt,
+	})
+}
+
+// EditCourseV1 godoc
+// @Summary Edit a course
+// @Description Allows a user to edit a course.
+// @ID editCourseV1
+// @Tags Course
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body EditCourseData true "Data needed to edit a course"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=EditCourseResult}
+// @Router /api/v1/course/edit [post]
+func EditCourseV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	} else if !userInfo.CanEditCourse() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	data := &EditCourseData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	courseInfo, err := database.GetCourseInfo(data.CourseId)
+	if err != nil {
+		if err == database.ErrCourseNotFound {
+			return apiHandlers.SendErrCourseNotFound(c)
+		}
+
+		logging.UnexpectedError("EditCourseV1: failed to query database.GetCourseInfo: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	} else if courseInfo == nil {
+		return apiHandlers.SendErrCourseNotFound(c)
+	}
+
+	courseInfo, err = database.EditCourseInfo(&database.EditCourseInfoData{
+		CourseId:          data.CourseId,
+		CourseName:        data.CourseName,
+		CourseDescription: data.CourseDescription,
+	})
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &EditCourseResult{
+		CourseId:          courseInfo.CourseId,
+		CourseName:        courseInfo.CourseName,
+		CourseDescription: courseInfo.CourseDescription,
+		AddedBy:           courseInfo.AddedBy,
+		CreatedAt:         courseInfo.CreatedAt,
 	})
 }
 
