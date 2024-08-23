@@ -56,6 +56,7 @@ func CreateCourseV1(c *fiber.Ctx) error {
 		AddedBy:           userInfo.UserId,
 	})
 	if err != nil {
+		logging.UnexpectedError("CreateCourseV1: failed to query database.CreateNewCourse: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -117,6 +118,7 @@ func EditCourseV1(c *fiber.Ctx) error {
 		CourseDescription: data.CourseDescription,
 	})
 	if err != nil {
+		logging.UnexpectedError("EditCourseV1: failed to query database.EditCourseInfo: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -204,6 +206,7 @@ func SearchCourseV1(c *fiber.Ctx) error {
 		Limit:      data.Limit,
 	})
 	if err != nil {
+		logging.UnexpectedError("SearchCourseV1: failed to query database.SearchCourseByName: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -258,6 +261,7 @@ func GetCreatedCoursesV1(c *fiber.Ctx) error {
 
 	courses, err := database.GetCreatedCoursesByUser(data.UserId)
 	if err != nil {
+		logging.UnexpectedError("GetCreatedCoursesV1: failed to query database.GetCreatedCoursesByUser: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -312,6 +316,7 @@ func GetUserCoursesV1(c *fiber.Ctx) error {
 
 	courses, err := database.GetAllUserCourses(data.UserId)
 	if err != nil {
+		logging.UnexpectedError("GetUserCoursesV1: failed to query database.GetAllUserCourses: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -363,6 +368,7 @@ func GetCourseParticipantsV1(c *fiber.Ctx) error {
 
 	participants, err := database.GetAllParticipantsOfCourse(data.CourseId)
 	if err != nil {
+		logging.UnexpectedError("GetCourseParticipantsV1: failed to query database.GetAllParticipantsOfCourse: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
