@@ -41,3 +41,8 @@ func IsClientRIDValid(clientRID string) bool {
 	return len(clientRID) >= MinClientRIDLength &&
 		len(clientRID) <= MaxClientRIDLength
 }
+
+func IsPasswordValid(password string) bool {
+	return len(password) >= MinPasswordLength &&
+		len(password) <= MaxPasswordLength
+}

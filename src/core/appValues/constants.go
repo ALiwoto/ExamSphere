@@ -14,4 +14,7 @@ const (
 
 	MinClientRIDLength = 8
 	MaxClientRIDLength = 16
+
+	MinPasswordLength = 3
+	MaxPasswordLength = 32
 )

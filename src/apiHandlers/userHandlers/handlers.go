@@ -664,16 +664,18 @@ func ConfirmAccountV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	if confirmData.RawPassword != "" {
-		// all is fine, we can now update the password in the database
-		err = database.UpdateUserPassword(&database.UpdateUserPasswordData{
-			UserId:      userInfo.UserId,
-			RawPassword: confirmData.RawPassword,
-		})
-		if err != nil {
-			logging.Error("ConfirmAccountV1: failed to update password: ", err)
-			return apiHandlers.SendErrInternalServerError(c)
-		}
+	if appValues.IsPasswordValid(confirmData.RawPassword) {
+		return apiHandlers.SendErrInvalidInputPass(c)
+	}
+
+	// all is fine, we can now update the password in the database
+	err = database.UpdateUserPassword(&database.UpdateUserPasswordData{
+		UserId:      userInfo.UserId,
+		RawPassword: confirmData.RawPassword,
+	})
+	if err != nil {
+		logging.Error("ConfirmAccountV1: failed to update password: ", err)
+		return apiHandlers.SendErrInternalServerError(c)
 	}
 
 	err = database.ConfirmUserAccount(userInfo.UserId)
