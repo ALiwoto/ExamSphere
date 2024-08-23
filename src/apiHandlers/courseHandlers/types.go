@@ -40,6 +40,8 @@ type GetCourseInfoResult struct {
 
 type SearchCourseData struct {
 	CourseName string `json:"course_name"`
+	Offset     int    `json:"offset"`
+	Limit      int    `json:"limit"`
 } // @name SearchCourseData
 
 type SearchCourseResult struct {

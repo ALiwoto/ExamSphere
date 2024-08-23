@@ -135,12 +135,15 @@ func GetCourseByName(courseName string) (*CourseInfo, error) {
 }
 
 // SearchCourseByName searches for courses in the database.
-func SearchCourseByName(courseName string) ([]*CourseInfo, error) {
+func SearchCourseByName(data *SearchCourseByNameData) ([]*CourseInfo, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
 		`SELECT course_id, course_name, course_description, created_at, added_by
 			FROM course_info WHERE course_name ILIKE '%' || $1 || '%'
-			ORDER BY created_at DESC;`,
-		courseName,
+			ORDER BY created_at DESC
+			LIMIT $2 OFFSET $3;`,
+		data.CourseName,
+		data.Limit,
+		data.Offset,
 	)
 	if err != nil {
 		return nil, err

@@ -198,7 +198,11 @@ func SearchCourseV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	courses, err := database.SearchCourseByName(data.CourseName)
+	courses, err := database.SearchCourseByName(&database.SearchCourseByNameData{
+		CourseName: data.CourseName,
+		Offset:     data.Offset,
+		Limit:      data.Limit,
+	})
 	if err != nil {
 		return apiHandlers.SendErrInternalServerError(c)
 	}

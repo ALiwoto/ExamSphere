@@ -10,6 +10,12 @@ type CourseInfo struct {
 	AddedBy           string    `json:"added_by"`
 }
 
+type SearchCourseByNameData struct {
+	CourseName string `json:"course_name"`
+	Offset     int    `json:"offset"`
+	Limit      int    `json:"limit"`
+}
+
 type UserParticipatedCourse struct {
 	CourseId   int    `json:"course_id"`
 	CourseName string `json:"course_name"`
