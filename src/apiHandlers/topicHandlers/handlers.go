@@ -248,3 +248,42 @@ func GetAllUserTopicStatsV1(c *fiber.Ctx) error {
 		Stats:  sStats,
 	})
 }
+
+// DeleteTopicV1 godoc
+// @Summary Delete a topic
+// @Description Allows moderators to delete a topic. All courses and exams related to the topic will be deleted as well.
+// @ID deleteTopicV1
+// @Tags Topic
+// @Accept json
+// @Produce json
+// @Param id query int true "Topic ID"
+// @Param Authorization header string true "Authorization token"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=bool}
+// @Router /api/v1/topic/delete [delete]
+func DeleteTopicV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	} else if !userInfo.CanDeleteTopic() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	topicId := c.QueryInt("id")
+	if topicId == 0 {
+		return apiHandlers.SendErrParameterRequired(c, "id")
+	}
+
+	err := database.DeleteTopicById(topicId)
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, true)
+}

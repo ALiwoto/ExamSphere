@@ -905,6 +905,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/topic/delete": {
+            "delete": {
+                "description": "Allows moderators to delete a topic. All courses and exams related to the topic will be deleted as well.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Topic"
+                ],
+                "summary": "Delete a topic",
+                "operationId": "deleteTopicV1",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Topic ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/topic/info": {
             "get": {
                 "description": "Get topic info",
@@ -1666,7 +1718,9 @@ const docTemplate = `{
                 2149,
                 2150,
                 2151,
-                2152
+                2152,
+                2153,
+                2154
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1721,7 +1775,9 @@ const docTemplate = `{
                 "ErrCodeExamQuestionNotFound",
                 "ErrCodeInvalidAnswerOption",
                 "ErrCodeGivenExamNotFound",
-                "ErrCodeAccountAlreadyConfirmed"
+                "ErrCodeAccountAlreadyConfirmed",
+                "ErrCodeEmailAlreadyExists",
+                "ErrCodeTopicNameExists"
             ]
         },
         "AnswerQuestionData": {

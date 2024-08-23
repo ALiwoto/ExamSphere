@@ -85,6 +85,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Get("/topic/info", authProtection, topicHandlers.GetTopicInfoV1)
 	v1.Post("/topic/userTopicStat", authProtection, topicHandlers.GetUserTopicStatV1)
 	v1.Get("/topic/allUserTopicStats", authProtection, topicHandlers.GetAllUserTopicStatsV1)
+	v1.Delete("/topic/delete", authProtection, topicHandlers.DeleteTopicV1)
 
 	// course handlers
 	v1.Post("/course/create", authProtection, courseHandlers.CreateCourseV1)

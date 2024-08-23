@@ -145,6 +145,18 @@ func (i *UserInfo) CanCreateNewTopic() bool {
 		i.Role == appValues.UserRoleAdmin
 }
 
+// CanDeleteTopic returns true if and only if the current user has
+// the permission to delete a topic.
+func (i *UserInfo) CanDeleteTopic() bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	return i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
+}
+
 // CanSearchTopic returns true if and only if the current user has
 // the permission to search for a topic.
 func (i *UserInfo) CanSearchTopic() bool {

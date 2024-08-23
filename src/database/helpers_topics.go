@@ -186,3 +186,17 @@ func GetUserTopicStat(userId string, topicId int) (*UserTopicStat, error) {
 
 	return stat, nil
 }
+
+// DeleteTopicById deletes a topic from the database.
+func DeleteTopicById(topicId int) error {
+	_, err := DefaultContainer.db.Exec(context.Background(),
+		`DELETE FROM topic_info WHERE topic_id = $1`,
+		topicId,
+	)
+	if err != nil {
+		return err
+	}
+
+	topicsInfoMap.Delete(topicId)
+	return nil
+}

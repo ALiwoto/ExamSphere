@@ -54,6 +54,8 @@ definitions:
     - 2150
     - 2151
     - 2152
+    - 2153
+    - 2154
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -109,6 +111,8 @@ definitions:
     - ErrCodeInvalidAnswerOption
     - ErrCodeGivenExamNotFound
     - ErrCodeAccountAlreadyConfirmed
+    - ErrCodeEmailAlreadyExists
+    - ErrCodeTopicNameExists
   AnswerQuestionData:
     properties:
       answer_text:
@@ -1327,6 +1331,39 @@ paths:
                   $ref: '#/definitions/CreateNewTopicResult'
               type: object
       summary: Create a new topic
+      tags:
+      - Topic
+  /api/v1/topic/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Allows moderators to delete a topic. All courses and exams related
+        to the topic will be deleted as well.
+      operationId: deleteTopicV1
+      parameters:
+      - description: Topic ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  type: boolean
+              type: object
+      summary: Delete a topic
       tags:
       - Topic
   /api/v1/topic/info:
