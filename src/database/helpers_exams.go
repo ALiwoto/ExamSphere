@@ -68,6 +68,10 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 		return info, nil
 	}
 
+	info = &ExamInfo{
+		ExamId: examId,
+		mut:    &sync.RWMutex{},
+	}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT exam_id,
 			course_id, 
@@ -293,8 +297,20 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 		return info, nil
 	}
 
+	info = &ExamQuestion{
+		QuestionId: questionId,
+		ExamId:     examId,
+	}
 	err = DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT question_id, exam_id, question_title, description, option1, option2, option3, option4, created_at
+		`SELECT question_id, 
+			exam_id, 
+			question_title, 
+			description, 
+			option1, 
+			option2, 
+			option3, 
+			option4, 
+			created_at
 		FROM exam_question WHERE question_id = $1`,
 		questionId,
 	).Scan(
@@ -424,8 +440,18 @@ func GetGivenExam(userId string, examId int) (*GivenExam, error) {
 		return info, nil
 	}
 
+	info = &GivenExam{
+		UserId: userId,
+		ExamId: examId,
+	}
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT user_id, exam_id, price, added_by, scored_by, created_at, final_score
+		`SELECT user_id,
+			exam_id, 
+			price, 
+			added_by, 
+			scored_by, 
+			created_at, 
+			final_score
 		FROM given_exams WHERE user_id = $1 AND exam_id = $2`,
 		userId,
 		examId,
