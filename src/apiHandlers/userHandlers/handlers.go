@@ -518,10 +518,6 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	if IsInvalidPassword(newPasswordData.NewPassword) {
-		return apiHandlers.SendErrInvalidInputPass(c)
-	}
-
 	targetUserInfo, err := database.GetUserByUserId(newPasswordData.UserId)
 	if err != nil {
 		if err == database.ErrUserNotFound {
@@ -532,7 +528,9 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
-	if targetUserInfo.UserId == userInfo.UserId {
+	shouldSendEmail := targetUserInfo.UserId == userInfo.UserId
+
+	if shouldSendEmail {
 		// the user is trying to change their own password
 		// so they should get an email, click on the email link
 		// get redirected to the special change password page
@@ -568,8 +566,11 @@ func ChangePasswordV1(c *fiber.Ctx) error {
 			Lang:            newPasswordData.Lang,
 		})
 	}
+
 	if !userInfo.CanChangePassword(targetUserInfo) {
 		return apiHandlers.SendErrPermissionDenied(c)
+	} else if IsInvalidPassword(newPasswordData.NewPassword) {
+		return apiHandlers.SendErrInvalidInputPass(c)
 	}
 
 	err = database.UpdateUserPassword(&database.UpdateUserPasswordData{
