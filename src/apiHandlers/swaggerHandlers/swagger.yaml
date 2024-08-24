@@ -281,6 +281,10 @@ definitions:
       price:
         default: 0T
         type: string
+    required:
+    - course_id
+    - exam_description
+    - exam_title
     type: object
   CreateExamResult:
     properties:
@@ -722,6 +726,10 @@ definitions:
         type: integer
       search_query:
         type: string
+    required:
+    - limit
+    - offset
+    - search_query
     type: object
   SearchExamResult:
     properties:

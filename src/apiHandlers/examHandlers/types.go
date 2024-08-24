@@ -4,8 +4,8 @@ import "time"
 
 type CreateExamData struct {
 	CourseId        int    `json:"course_id" validate:"required"`
-	ExamTitle       string `json:"exam_title"`
-	ExamDescription string `json:"exam_description"`
+	ExamTitle       string `json:"exam_title" validate:"required"`
+	ExamDescription string `json:"exam_description" validate:"required"`
 	Price           string `json:"price" default:"0T"`
 	IsPublic        bool   `json:"is_public" default:"false"`
 	Duration        int    `json:"duration" default:"60"`
@@ -24,9 +24,9 @@ type CreateExamResult struct {
 } // @name CreateExamResult
 
 type SearchExamData struct {
-	SearchQuery string `json:"search_query"`
-	Offset      int    `json:"offset"`
-	Limit       int    `json:"limit"`
+	SearchQuery string `json:"search_query" validate:"required"`
+	Offset      int    `json:"offset" validate:"required"`
+	Limit       int    `json:"limit" validate:"required"`
 } // @name SearchExamData
 
 type SearchExamResult struct {

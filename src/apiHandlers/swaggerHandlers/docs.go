@@ -2171,6 +2171,11 @@ const docTemplate = `{
         },
         "CreateExamData": {
             "type": "object",
+            "required": [
+                "course_id",
+                "exam_description",
+                "exam_title"
+            ],
             "properties": {
                 "course_id": {
                     "type": "integer"
@@ -2865,6 +2870,11 @@ const docTemplate = `{
         },
         "SearchExamData": {
             "type": "object",
+            "required": [
+                "limit",
+                "offset",
+                "search_query"
+            ],
             "properties": {
                 "limit": {
                     "type": "integer"
