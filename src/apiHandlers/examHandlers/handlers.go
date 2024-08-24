@@ -174,6 +174,7 @@ func SearchExamV1(c *fiber.Ctx) error {
 		PublicOnly:  userInfo.CanGetAllExams(),
 	})
 	if err != nil {
+		logging.UnexpectedError("SearchExam: Failed to search exams:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 

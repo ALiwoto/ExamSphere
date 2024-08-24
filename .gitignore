@@ -28,3 +28,9 @@ config.ini
 ui/*
 !ui/.gitkeep
 ExamSphere
+
+logs/errors/*
+logs/panics/*
+!logs/.gitkeep
+!logs/errors/.gitkeep
+!logs/panics/.gitkeep

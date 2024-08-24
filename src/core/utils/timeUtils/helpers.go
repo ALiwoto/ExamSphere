@@ -21,16 +21,14 @@ func GenerateCurrentDateTime() string {
 	return str
 }
 
-// GenerateSuitableDateTime will format of the date time to dd-MM-yyyy HH-mm-ss
+// GenerateSuitableDateTime will format of the date time to dd-MM-yyyy.
+// This function is used for generating a suitable date time for file names.
 func GenerateSuitableDateTime() string {
 	t := time.Now()
 
 	str := stringUtils.MakeSureNum(t.Day(), 2) + "-"
 	str += stringUtils.MakeSureNum(int(t.Month()), 2) + "-"
-	str += stringUtils.MakeSureNum(t.Year(), 4) + "--"
-	str += stringUtils.MakeSureNum(t.Hour(), 2) + "-"
-	str += stringUtils.MakeSureNum(t.Minute(), 2) + "-"
-	str += stringUtils.MakeSureNum(t.Second(), 2)
+	str += stringUtils.MakeSureNum(t.Year(), 4)
 
 	return str
 }

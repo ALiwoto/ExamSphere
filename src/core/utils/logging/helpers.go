@@ -5,6 +5,8 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"runtime/debug"
+	"time"
 
 	"ExamSphere/src/core/utils/timeUtils"
 
@@ -68,7 +70,14 @@ func UnexpectedError(args ...interface{}) {
 	} else {
 		log.Println("[UNEXPECTED ERROR]: ", err)
 	}
-	_ = os.WriteFile(GetLogErrorPath(), []byte(err), fs.ModePerm)
+
+	errorDetails := fmt.Sprintf(
+		"[%s]: %v\nStack Trace: %s",
+		time.Now().Format(time.RFC3339),
+		err,
+		debug.Stack(),
+	)
+	_ = os.WriteFile(GetErrorLogFilePath(), []byte(errorDetails), fs.ModePerm)
 }
 
 // UnexpectedPanic works like Error function and logs the error details to a
@@ -80,7 +89,14 @@ func UnexpectedPanic(args ...interface{}) {
 	} else {
 		log.Println("[UNEXPECTED PANIC]: ", err)
 	}
-	_ = os.WriteFile(GetLogPanicPath(), []byte(err), fs.ModePerm)
+
+	panicDetails := fmt.Sprintf(
+		"[%s]: %v\nStack Trace: %s",
+		time.Now().Format(time.RFC3339),
+		err,
+		debug.Stack(),
+	)
+	_ = os.WriteFile(GetPanicLogPath(), []byte(panicDetails), fs.ModePerm)
 }
 
 func Info(args ...interface{}) {
@@ -123,23 +139,13 @@ func Fatal(args ...interface{}) {
 	}
 }
 
-func LogPanic(details []byte) {
-	p := string(os.PathSeparator)
-	path := "logs" + p + "panics/" +
-		"panic_" + timeUtils.GenerateSuitableDateTime() + ".log"
-	err := os.WriteFile(path, details, fs.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func GetLogErrorPath() string {
+func GetErrorLogFilePath() string {
 	p := string(os.PathSeparator)
 	return "logs" + p + "errors/" +
 		"error_" + timeUtils.GenerateSuitableDateTime() + ".log"
 }
 
-func GetLogPanicPath() string {
+func GetPanicLogPath() string {
 	p := string(os.PathSeparator)
 	return "logs" + p + "panics/" +
 		"panic_" + timeUtils.GenerateSuitableDateTime() + ".log"
