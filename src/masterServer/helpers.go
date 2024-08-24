@@ -99,6 +99,7 @@ func LoadHandlersV1(app *fiber.App) {
 	// exam handlers
 	v1.Post("/exam/create", authProtection, examHandlers.CreateExamV1)
 	v1.Get("/exam/info", authProtection, examHandlers.GetExamInfoV1)
+	v1.Post("/exam/edit", authProtection, examHandlers.EditExamV1)
 	v1.Post("/exam/questions", authProtection, examHandlers.GetExamQuestionsV1)
 	v1.Post("/exam/answer", authProtection, examHandlers.AnswerExamQuestionV1)
 	v1.Post("/exam/setScore", authProtection, examHandlers.SetScoreV1)

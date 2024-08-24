@@ -35,6 +35,17 @@ type NewExamData struct {
 	ExamDate        time.Time `json:"exam_date"`
 }
 
+type EditExamInfoData struct {
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	IsPublic        bool      `json:"is_public"`
+	Duration        int       `json:"duration"`
+	ExamDate        time.Time `json:"exam_date"`
+}
+
 // ExamQuestion is a struct that represents the information of an exam question.
 type ExamQuestion struct {
 	QuestionId    int     `json:"question_id"`

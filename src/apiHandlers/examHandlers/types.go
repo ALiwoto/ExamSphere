@@ -23,6 +23,30 @@ type CreateExamResult struct {
 	IsPublic  bool      `json:"is_public"`
 } // @name CreateExamResult
 
+type EditExamData struct {
+	ExamId          int    `json:"exam_id"`
+	CourseId        int    `json:"course_id"`
+	ExamTitle       string `json:"exam_title"`
+	ExamDescription string `json:"exam_description"`
+	Price           string `json:"price" default:"0T"`
+	IsPublic        bool   `json:"is_public" default:"false"`
+	Duration        int    `json:"duration" default:"60"`
+	ExamDate        int64  `json:"exam_date"`
+} // @name EditExamData
+
+type EditExamResult struct {
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExamDate        time.Time `json:"exam_date"`
+	Duration        int       `json:"duration"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
+} // @name EditExamResult
+
 type GetExamInfoResult struct {
 	ExamId          int       `json:"exam_id"`
 	CourseId        int       `json:"course_id"`

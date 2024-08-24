@@ -106,6 +106,49 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 	return info, nil
 }
 
+// EditExamInfo edits the information of an exam.
+func EditExamInfo(data *EditExamInfoData) (*ExamInfo, error) {
+	info, err := GetExamInfo(data.ExamId)
+	if err != nil {
+		return nil, err
+	} else if info == nil {
+		return nil, ErrExamNotFound
+	}
+
+	data.ExamTitle = strings.TrimSpace(data.ExamTitle)
+	data.ExamDescription = strings.TrimSpace(data.ExamDescription)
+
+	info.ExamTitle = data.ExamTitle
+	info.ExamDescription = data.ExamDescription
+	info.Price = data.Price
+	info.IsPublic = data.IsPublic
+	info.Duration = data.Duration
+	info.ExamDate = data.ExamDate
+
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`UPDATE exam_info SET
+			exam_title = $1,
+			exam_description = $2,
+			price = $3,
+			is_public = $4,
+			duration = $5,
+			exam_date = $6
+		WHERE exam_id = $7`,
+		info.ExamTitle,
+		info.ExamDescription,
+		info.Price,
+		info.IsPublic,
+		info.Duration,
+		info.ExamDate,
+		info.ExamId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return info, nil
+}
+
 // GetExamInfoOrNil gets the exam info or nil if not found.
 func GetExamInfoOrNil(examId int) *ExamInfo {
 	info, err := GetExamInfo(examId)

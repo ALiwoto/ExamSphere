@@ -132,6 +132,80 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 	})
 }
 
+// EditExamV1 godoc
+// @Summary Edit an exam
+// @Description Allows the user to edit an exam.
+// @ID editExamV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body EditExamData true "Data needed to edit an exam"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=EditExamResult}
+// @Router /api/v1/exam/edit [post]
+func EditExamV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	} else if !userInfo.CanTryToEditExam() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	data := &EditExamData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if !data.IsValid() {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	examInfo := database.GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return apiHandlers.SendErrExamNotFound(c)
+	}
+
+	if !userInfo.CanEditExam(examInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	examInfo, err := database.EditExamInfo(&database.EditExamInfoData{
+		ExamId:          data.ExamId,
+		CourseId:        data.CourseId,
+		ExamTitle:       data.ExamTitle,
+		ExamDescription: data.ExamDescription,
+		Price:           data.Price,
+		IsPublic:        data.IsPublic,
+		Duration:        data.Duration,
+		ExamDate:        time.Unix(data.ExamDate, 0),
+	})
+
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &EditExamResult{
+		ExamId:          examInfo.ExamId,
+		CourseId:        examInfo.CourseId,
+		ExamTitle:       examInfo.ExamTitle,
+		ExamDescription: examInfo.ExamDescription,
+		Price:           examInfo.Price,
+		CreatedAt:       examInfo.CreatedAt,
+		ExamDate:        examInfo.ExamDate,
+		Duration:        examInfo.Duration,
+		CreatedBy:       examInfo.CreatedBy,
+		IsPublic:        examInfo.IsPublic,
+	})
+}
+
 // GetExamQuestionsV1 godoc
 // @Summary Get questions of an exam
 // @Description Allows the user to get questions of an exam.

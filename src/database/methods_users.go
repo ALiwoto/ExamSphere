@@ -252,6 +252,30 @@ func (i *UserInfo) CanForceScoreExam() bool {
 		i.Role == appValues.UserRoleTeacher
 }
 
+// CanTryToEditExam returns true if and only if the current user has
+// the permission to *try* to edit an exam.
+func (i *UserInfo) CanTryToEditExam() bool {
+	return i != nil && i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin ||
+		i.Role == appValues.UserRoleTeacher
+}
+
+// CanEditExam returns true if and only if the current user has
+// the permission to edit an exam.
+func (i *UserInfo) CanEditExam(targetExam *ExamInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.UserId == targetExam.CreatedBy {
+		return true
+	}
+
+	return i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
+}
+
 //---------------------------------------------------------
 
 func (d *UpdateUserData) IsEmpty() bool {
