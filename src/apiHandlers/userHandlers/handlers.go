@@ -620,7 +620,7 @@ func ConfirmChangePasswordV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
-	if !IsInvalidPassword(confirmData.NewPassword) {
+	if IsInvalidPassword(confirmData.NewPassword) {
 		return apiHandlers.SendErrInvalidInputPass(c)
 	}
 
