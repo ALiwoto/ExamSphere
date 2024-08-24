@@ -2,6 +2,11 @@
 
 This folder contains the SQL scripts to create the database schema and populate the tables with data.
 
+## WARNINGS
+  - **The scripts are written for PostgreSQL. They may not work for other databases.**
+  - **Do NOT run these migrations directly yourself. The application should run them automatically if necessary.**
+
+
 ## Run the migrations
 Run migrations from 1 to 3 in the given order to create the database schema.
 

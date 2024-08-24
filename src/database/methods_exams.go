@@ -66,7 +66,11 @@ func (e *ExamInfo) HasExamFinished() bool {
 }
 
 func (e *ExamInfo) ExamStartsIn() int {
-	return int(time.Until(e.ExamDate).Minutes())
+	until := time.Until(e.ExamDate)
+	if until < 0 {
+		return 0
+	}
+	return int(until.Minutes())
 }
 
 func (e *ExamInfo) ExamFinishesIn() int {

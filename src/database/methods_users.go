@@ -62,6 +62,13 @@ func (i *UserInfo) CanSearchUser() bool {
 	return i.Role == appValues.UserRoleOwner || i.Role == appValues.UserRoleAdmin
 }
 
+// IsAdminOrOwner returns true if and only if the current user is
+// an admin or owner.
+func (i *UserInfo) IsAdminOrOwner() bool {
+	return i != nil && (i.Role == appValues.UserRoleAdmin ||
+		i.Role == appValues.UserRoleOwner)
+}
+
 // CanGetUserInfo returns true if and only if the current user has
 // the permission to get information about the specified user.
 func (i *UserInfo) CanGetUserInfo(targetUser *UserInfo) bool {
@@ -192,6 +199,25 @@ func (i *UserInfo) CanCreateNewExam() bool {
 	return i != nil && i.Role == appValues.UserRoleAdmin ||
 		i.Role == appValues.UserRoleOwner ||
 		i.Role == appValues.UserRoleTeacher
+}
+
+// CanAddOthersToExam returns true if and only if the current user has
+// the permission to add others to the specified exam.
+// Owners, admins, can add others to exams.
+// Teachers can add others to exams if and only if they are the creator
+// of the exam.
+func (i *UserInfo) CanAddOthersToExam(examInfo *ExamInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.UserId == examInfo.CreatedBy {
+		return true
+	}
+
+	return i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
 }
 
 // CanGetExamInfo returns true if and only if the current user has

@@ -701,6 +701,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exam/participate": {
+            "post": {
+                "description": "Allows the user to participate in an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Participate in an exam",
+                "operationId": "participateExamV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to participate in an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ParticipateExamData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/ParticipateExamResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/questions": {
             "post": {
                 "description": "Allows the user to get questions of an exam.",
@@ -2580,6 +2634,10 @@ const docTemplate = `{
         "GetExamInfoResult": {
             "type": "object",
             "properties": {
+                "can_participate": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "course_id": {
                     "type": "integer"
                 },
@@ -2605,10 +2663,16 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "finishes_in": {
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                 },
                 "has_finished": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
+                },
+                "has_participated": {
+                    "type": "boolean",
+                    "default": false
                 },
                 "has_started": {
                     "type": "boolean"
@@ -2620,10 +2684,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "question_count": {
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                 },
                 "starts_in": {
-                    "type": "integer"
+                    "type": "integer",
+                    "default": 0
                 }
             }
         },
@@ -2837,6 +2903,55 @@ const docTemplate = `{
                 },
                 "role": {
                     "$ref": "#/definitions/UserRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ParticipateExamData": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "description": "ExamId is the exam the user is trying to participate in.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price is the price of the exam that user has already paid.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserId is the user who is trying to participate in the exam.\nIf the user is trying to participate in the exam themselves,\nthis field should be set to their own user id.",
+                    "type": "string"
+                }
+            }
+        },
+        "ParticipateExamResult": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "finishes_in": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "price": {
+                    "type": "string"
+                },
+                "question_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "starts_in": {
+                    "type": "integer",
+                    "default": 0
                 },
                 "user_id": {
                     "type": "string"

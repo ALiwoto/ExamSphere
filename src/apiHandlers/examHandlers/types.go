@@ -82,10 +82,12 @@ type GetExamInfoResult struct {
 	CreatedBy       string    `json:"created_by"`
 	IsPublic        bool      `json:"is_public"`
 	HasStarted      bool      `json:"has_started"`
-	HasFinished     bool      `json:"has_finished"`
-	StartsIn        int       `json:"starts_in"`
-	FinishesIn      int       `json:"finishes_in"`
-	QuestionCount   int       `json:"question_count"`
+	HasParticipated bool      `json:"has_participated" default:"false"`
+	CanParticipate  bool      `json:"can_participate" default:"false"`
+	HasFinished     bool      `json:"has_finished" default:"false"`
+	StartsIn        int       `json:"starts_in" default:"0"`
+	FinishesIn      int       `json:"finishes_in" default:"0"`
+	QuestionCount   int       `json:"question_count" default:"0"`
 } // @name GetExamInfoResult
 
 type GetExamQuestionsData struct {
@@ -115,6 +117,30 @@ type AnsweredQuestionInfo struct {
 	SecondsTaken int     `json:"seconds_taken"`
 	AnswerText   *string `json:"answer"`
 } // @name AnsweredQuestionInfo
+
+type ParticipateExamData struct {
+	// UserId is the user who is trying to participate in the exam.
+	// If the user is trying to participate in the exam themselves,
+	// this field should be set to their own user id.
+	UserId string `json:"user_id"`
+
+	// ExamId is the exam the user is trying to participate in.
+	ExamId int `json:"exam_id"`
+
+	// Price is the price of the exam that user has already paid.
+	Price string `json:"price"`
+} // @name ParticipateExamData
+
+type ParticipateExamResult struct {
+	ExamId        int       `json:"exam_id"`
+	UserId        string    `json:"user_id"`
+	Price         string    `json:"price"`
+	AddedBy       *string   `json:"added_by"`
+	CreatedAt     time.Time `json:"created_at"`
+	StartsIn      int       `json:"starts_in" default:"0"`
+	FinishesIn    int       `json:"finishes_in" default:"0"`
+	QuestionCount int       `json:"question_count" default:"0"`
+} // @name ParticipateExamResult
 
 type AnswerQuestionData struct {
 	ExamId       int     `json:"exam_id"`

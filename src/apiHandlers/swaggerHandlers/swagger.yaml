@@ -532,6 +532,9 @@ definitions:
     type: object
   GetExamInfoResult:
     properties:
+      can_participate:
+        default: false
+        type: boolean
       course_id:
         type: integer
       created_at:
@@ -549,8 +552,13 @@ definitions:
       exam_title:
         type: string
       finishes_in:
+        default: 0
         type: integer
       has_finished:
+        default: false
+        type: boolean
+      has_participated:
+        default: false
         type: boolean
       has_started:
         type: boolean
@@ -559,8 +567,10 @@ definitions:
       price:
         type: string
       question_count:
+        default: 0
         type: integer
       starts_in:
+        default: 0
         type: integer
     type: object
   GetExamQuestionsData:
@@ -699,6 +709,43 @@ definitions:
         type: string
       role:
         $ref: '#/definitions/UserRole'
+      user_id:
+        type: string
+    type: object
+  ParticipateExamData:
+    properties:
+      exam_id:
+        description: ExamId is the exam the user is trying to participate in.
+        type: integer
+      price:
+        description: Price is the price of the exam that user has already paid.
+        type: string
+      user_id:
+        description: |-
+          UserId is the user who is trying to participate in the exam.
+          If the user is trying to participate in the exam themselves,
+          this field should be set to their own user id.
+        type: string
+    type: object
+  ParticipateExamResult:
+    properties:
+      added_by:
+        type: string
+      created_at:
+        type: string
+      exam_id:
+        type: integer
+      finishes_in:
+        default: 0
+        type: integer
+      price:
+        type: string
+      question_count:
+        default: 0
+        type: integer
+      starts_in:
+        default: 0
+        type: integer
       user_id:
         type: string
     type: object
@@ -1342,6 +1389,39 @@ paths:
                   $ref: '#/definitions/GetExamInfoResult'
               type: object
       summary: Get information about an exam
+      tags:
+      - Exam
+  /api/v1/exam/participate:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to participate in an exam.
+      operationId: participateExamV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to participate in an exam
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/ParticipateExamData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/ParticipateExamResult'
+              type: object
+      summary: Participate in an exam
       tags:
       - Exam
   /api/v1/exam/questions:

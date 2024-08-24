@@ -124,7 +124,9 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 		Duration:        examInfo.Duration,
 		CreatedBy:       examInfo.CreatedBy,
 		IsPublic:        examInfo.IsPublic,
+		HasParticipated: database.HasParticipatedInExam(userInfo.UserId, examId),
 		HasStarted:      examInfo.HasExamStarted(),
+		CanParticipate:  database.CanParticipateInExamOrFalse(userInfo.UserId, examId),
 		HasFinished:     examInfo.HasExamFinished(),
 		StartsIn:        examInfo.ExamStartsIn(),
 		FinishesIn:      examInfo.ExamFinishesIn(),
@@ -171,7 +173,7 @@ func SearchExamV1(c *fiber.Ctx) error {
 		SearchQuery: data.SearchQuery,
 		Offset:      data.Offset,
 		Limit:       data.Limit,
-		PublicOnly:  userInfo.CanGetAllExams(),
+		PublicOnly:  !userInfo.CanGetAllExams(),
 	})
 	if err != nil {
 		logging.UnexpectedError("SearchExam: Failed to search exams:", err)
@@ -270,6 +272,96 @@ func EditExamV1(c *fiber.Ctx) error {
 		Duration:        examInfo.Duration,
 		CreatedBy:       examInfo.CreatedBy,
 		IsPublic:        examInfo.IsPublic,
+	})
+}
+
+// ParticipateExamV1 godoc
+// @Summary Participate in an exam
+// @Description Allows the user to participate in an exam.
+// @ID participateExamV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body ParticipateExamData true "Data needed to participate in an exam"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=ParticipateExamResult}
+// @Router /api/v1/exam/participate [post]
+func ParticipateExamV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &ParticipateExamData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.ExamId == 0 {
+		return apiHandlers.SendErrParameterRequired(c, "exam_id")
+	}
+
+	examInfo := database.GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return apiHandlers.SendErrExamNotFound(c)
+	}
+
+	if data.UserId != userInfo.UserId &&
+		!userInfo.CanAddOthersToExam(examInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	targetUser, err := database.GetUserByUserId(data.UserId)
+	if err != nil {
+		if err == database.ErrUserNotFound {
+			return apiHandlers.SendErrInvalidUserID(c)
+		}
+		logging.UnexpectedError("ParticipateExam: Failed to get user info:", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	} else if targetUser == nil {
+		return apiHandlers.SendErrInvalidUserID(c)
+	} else if targetUser.IsAdminOrOwner() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	if !database.CanParticipateInExamOrFalse(userInfo.UserId, data.ExamId) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	} else if examInfo.HasExamFinished() {
+		return apiHandlers.SendErrExamFinished(c)
+	}
+
+	var addedBy *string
+	if userInfo.UserId != data.UserId {
+		addedBy = ssg.Clone(&userInfo.UserId)
+	}
+
+	givenExam, err := database.AddUserInExam(&database.NewGivenExamData{
+		UserId:  data.UserId,
+		ExamId:  data.ExamId,
+		Price:   examInfo.Price,
+		AddedBy: addedBy,
+	})
+	if err != nil {
+		logging.UnexpectedError("ParticipateExam: Failed to add user in exam:", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &ParticipateExamResult{
+		ExamId:        givenExam.ExamId,
+		UserId:        givenExam.UserId,
+		Price:         givenExam.Price,
+		AddedBy:       ssg.Clone(givenExam.AddedBy),
+		CreatedAt:     givenExam.CreatedAt,
+		StartsIn:      examInfo.ExamStartsIn(),
+		FinishesIn:    examInfo.ExamFinishesIn(),
+		QuestionCount: database.GetExamQuestionsCount(data.ExamId),
 	})
 }
 

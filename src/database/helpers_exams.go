@@ -488,6 +488,18 @@ func CanParticipateInExam(userId string, examId int) (bool, error) {
 	return canParticipate, nil
 }
 
+// CanParticipateInExamOrFalse returns true if the user can participate in the exam.
+// It will also returns false if there is an error.
+func CanParticipateInExamOrFalse(userId string, examId int) bool {
+	canParticipate, err := CanParticipateInExam(userId, examId)
+	if err != nil {
+		logging.UnexpectedError("CanParticipateInExamOrFalse: failed to check participation:", err)
+		return false
+	}
+
+	return canParticipate
+}
+
 // GetGivenExam gets the information of a given exam.
 func GetGivenExam(userId string, examId int) (*GivenExam, error) {
 	uniqueId := userId + KeySepChar + ssg.ToBase10(examId)
