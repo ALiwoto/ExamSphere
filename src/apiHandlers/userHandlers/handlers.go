@@ -290,7 +290,7 @@ func SearchUserV1(c *fiber.Ctx) error {
 	searchUserData := &SearchUserData{}
 	if err := c.BodyParser(searchUserData); err != nil {
 		return apiHandlers.SendErrInvalidBodyData(c)
-	} else if searchUserData.Query == "" || searchUserData.Limit <= 0 {
+	} else if searchUserData.Limit <= 0 {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
 
