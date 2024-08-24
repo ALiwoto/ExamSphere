@@ -2698,6 +2698,12 @@ const docTemplate = `{
             "properties": {
                 "exam_id": {
                     "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
                 }
             }
         },
