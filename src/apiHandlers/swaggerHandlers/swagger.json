@@ -533,6 +533,60 @@
                 }
             }
         },
+        "/api/v1/exam/edit": {
+            "post": {
+                "description": "Allows the user to edit an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Edit an exam",
+                "operationId": "editExamV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to edit an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EditExamData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/EditExamResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/givenExam": {
             "post": {
                 "description": "Allows the user to get information about an exam that a user has participated in.",
@@ -2210,6 +2264,73 @@
                     "type": "string"
                 },
                 "created_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "EditExamData": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer",
+                    "default": 60
+                },
+                "exam_date": {
+                    "type": "integer"
+                },
+                "exam_description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "is_public": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "price": {
+                    "type": "string",
+                    "default": "0T"
+                }
+            }
+        },
+        "EditExamResult": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "exam_date": {
+                    "type": "string"
+                },
+                "exam_description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "is_public": {
+                    "type": "boolean"
+                },
+                "price": {
                     "type": "string"
                 }
             }

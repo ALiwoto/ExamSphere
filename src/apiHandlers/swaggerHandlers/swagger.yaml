@@ -367,6 +367,51 @@ definitions:
       created_at:
         type: string
     type: object
+  EditExamData:
+    properties:
+      course_id:
+        type: integer
+      duration:
+        default: 60
+        type: integer
+      exam_date:
+        type: integer
+      exam_description:
+        type: string
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      is_public:
+        default: false
+        type: boolean
+      price:
+        default: 0T
+        type: string
+    type: object
+  EditExamResult:
+    properties:
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        type: string
+      duration:
+        type: integer
+      exam_date:
+        type: string
+      exam_description:
+        type: string
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      is_public:
+        type: boolean
+      price:
+        type: string
+    type: object
   EditUserData:
     properties:
       email:
@@ -1148,6 +1193,39 @@ paths:
                   $ref: '#/definitions/CreateExamResult'
               type: object
       summary: Create a new exam
+      tags:
+      - Exam
+  /api/v1/exam/edit:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to edit an exam.
+      operationId: editExamV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to edit an exam
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/EditExamData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/EditExamResult'
+              type: object
+      summary: Edit an exam
       tags:
       - Exam
   /api/v1/exam/givenExam:
