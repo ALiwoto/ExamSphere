@@ -398,8 +398,8 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 }
 
 // GetExamQuestions gets all questions of an exam from the database.
-func GetExamQuestions(examId int) ([]*ExamQuestion, error) {
-	examInfo, err := GetExamInfo(examId)
+func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
+	examInfo, err := GetExamInfo(data.ExamId)
 	if err != nil {
 		return nil, err
 	} else if examInfo == nil {
@@ -422,8 +422,12 @@ func GetExamQuestions(examId int) ([]*ExamQuestion, error) {
 			option3, 
 			option4, 
 			created_at
-		FROM exam_question WHERE exam_id = $1`,
-		examId,
+		FROM exam_question WHERE exam_id = $1
+		ORDER BY question_id
+		LIMIT $2 OFFSET $3`,
+		data.ExamId,
+		data.Limit,
+		data.Offset,
 	)
 	if err != nil {
 		return nil, err

@@ -48,6 +48,12 @@ type SearchedExamInfo struct {
 	IsPublic        bool      `json:"is_public"`
 }
 
+type GetExamQuestionsData struct {
+	ExamId int `json:"exam_id"`
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
+
 // NewExamData is a struct that represents the data needed to create a new exam.
 type NewExamData struct {
 	CourseId        int       `json:"course_id"`

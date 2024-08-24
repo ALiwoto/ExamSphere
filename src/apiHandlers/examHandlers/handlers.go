@@ -412,7 +412,11 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrNotParticipatedInExam(c)
 	}
 
-	questions, err := database.GetExamQuestions(data.ExamId)
+	questions, err := database.GetExamQuestions(&database.GetExamQuestionsData{
+		ExamId: data.ExamId,
+		Offset: data.Offset,
+		Limit:  data.Limit,
+	})
 	if err != nil && err != pgx.ErrNoRows {
 		return apiHandlers.SendErrInternalServerError(c)
 	}

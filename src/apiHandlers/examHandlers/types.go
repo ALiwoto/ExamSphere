@@ -92,6 +92,8 @@ type GetExamInfoResult struct {
 
 type GetExamQuestionsData struct {
 	ExamId int `json:"exam_id"`
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
 } // @name GetExamQuestionsData
 
 type GetExamQuestionsResult struct {
