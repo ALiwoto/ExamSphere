@@ -18,10 +18,10 @@ var (
 
 var (
 	PasswordChangeTemplateMap = map[string]string{
-		"en": PasswordChangeEmailTemplate_en,
+		"en": fixTemplateFormatting(PasswordChangeEmailTemplate_en),
 	}
 
 	ConfirmAccountTemplateMap = map[string]string{
-		"en": ConfirmAccountEmailTemplate_en,
+		"en": fixTemplateFormatting(ConfirmAccountEmailTemplate_en),
 	}
 )

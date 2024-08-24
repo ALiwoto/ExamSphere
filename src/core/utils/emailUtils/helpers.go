@@ -4,6 +4,7 @@ import (
 	"ExamSphere/src/core/appConfig"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/ALiwoto/ssg/ssg"
 	"github.com/jordan-wright/email"
@@ -118,4 +119,10 @@ func DecodeSpecificPassword(encodedPassword string) (string, error) {
 	}
 
 	return passResult, nil
+}
+
+func fixTemplateFormatting(template string) string {
+	template = strings.ReplaceAll(template, "100%", "100%%")
+
+	return template
 }
