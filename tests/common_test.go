@@ -29,7 +29,7 @@ func TestDateJson(t *testing.T) {
 		t.Error(err)
 	}
 
-	if myValue.DateField != myValue2.DateField {
+	if myValue.DateField.Format(time.Stamp) != myValue2.DateField.Format(time.Stamp) {
 		t.Errorf("Expected %s, got %s", myValue.DateField, myValue2.DateField)
 	}
 }
