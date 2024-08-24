@@ -127,7 +127,7 @@ func SearchExam(data *SearchExamsData) (*SearchExamResult, error) {
 			duration, 
 			created_by, 
 			is_public
-		FROM search_exams_view
+		FROM exam_info
 		WHERE exam_title ILIKE '%' || $1 || '%'`+publicWhere+`
 		ORDER BY exam_date DESC
 		LIMIT $2 OFFSET $3`,

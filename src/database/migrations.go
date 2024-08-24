@@ -39,10 +39,12 @@ func migrateV3(tx pgx.Tx, container *DatabaseContainer) error {
 	return nil
 }
 
-// func migrateV2(pgx.Tx, *DatabaseContainer) error {
-// 	return nil
-// }
+func migrateV4(tx pgx.Tx, container *DatabaseContainer) error {
+	_, err := tx.Exec(context.Background(),
+		dbScripts.Migration4Str)
+	if err != nil {
+		return nil
+	}
 
-// func migrateV3(pgx.Tx, *DatabaseContainer) error {
-// 	return nil
-// }
+	return nil
+}
