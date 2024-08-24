@@ -571,3 +571,11 @@ func SendErrTopicNotFound(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrBodyTooLong(c *fiber.Ctx) error {
+	return SendError(fiber.StatusRequestEntityTooLarge, c, &EndpointError{
+		ErrorCode: ErrCodeBodyTooLong,
+		Message:   ErrBodyTooLong,
+		Origin:    c.Path(),
+	})
+}

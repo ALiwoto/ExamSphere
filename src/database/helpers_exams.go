@@ -110,6 +110,63 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 	return info, nil
 }
 
+// SearchExam searches for exams in the database.
+func SearchExam(data *SearchExamsData) (*SearchExamResult, error) {
+	publicWhere := ""
+	if data.PublicOnly {
+		publicWhere = " AND is_public = true "
+	}
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT exam_id, 
+			course_id, 
+			exam_title, 
+			exam_description, 
+			price, 
+			created_at, 
+			exam_date, 
+			duration, 
+			created_by, 
+			is_public
+		FROM search_exams_view
+		WHERE exam_title ILIKE '%' || $1 || '%'`+publicWhere+`
+		ORDER BY exam_date DESC
+		LIMIT $2 OFFSET $3`,
+		"%"+data.SearchQuery+"%",
+		data.Limit,
+		data.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*SearchedExamInfo
+	for rows.Next() {
+		info := &SearchedExamInfo{}
+		err = rows.Scan(
+			&info.ExamId,
+			&info.CourseId,
+			&info.ExamTitle,
+			&info.ExamDescription,
+			&info.Price,
+			&info.CreatedAt,
+			&info.ExamDate,
+			&info.Duration,
+			&info.CreatedBy,
+			&info.IsPublic,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return &SearchExamResult{
+		Exams: exams,
+	}, nil
+}
+
 // EditExamInfo edits the information of an exam.
 func EditExamInfo(data *EditExamInfoData) (*ExamInfo, error) {
 	info, err := GetExamInfo(data.ExamId)

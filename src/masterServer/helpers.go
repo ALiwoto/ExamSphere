@@ -30,6 +30,9 @@ func RunServer() error {
 	appValues.ServerEngine = fiber.New(fiber.Config{
 		ProxyHeader:   appConfig.GetIPProxyHeader(),
 		CaseSensitive: CaseSensitive,
+
+		// set body limit to 2MB
+		BodyLimit: 2 * 1024 * 1024,
 	})
 
 	if appConfig.IsDebug() {
@@ -99,6 +102,7 @@ func LoadHandlersV1(app *fiber.App) {
 	// exam handlers
 	v1.Post("/exam/create", authProtection, examHandlers.CreateExamV1)
 	v1.Get("/exam/info", authProtection, examHandlers.GetExamInfoV1)
+	v1.Post("/exam/search", authProtection, examHandlers.SearchExamV1)
 	v1.Post("/exam/edit", authProtection, examHandlers.EditExamV1)
 	v1.Post("/exam/questions", authProtection, examHandlers.GetExamQuestionsV1)
 	v1.Post("/exam/answer", authProtection, examHandlers.AnswerExamQuestionV1)

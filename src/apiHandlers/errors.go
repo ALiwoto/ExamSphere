@@ -58,6 +58,7 @@ const (
 	ErrEmailAlreadyExists            = "Email already exists"
 	ErrTopicNameExists               = "A topic with this name already exists"
 	ErrTopicNotFound                 = "Topic not found"
+	ErrBodyTooLong                   = "The provided body is too long"
 )
 
 // error codes
@@ -118,4 +119,5 @@ const (
 	ErrCodeEmailAlreadyExists
 	ErrCodeTopicNameExists
 	ErrCodeTopicNotFound
+	ErrCodeBodyTooLong
 )

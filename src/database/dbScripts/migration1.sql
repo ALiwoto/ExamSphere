@@ -295,7 +295,7 @@ FROM
 WHERE 
     ei.exam_date >= CURRENT_TIMESTAMP AND ei.is_public = TRUE
 ORDER BY 
-    ei.exam_date ASC;
+    ei.exam_date DESC;
 
 -- is_started returns true if the exam is started and false otherwise
 CREATE OR REPLACE FUNCTION has_exam_started(p_exam_id INTEGER)

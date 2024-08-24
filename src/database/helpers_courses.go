@@ -154,43 +154,24 @@ func GetCourseByName(courseName string) (*CourseInfo, error) {
 
 // SearchCourseByName searches for courses in the database.
 func SearchCourseByName(data *SearchCourseByNameData) ([]*CourseInfo, error) {
-	var rows pgx.Rows
-	var err error
-
 	if data.Limit == 0 {
 		data.Limit = DefaultPaginationLimit
 	}
 
-	if data.CourseName == "" {
-		rows, err = DefaultContainer.db.Query(context.Background(),
-			`SELECT course_id,
-				course_name,
-				course_description,
-				topic_id,
-				created_at,
-				added_by
-			FROM course_info 
-			ORDER BY created_at DESC
-			LIMIT $1 OFFSET $2;`,
-			data.Limit,
-			data.Offset,
-		)
-	} else {
-		rows, err = DefaultContainer.db.Query(context.Background(),
-			`SELECT course_id,
-				course_name,
-				course_description,
-				topic_id,
-				created_at,
-				added_by
-			FROM course_info WHERE course_name ILIKE '%' || $1 || '%'
-			ORDER BY created_at DESC
-			LIMIT $2 OFFSET $3;`,
-			data.CourseName,
-			data.Limit,
-			data.Offset,
-		)
-	}
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT course_id,
+			course_name,
+			course_description,
+			topic_id,
+			created_at,
+			added_by
+		FROM course_info WHERE course_name ILIKE '%' || $1 || '%'
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3;`,
+		data.CourseName,
+		data.Limit,
+		data.Offset,
+	)
 
 	if err != nil {
 		return nil, err

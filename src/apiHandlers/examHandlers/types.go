@@ -3,7 +3,7 @@ package examHandlers
 import "time"
 
 type CreateExamData struct {
-	CourseId        int    `json:"course_id"`
+	CourseId        int    `json:"course_id" validate:"required"`
 	ExamTitle       string `json:"exam_title"`
 	ExamDescription string `json:"exam_description"`
 	Price           string `json:"price" default:"0T"`
@@ -22,6 +22,29 @@ type CreateExamResult struct {
 	CreatedBy string    `json:"created_by"`
 	IsPublic  bool      `json:"is_public"`
 } // @name CreateExamResult
+
+type SearchExamData struct {
+	SearchQuery string `json:"search_query"`
+	Offset      int    `json:"offset"`
+	Limit       int    `json:"limit"`
+} // @name SearchExamData
+
+type SearchExamResult struct {
+	Exams []*SearchedExamInfo `json:"exams"`
+} // @name SearchExamResult
+
+type SearchedExamInfo struct {
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExamDate        time.Time `json:"exam_date"`
+	Duration        int       `json:"duration"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
+} // @name SearchedExamInfo
 
 type EditExamData struct {
 	ExamId          int    `json:"exam_id"`

@@ -202,6 +202,14 @@ func (i *UserInfo) CanGetExamInfo() bool {
 	return i != nil && i.Role != appValues.UserRoleUnknown
 }
 
+// CanGetAllExams returns true if and only if the current user has
+// the permission to get all exams.
+func (i *UserInfo) CanGetAllExams() bool {
+	return i != nil && i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin ||
+		i.Role == appValues.UserRoleTeacher
+}
+
 // CanGetExamQuestions returns true if and only if the current user has
 // the permission to get questions of an exam.
 func (i *UserInfo) CanGetExamQuestions() bool {

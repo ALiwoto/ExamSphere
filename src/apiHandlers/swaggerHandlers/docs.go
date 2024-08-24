@@ -755,6 +755,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exam/search": {
+            "post": {
+                "description": "Allows the user to search exams.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Search exams",
+                "operationId": "searchExamV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to search exams",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SearchExamData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/SearchExamResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/setScore": {
             "post": {
                 "description": "Allows the user to set score for a user in an exam.",
@@ -1829,7 +1883,8 @@ const docTemplate = `{
                 2152,
                 2153,
                 2154,
-                2155
+                2155,
+                2156
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -1887,7 +1942,8 @@ const docTemplate = `{
                 "ErrCodeAccountAlreadyConfirmed",
                 "ErrCodeEmailAlreadyExists",
                 "ErrCodeTopicNameExists",
-                "ErrCodeTopicNotFound"
+                "ErrCodeTopicNotFound",
+                "ErrCodeBodyTooLong"
             ]
         },
         "AnswerQuestionData": {
@@ -2807,6 +2863,31 @@ const docTemplate = `{
                 }
             }
         },
+        "SearchExamData": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "search_query": {
+                    "type": "string"
+                }
+            }
+        },
+        "SearchExamResult": {
+            "type": "object",
+            "properties": {
+                "exams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SearchedExamInfo"
+                    }
+                }
+            }
+        },
         "SearchTopicData": {
             "type": "object",
             "properties": {
@@ -2872,6 +2953,41 @@ const docTemplate = `{
                 },
                 "topic_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "SearchedExamInfo": {
+            "type": "object",
+            "properties": {
+                "course_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "exam_date": {
+                    "type": "string"
+                },
+                "exam_description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "is_public": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "string"
                 }
             }
         },

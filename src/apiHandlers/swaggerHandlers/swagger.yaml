@@ -57,6 +57,7 @@ definitions:
     - 2153
     - 2154
     - 2155
+    - 2156
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -115,6 +116,7 @@ definitions:
     - ErrCodeEmailAlreadyExists
     - ErrCodeTopicNameExists
     - ErrCodeTopicNotFound
+    - ErrCodeBodyTooLong
   AnswerQuestionData:
     properties:
       answer_text:
@@ -712,6 +714,22 @@ definitions:
           $ref: '#/definitions/SearchedCourseInfo'
         type: array
     type: object
+  SearchExamData:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      search_query:
+        type: string
+    type: object
+  SearchExamResult:
+    properties:
+      exams:
+        items:
+          $ref: '#/definitions/SearchedExamInfo'
+        type: array
+    type: object
   SearchTopicData:
     properties:
       topic_name:
@@ -755,6 +773,29 @@ definitions:
         type: string
       topic_id:
         type: integer
+    type: object
+  SearchedExamInfo:
+    properties:
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        type: string
+      duration:
+        type: integer
+      exam_date:
+        type: string
+      exam_description:
+        type: string
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      is_public:
+        type: boolean
+      price:
+        type: string
     type: object
   SearchedTopicInfo:
     properties:
@@ -1326,6 +1367,39 @@ paths:
                   $ref: '#/definitions/GetExamQuestionsResult'
               type: object
       summary: Get questions of an exam
+      tags:
+      - Exam
+  /api/v1/exam/search:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to search exams.
+      operationId: searchExamV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to search exams
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/SearchExamData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/SearchExamResult'
+              type: object
+      summary: Search exams
       tags:
       - Exam
   /api/v1/exam/setScore:

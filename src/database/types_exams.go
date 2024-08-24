@@ -23,6 +23,31 @@ type ExamInfo struct {
 	Questions []*ExamQuestion `json:"-"`
 }
 
+// SearchExamsData is a struct that represents the data needed to search for exams.
+type SearchExamsData struct {
+	SearchQuery string `json:"search_query"`
+	Offset      int    `json:"offset"`
+	Limit       int    `json:"limit"`
+	PublicOnly  bool   `json:"public_only"`
+}
+
+type SearchExamResult struct {
+	Exams []*SearchedExamInfo `json:"exams"`
+}
+
+type SearchedExamInfo struct {
+	ExamId          int       `json:"exam_id"`
+	CourseId        int       `json:"course_id"`
+	ExamTitle       string    `json:"exam_title"`
+	ExamDescription string    `json:"exam_description"`
+	Price           string    `json:"price"`
+	CreatedAt       time.Time `json:"created_at"`
+	ExamDate        time.Time `json:"exam_date"`
+	Duration        int       `json:"duration"`
+	CreatedBy       string    `json:"created_by"`
+	IsPublic        bool      `json:"is_public"`
+}
+
 // NewExamData is a struct that represents the data needed to create a new exam.
 type NewExamData struct {
 	CourseId        int       `json:"course_id"`

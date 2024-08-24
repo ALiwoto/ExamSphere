@@ -132,6 +132,72 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 	})
 }
 
+// SearchExamV1 godoc
+// @Summary Search exams
+// @Description Allows the user to search exams.
+// @ID searchExamV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body SearchExamData true "Data needed to search exams"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=SearchExamResult}
+// @Router /api/v1/exam/search [post]
+func SearchExamV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	} else if !userInfo.CanGetExamInfo() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	data := &SearchExamData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if len(data.SearchQuery) > database.MaxExamTitleLength {
+		return apiHandlers.SendErrBodyTooLong(c)
+	}
+
+	exams, err := database.SearchExam(&database.SearchExamsData{
+		SearchQuery: data.SearchQuery,
+		Offset:      data.Offset,
+		Limit:       data.Limit,
+		PublicOnly:  userInfo.CanGetAllExams(),
+	})
+	if err != nil {
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	examsInfo := make([]*SearchedExamInfo, 0, len(exams.Exams))
+	for _, exam := range exams.Exams {
+		examsInfo = append(examsInfo, &SearchedExamInfo{
+			ExamId:          exam.ExamId,
+			CourseId:        exam.CourseId,
+			ExamTitle:       exam.ExamTitle,
+			ExamDescription: exam.ExamDescription,
+			Price:           exam.Price,
+			CreatedAt:       exam.CreatedAt,
+			ExamDate:        exam.ExamDate,
+			Duration:        exam.Duration,
+			CreatedBy:       exam.CreatedBy,
+			IsPublic:        exam.IsPublic,
+		})
+	}
+
+	return apiHandlers.SendResult(c, &SearchExamResult{
+		Exams: examsInfo,
+	})
+}
+
 // EditExamV1 godoc
 // @Summary Edit an exam
 // @Description Allows the user to edit an exam.
