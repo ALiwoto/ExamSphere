@@ -45,12 +45,12 @@ func EditCourseInfo(data *EditCourseInfoData) (*CourseInfo, error) {
 	_, err := DefaultContainer.db.Exec(context.Background(),
 		`
 		BEGIN;
-			
+			-- Begin the transaction.
 			UPDATE course_info
 			SET course_name = $1,
 				course_description = $2,
 				topic_id = $3
-			WHERE course_id = $d;
+			WHERE course_id = $4;
 			
 		COMMIT;
 		`,
