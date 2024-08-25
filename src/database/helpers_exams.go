@@ -607,15 +607,29 @@ func AddUserInExam(data *NewGivenExamData) (*GivenExam, error) {
 	}
 
 	uniqueId := data.UserId + KeySepChar + ssg.ToBase10(data.ExamId)
-	info := &GivenExam{
-		UserId:  data.UserId,
-		ExamId:  data.ExamId,
-		Price:   data.Price,
-		AddedBy: data.AddedBy,
+	info := givenExamsMap.Get(uniqueId)
+	if info != nil && info != valueGivenExamNotFound &&
+		info.ExamId == data.ExamId && info.UserId == data.UserId {
+		return info, nil
 	}
 
-	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT add_user_in_exam(
+	info = &GivenExam{
+		UserId:    data.UserId,
+		ExamId:    data.ExamId,
+		Price:     data.Price,
+		AddedBy:   data.AddedBy,
+		CreatedAt: time.Now(),
+	}
+
+	// 	-- Example usage:
+	// --    CALL add_user_in_exam(
+	// --        p_user_id := 'user123',
+	// --        p_exam_id := 1001,
+	// --        p_price := '0T',
+	// --        p_added_by := 'admin'
+	// --    );
+	_, err := DefaultContainer.db.Exec(context.Background(),
+		`CALL add_user_in_exam(
 			p_user_id := $1,
 			p_exam_id := $2,
 			p_price := $3,
@@ -625,7 +639,7 @@ func AddUserInExam(data *NewGivenExamData) (*GivenExam, error) {
 		info.ExamId,
 		info.Price,
 		info.AddedBy,
-	).Scan(&info.CreatedAt)
+	)
 	if err != nil {
 		return nil, err
 	}
