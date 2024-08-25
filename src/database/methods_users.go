@@ -260,6 +260,13 @@ func (i *UserInfo) CanCreateExamQuestion(examInfo *ExamInfo) bool {
 		i.Role == appValues.UserRoleAdmin
 }
 
+// CanGetExamParticipants returns true if and only if the current user has
+// the permission to get participants of an exam.
+// For now, everyone can get participants of an exam (requires login).
+func (i *UserInfo) CanGetExamParticipants() bool {
+	return i != nil && i.Role != appValues.UserRoleUnknown
+}
+
 // CanGetAllExams returns true if and only if the current user has
 // the permission to get all exams.
 func (i *UserInfo) CanGetAllExams() bool {
@@ -316,6 +323,13 @@ func (i *UserInfo) CanForceScoreExam() bool {
 	return i.Role == appValues.UserRoleOwner ||
 		i.Role == appValues.UserRoleAdmin ||
 		i.Role == appValues.UserRoleTeacher
+}
+
+// CanSetScoreForExam returns true if and only if the current user has
+// the permission to set score for an exam.
+func (i *UserInfo) CanSetScoreForExam(examInfo *ExamInfo) bool {
+	return i.UserId == examInfo.CreatedBy ||
+		i.CanForceScoreExam()
 }
 
 // CanTryToEditExam returns true if and only if the current user has

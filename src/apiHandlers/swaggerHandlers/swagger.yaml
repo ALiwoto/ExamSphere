@@ -539,6 +539,23 @@ definitions:
       success:
         type: boolean
     type: object
+  ExamParticipantInfo:
+    properties:
+      added_by:
+        type: string
+      created_at:
+        type: string
+      exam_id:
+        type: integer
+      final_score:
+        type: string
+      price:
+        type: string
+      scored_by:
+        type: string
+      user_id:
+        type: string
+    type: object
   ExamQuestionInfo:
     properties:
       created_at:
@@ -656,6 +673,27 @@ definitions:
       starts_in:
         default: 0
         type: integer
+    type: object
+  GetExamParticipantsData:
+    properties:
+      exam_id:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+  GetExamParticipantsResult:
+    properties:
+      can_set_score:
+        default: false
+        type: boolean
+      exam_id:
+        type: integer
+      participants:
+        items:
+          $ref: '#/definitions/ExamParticipantInfo'
+        type: array
     type: object
   GetExamQuestionsData:
     properties:
@@ -1543,6 +1581,39 @@ paths:
                   $ref: '#/definitions/GetExamInfoResult'
               type: object
       summary: Get information about an exam
+      tags:
+      - Exam
+  /api/v1/exam/participants:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to get participants of an exam.
+      operationId: getExamParticipantsV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to get participants of an exam
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/GetExamParticipantsData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetExamParticipantsResult'
+              type: object
+      summary: Get participants of an exam
       tags:
       - Exam
   /api/v1/exam/participate:

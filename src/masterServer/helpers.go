@@ -105,6 +105,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/exam/search", authProtection, examHandlers.SearchExamV1)
 	v1.Post("/exam/edit", authProtection, examHandlers.EditExamV1)
 	v1.Post("/exam/participate", authProtection, examHandlers.ParticipateExamV1)
+	v1.Post("/exam/participants", authProtection, examHandlers.GetExamParticipantsV1)
 	v1.Post("/exam/questions", authProtection, examHandlers.GetExamQuestionsV1)
 	v1.Post("/exam/createQuestion", authProtection, examHandlers.CreateExamQuestionV1)
 	v1.Post("/exam/editQuestion", authProtection, examHandlers.EditExamQuestionV1)

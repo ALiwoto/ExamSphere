@@ -264,3 +264,25 @@ type EditExamQuestionResult struct {
 	Option4       *string   `json:"option4"`
 	CreatedAt     time.Time `json:"created_at"`
 } // @name EditExamQuestionResult
+
+type GetExamParticipantsData struct {
+	ExamId int `json:"exam_id"`
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+} // @name GetExamParticipantsData
+
+type GetExamParticipantsResult struct {
+	ExamId       int                    `json:"exam_id"`
+	Participants []*ExamParticipantInfo `json:"participants"`
+	CanSetScore  bool                   `json:"can_set_score" default:"false"`
+} // @name GetExamParticipantsResult
+
+type ExamParticipantInfo struct {
+	UserId     string    `json:"user_id"`
+	ExamId     int       `json:"exam_id"`
+	Price      string    `json:"price"`
+	FinalScore *string   `json:"final_score"`
+	AddedBy    *string   `json:"added_by"`
+	ScoredBy   *string   `json:"scored_by"`
+	CreatedAt  time.Time `json:"created_at"`
+} // @name ExamParticipantInfo

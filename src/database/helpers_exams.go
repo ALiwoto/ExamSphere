@@ -927,11 +927,21 @@ func GetUserExamsHistoryOrNil(opts *GetUserExamsHistoryOptions) []*UserPastExamI
 }
 
 // GetExamParticipants gets all the participants of an exam.
-func GetExamParticipants(examId int) ([]*GivenExam, error) {
+func GetExamParticipants(opts *GetExamParticipantsOptions) ([]*GivenExam, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT user_id, exam_id, price, added_by, scored_by, created_at, final_score
-		FROM given_exams WHERE exam_id = $1`,
-		examId,
+		`SELECT user_id, 
+			exam_id, 
+			price, 
+			added_by, 
+			scored_by, 
+			created_at, 
+			final_score
+		FROM given_exams WHERE exam_id = $1
+		ORDER BY created_at DESC
+		LIMIT $2 OFFSET $3`,
+		opts.ExamId,
+		opts.Limit,
+		opts.Offset,
 	)
 	if err != nil {
 		return nil, err
@@ -961,8 +971,8 @@ func GetExamParticipants(examId int) ([]*GivenExam, error) {
 }
 
 // GetExamParticipantsOrNil gets the participants of an exam or nil if not found.
-func GetExamParticipantsOrNil(examId int) []*GivenExam {
-	exams, err := GetExamParticipants(examId)
+func GetExamParticipantsOrNil(opts *GetExamParticipantsOptions) []*GivenExam {
+	exams, err := GetExamParticipants(opts)
 	if err != nil && err != pgx.ErrNoRows {
 		logging.UnexpectedError("GetExamParticipantsOrNil: failed to get exam participants:", err)
 		return nil

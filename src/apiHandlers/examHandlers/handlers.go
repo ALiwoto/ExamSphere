@@ -370,6 +370,78 @@ func ParticipateExamV1(c *fiber.Ctx) error {
 	})
 }
 
+// GetExamParticipantsV1 godoc
+// @Summary Get participants of an exam
+// @Description Allows the user to get participants of an exam.
+// @ID getExamParticipantsV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body GetExamParticipantsData true "Data needed to get participants of an exam"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetExamParticipantsResult}
+// @Router /api/v1/exam/participants [post]
+func GetExamParticipantsV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &GetExamParticipantsData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.ExamId == 0 {
+		return apiHandlers.SendErrParameterRequired(c, "exam_id")
+	}
+
+	examInfo := database.GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return apiHandlers.SendErrExamNotFound(c)
+	}
+
+	if !userInfo.CanGetExamParticipants() {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	participants, err := database.GetExamParticipants(&database.GetExamParticipantsOptions{
+		ExamId: data.ExamId,
+		Offset: data.Offset,
+		Limit:  data.Limit,
+	})
+	if err != nil {
+		logging.UnexpectedError("GetExamParticipants: Failed to get exam participants:", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	participantsInfo := make([]*ExamParticipantInfo, 0, len(participants))
+	for _, p := range participants {
+		participantsInfo = append(participantsInfo, &ExamParticipantInfo{
+			UserId:     p.UserId,
+			ExamId:     p.ExamId,
+			Price:      p.Price,
+			AddedBy:    ssg.Clone(p.AddedBy),
+			ScoredBy:   ssg.Clone(p.ScoredBy),
+			CreatedAt:  p.CreatedAt,
+			FinalScore: ssg.Clone(p.FinalScore),
+		})
+	}
+
+	return apiHandlers.SendResult(c, &GetExamParticipantsResult{
+		ExamId:       data.ExamId,
+		Participants: participantsInfo,
+		CanSetScore:  userInfo.CanSetScoreForExam(examInfo),
+	})
+}
+
 // CreateExamQuestionV1 godoc
 // @Summary Create a new question for an exam
 // @Description Allows the user to create a new question for an exam.
@@ -745,8 +817,7 @@ func SetScoreV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrExamNotFound(c)
 	}
 
-	if examInfo.CreatedBy != userInfo.UserId &&
-		!userInfo.CanForceScoreExam() {
+	if userInfo.CanSetScoreForExam(examInfo) {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 

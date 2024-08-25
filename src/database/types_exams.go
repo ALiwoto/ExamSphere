@@ -207,3 +207,9 @@ type UserPastExamInfo struct {
 	ExamTitle string    `json:"exam_title"`
 	StartedAt time.Time `json:"started_at"`
 }
+
+type GetExamParticipantsOptions struct {
+	ExamId int `json:"exam_id"`
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}

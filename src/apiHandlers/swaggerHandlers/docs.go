@@ -809,6 +809,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exam/participants": {
+            "post": {
+                "description": "Allows the user to get participants of an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get participants of an exam",
+                "operationId": "getExamParticipantsV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to get participants of an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GetExamParticipantsData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetExamParticipantsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/participate": {
             "post": {
                 "description": "Allows the user to participate in an exam.",
@@ -2751,6 +2805,32 @@ const docTemplate = `{
                 }
             }
         },
+        "ExamParticipantInfo": {
+            "type": "object",
+            "properties": {
+                "added_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "final_score": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "scored_by": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "ExamQuestionInfo": {
             "type": "object",
             "properties": {
@@ -2925,6 +3005,38 @@ const docTemplate = `{
                 "starts_in": {
                     "type": "integer",
                     "default": 0
+                }
+            }
+        },
+        "GetExamParticipantsData": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                }
+            }
+        },
+        "GetExamParticipantsResult": {
+            "type": "object",
+            "properties": {
+                "can_set_score": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ExamParticipantInfo"
+                    }
                 }
             }
         },
