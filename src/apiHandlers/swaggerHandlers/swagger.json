@@ -641,6 +641,60 @@
                 }
             }
         },
+        "/api/v1/exam/editQuestion": {
+            "post": {
+                "description": "Allows the user to edit a question of an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Edit a question of an exam",
+                "operationId": "editExamQuestionV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to edit a question of an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EditExamQuestionData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/EditExamQuestionResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/givenExam": {
             "post": {
                 "description": "Allows the user to get information about an exam that a user has participated in.",
@@ -2524,6 +2578,67 @@
                 "price": {
                     "type": "string",
                     "default": "0T"
+                }
+            }
+        },
+        "EditExamQuestionData": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "EditExamQuestionResult": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_title": {
+                    "type": "string"
                 }
             }
         },

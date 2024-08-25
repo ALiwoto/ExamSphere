@@ -101,6 +101,18 @@ type NewExamQuestionData struct {
 	Option4       *string `json:"option4"`
 }
 
+// EditExamQuestionData is a struct that represents the data needed to edit an exam question.
+type EditExamQuestionData struct {
+	QuestionId    int     `json:"question_id"`
+	ExamId        int     `json:"exam_id"`
+	QuestionTitle string  `json:"question_title"`
+	Description   *string `json:"description"`
+	Option1       *string `json:"option1"`
+	Option2       *string `json:"option2"`
+	Option3       *string `json:"option3"`
+	Option4       *string `json:"option4"`
+}
+
 // NewScoreData is a struct that represents the data needed to create
 // a new score for a user in an exam.
 type NewScoreData struct {

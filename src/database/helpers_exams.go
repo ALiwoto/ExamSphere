@@ -340,6 +340,56 @@ func CreateNewExamQuestion(data *NewExamQuestionData) (*ExamQuestion, error) {
 	return info, nil
 }
 
+// EditExamQuestion edits an exam question in the database.
+func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
+	examInfo := GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return nil, ErrExamNotFound
+	}
+
+	info, err := GetExamQuestion(data.ExamId, data.QuestionId)
+	if err != nil {
+		return nil, err
+	} else if info == nil {
+		return nil, ErrExamQuestionNotFound
+	}
+
+	info.QuestionTitle = data.QuestionTitle
+	info.Description = data.Description
+	info.Option1 = data.Option1
+	info.Option2 = data.Option2
+	info.Option3 = data.Option3
+	info.Option4 = data.Option4
+
+	_, err = DefaultContainer.db.Exec(context.Background(),
+		`UPDATE exam_question SET
+			question_title = $1,
+			description = $2,
+			option1 = $3,
+			option2 = $4,
+			option3 = $5,
+			option4 = $6
+		WHERE question_id = $7`,
+		info.QuestionTitle,
+		info.Description,
+		info.Option1,
+		info.Option2,
+		info.Option3,
+		info.Option4,
+		info.QuestionId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// if the question is cached, update the cached question
+	if len(examInfo.GetQuestions()) > 0 {
+		examInfo.AddQuestion(info)
+	}
+
+	return info, nil
+}
+
 // GetExamQuestion gets an exam question from the database.
 func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 	examInfo, err := GetExamInfo(examId)
