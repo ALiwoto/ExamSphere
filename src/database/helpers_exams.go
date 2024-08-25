@@ -739,7 +739,7 @@ func GetGivenAnswer(data *GetGivenAnswerData) (*GivenAnswerInfo, error) {
 			seconds_taken,
 			answer_text,
 			answered_at
-		FROM given_answers WHERE exam_id = $1 AND question_id = $2 AND answered_by = $3`,
+		FROM given_answer WHERE exam_id = $1 AND question_id = $2 AND answered_by = $3`,
 		data.ExamId,
 		data.QuestionId,
 		data.UserId,
