@@ -151,6 +151,8 @@ definitions:
         type: integer
       seconds_taken:
         type: integer
+      user_id:
+        type: string
     type: object
   AuthResult:
     properties:
@@ -705,11 +707,17 @@ definitions:
         type: integer
       offset:
         type: integer
+      pov:
+        description: Point of view
+        type: string
     type: object
   GetExamQuestionsResult:
     properties:
       exam_id:
         type: integer
+      pov:
+        description: Point of view
+        type: string
       questions:
         items:
           $ref: '#/definitions/ExamQuestionInfo'

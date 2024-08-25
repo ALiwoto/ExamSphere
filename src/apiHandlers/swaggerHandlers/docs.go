@@ -2213,6 +2213,9 @@ const docTemplate = `{
                 },
                 "seconds_taken": {
                     "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -3054,6 +3057,10 @@ const docTemplate = `{
                 },
                 "offset": {
                     "type": "integer"
+                },
+                "pov": {
+                    "description": "Point of view",
+                    "type": "string"
                 }
             }
         },
@@ -3062,6 +3069,10 @@ const docTemplate = `{
             "properties": {
                 "exam_id": {
                     "type": "integer"
+                },
+                "pov": {
+                    "description": "Point of view",
+                    "type": "string"
                 },
                 "questions": {
                     "type": "array",

@@ -93,12 +93,14 @@ type GetExamInfoResult struct {
 } // @name GetExamInfoResult
 
 type GetExamQuestionsData struct {
-	ExamId int `json:"exam_id"`
-	Offset int `json:"offset"`
-	Limit  int `json:"limit"`
+	Pov    string `json:"pov"` // Point of view
+	ExamId int    `json:"exam_id"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
 } // @name GetExamQuestionsData
 
 type GetExamQuestionsResult struct {
+	Pov       string              `json:"pov"` // Point of view
 	ExamId    int                 `json:"exam_id"`
 	Questions []*ExamQuestionInfo `json:"questions"`
 } // @name GetExamQuestionsResult
@@ -116,6 +118,7 @@ type ExamQuestionInfo struct {
 } // @name ExamQuestionInfo
 
 type AnsweredQuestionInfo struct {
+	UserId       string  `json:"user_id"`
 	QuestionId   int     `json:"question_id"`
 	ChosenOption *string `json:"chosen_option"`
 	SecondsTaken int     `json:"seconds_taken"`

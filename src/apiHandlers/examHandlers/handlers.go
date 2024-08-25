@@ -629,6 +629,14 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrExamNotFound(c)
 	}
 
+	userPov := data.Pov
+	if (userPov != "" && data.Pov != userInfo.UserId) &&
+		!userInfo.CanSetScoreForExam(examInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	} else if userPov == "" {
+		userPov = userInfo.UserId
+	}
+
 	if !userInfo.CanPeekExamQuestions(examInfo.CreatedBy) &&
 		(!database.HasParticipatedInExam(userInfo.UserId, data.ExamId) ||
 			!examInfo.HasExamStarted()) {
@@ -661,10 +669,11 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		givenAnswer := database.GetGivenAnswerOrNil(&database.GetGivenAnswerData{
 			ExamId:     q.ExamId,
 			QuestionId: q.QuestionId,
-			UserId:     userInfo.UserId,
+			UserId:     userPov,
 		})
 		if givenAnswer != nil {
 			info.UserAnswer = &AnsweredQuestionInfo{
+				UserId:       givenAnswer.AnsweredBy,
 				QuestionId:   q.QuestionId,
 				ChosenOption: ssg.Clone(givenAnswer.ChosenOption),
 				SecondsTaken: givenAnswer.SecondsTaken,
@@ -675,6 +684,7 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &GetExamQuestionsResult{
+		Pov:       userPov,
 		ExamId:    data.ExamId,
 		Questions: questionsInfo,
 	})
