@@ -213,7 +213,7 @@ func CreateUserV1(c *fiber.Ctx) error {
 	})
 	if err != nil {
 		errStr := strings.ToLower(err.Error())
-		if strings.Contains(errStr, "unique key") && strings.Contains(errStr, "email") {
+		if strings.Contains(errStr, "unique") && strings.Contains(errStr, "email") {
 			return apiHandlers.SendErrEmailAlreadyExists(c)
 		}
 
