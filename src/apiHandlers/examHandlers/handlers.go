@@ -818,7 +818,7 @@ func SetExamScoreV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrExamNotFound(c)
 	}
 
-	if userInfo.CanSetScoreForExam(examInfo) {
+	if !userInfo.CanSetScoreForExam(examInfo) {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
