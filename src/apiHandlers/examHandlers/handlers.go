@@ -800,7 +800,7 @@ func SetExamScoreV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
-	data := &SetScoreData{}
+	data := &SetExamScoreData{}
 	if err := c.BodyParser(data); err != nil {
 		return apiHandlers.SendErrInvalidBodyData(c)
 	}
@@ -841,7 +841,7 @@ func SetExamScoreV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
-	return apiHandlers.SendResult(c, &SetScoreResult{
+	return apiHandlers.SendResult(c, &SetExamScoreResult{
 		ExamId:   scoreInfo.ExamId,
 		UserId:   scoreInfo.UserId,
 		Score:    *scoreInfo.FinalScore,

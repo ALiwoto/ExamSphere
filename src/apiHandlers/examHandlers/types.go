@@ -161,7 +161,7 @@ type AnswerQuestionResult struct {
 	AnsweredAt time.Time `json:"answered_at"`
 } // @name AnswerQuestionResult
 
-type SetScoreData struct {
+type SetExamScoreData struct {
 	// ExamId is the exam we are trying to give this score to.
 	ExamId int `json:"exam_id"`
 
@@ -170,14 +170,14 @@ type SetScoreData struct {
 
 	// Score is the score we are trying to give to the user.
 	Score string `json:"score"`
-} // @name SetScoreData
+} // @name SetExamScoreData
 
-type SetScoreResult struct {
+type SetExamScoreResult struct {
 	ExamId   int    `json:"exam_id"`
 	UserId   string `json:"user_id"`
 	Score    string `json:"score"`
 	ScoredBy string `json:"scored_by"`
-} // @name SetScoreResult
+} // @name SetExamScoreResult
 
 type GetGivenExamData struct {
 	UserId string `json:"user_id"`
