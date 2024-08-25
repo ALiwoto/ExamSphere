@@ -34,3 +34,5 @@ logs/panics/*
 !logs/.gitkeep
 !logs/errors/.gitkeep
 !logs/panics/.gitkeep
+
+experimental/*

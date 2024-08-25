@@ -138,7 +138,7 @@ CREATE OR REPLACE PROCEDURE set_score_for_user_in_exam(
     p_exam_id INTEGER,
     p_user_id UserIdType,
     p_final_score VARCHAR(63),
-    p_scored_by INTEGER
+    p_scored_by VARCHAR(16)
 )
 LANGUAGE plpgsql
 AS $$
@@ -160,11 +160,11 @@ BEGIN
             RAISE EXCEPTION 'Failed to update score for user % in exam %', p_user_id, p_exam_id;
         END IF;
 
-        COMMIT; -- commit the transaction
+        -- COMMIT; -- commit the transaction
     EXCEPTION
         WHEN OTHERS THEN
             -- just rollback the transaction if any error occurs
-            ROLLBACK;
+            -- ROLLBACK;
             RAISE;
     END;
 END;
