@@ -228,6 +228,22 @@ func (i *UserInfo) CanGetExamInfo() bool {
 	return i != nil && i.Role != appValues.UserRoleUnknown
 }
 
+// CanEditExamQuestion returns true if and only if the current user has
+// the permission to edit a question of an exam.
+func (i *UserInfo) CanEditExamQuestion(examInfo *ExamInfo) bool {
+	if i == nil || i.Role == appValues.UserRoleUnknown {
+		// looks like an uninitialized user to me, just in case
+		return false
+	}
+
+	if i.UserId == examInfo.CreatedBy {
+		return true
+	}
+
+	return i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
+}
+
 // CanGetAllExams returns true if and only if the current user has
 // the permission to get all exams.
 func (i *UserInfo) CanGetAllExams() bool {

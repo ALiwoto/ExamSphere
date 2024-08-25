@@ -532,6 +532,12 @@ definitions:
     type: object
   GetExamInfoResult:
     properties:
+      can_add_others_to_exam:
+        default: false
+        type: boolean
+      can_edit_question:
+        default: false
+        type: boolean
       can_participate:
         default: false
         type: boolean

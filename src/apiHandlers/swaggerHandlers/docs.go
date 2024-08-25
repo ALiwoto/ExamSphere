@@ -2634,6 +2634,14 @@ const docTemplate = `{
         "GetExamInfoResult": {
             "type": "object",
             "properties": {
+                "can_add_others_to_exam": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "can_edit_question": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "can_participate": {
                     "type": "boolean",
                     "default": false

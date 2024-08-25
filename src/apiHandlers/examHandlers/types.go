@@ -71,23 +71,25 @@ type EditExamResult struct {
 } // @name EditExamResult
 
 type GetExamInfoResult struct {
-	ExamId          int       `json:"exam_id"`
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedAt       time.Time `json:"created_at"`
-	ExamDate        time.Time `json:"exam_date"`
-	Duration        int       `json:"duration"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
-	HasStarted      bool      `json:"has_started"`
-	HasParticipated bool      `json:"has_participated" default:"false"`
-	CanParticipate  bool      `json:"can_participate" default:"false"`
-	HasFinished     bool      `json:"has_finished" default:"false"`
-	StartsIn        int       `json:"starts_in" default:"0"`
-	FinishesIn      int       `json:"finishes_in" default:"0"`
-	QuestionCount   int       `json:"question_count" default:"0"`
+	ExamId             int       `json:"exam_id"`
+	CourseId           int       `json:"course_id"`
+	ExamTitle          string    `json:"exam_title"`
+	ExamDescription    string    `json:"exam_description"`
+	Price              string    `json:"price"`
+	CreatedAt          time.Time `json:"created_at"`
+	ExamDate           time.Time `json:"exam_date"`
+	Duration           int       `json:"duration"`
+	CreatedBy          string    `json:"created_by"`
+	IsPublic           bool      `json:"is_public"`
+	HasStarted         bool      `json:"has_started"`
+	HasParticipated    bool      `json:"has_participated" default:"false"`
+	CanParticipate     bool      `json:"can_participate" default:"false"`
+	CanEditQuestion    bool      `json:"can_edit_question" default:"false"`
+	CanAddOthersToExam bool      `json:"can_add_others_to_exam" default:"false"`
+	HasFinished        bool      `json:"has_finished" default:"false"`
+	StartsIn           int       `json:"starts_in" default:"0"`
+	FinishesIn         int       `json:"finishes_in" default:"0"`
+	QuestionCount      int       `json:"question_count" default:"0"`
 } // @name GetExamInfoResult
 
 type GetExamQuestionsData struct {
