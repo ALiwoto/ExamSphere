@@ -59,6 +59,7 @@ func CreateExamV1(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
+		logging.UnexpectedError("CreateExam: Failed to create new exam:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -110,6 +111,7 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 	if err == database.ErrExamNotFound || examInfo == nil {
 		return apiHandlers.SendErrExamNotFound(c)
 	} else if err != nil {
+		logging.UnexpectedError("GetExamInfo: Failed to get exam info:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -260,6 +262,7 @@ func EditExamV1(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
+		logging.UnexpectedError("EditExamInfo: Failed to edit exam info:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -565,6 +568,7 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		Limit:  data.Limit,
 	})
 	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetExamQuestions: Failed to get exam questions:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -660,6 +664,7 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 		logging.UnexpectedError("GetExamQuestion: Failed to get exam question info:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	} else if question == nil {
+		logging.UnexpectedError("GetExamQuestion: database returned nil for question, with no errors")
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -858,6 +863,11 @@ func GetUserOngoingExamsV1(c *fiber.Ctx) error {
 
 	exams, err := database.GetUserOngoingExams(targetUserId)
 	if err != nil {
+		if err == database.ErrExamNotFound {
+			return apiHandlers.SendErrExamNotFound(c)
+		}
+
+		logging.UnexpectedError("GetUserOngoingExams: Failed to get user ongoing exams:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -913,7 +923,8 @@ func GetUserExamsHistoryV1(c *fiber.Ctx) error {
 		Offset: data.Offset,
 		Limit:  data.Limit,
 	})
-	if err != nil {
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetUserExamsHistory: Failed to get user exams history:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 

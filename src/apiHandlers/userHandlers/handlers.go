@@ -11,6 +11,7 @@ import (
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5"
 )
 
 func AuthProtection() fiber.Handler {
@@ -216,9 +217,10 @@ func CreateUserV1(c *fiber.Ctx) error {
 			return apiHandlers.SendErrEmailAlreadyExists(c)
 		}
 
-		logging.Error("CreateUserV1: failed to create new user: ", err)
+		logging.UnexpectedError("CreateUserV1: failed to create new user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	} else if newUserInfo == nil {
+		logging.UnexpectedError("CreateUserV1: failed to create new user: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -659,7 +661,7 @@ func ConfirmAccountV1(c *fiber.Ctx) error {
 
 	userInfo, err := database.GetUserByUserId(confirmData.UserId)
 	if err != nil {
-		if err == database.ErrUserNotFound {
+		if err == database.ErrUserNotFound || err == pgx.ErrNoRows {
 			return apiHandlers.SendErrInvalidUserID(c)
 		}
 
@@ -692,7 +694,7 @@ func ConfirmAccountV1(c *fiber.Ctx) error {
 
 	err = database.ConfirmUserAccount(userInfo.UserId)
 	if err != nil {
-		logging.Error("ConfirmAccountV1: failed to confirm account: ", err)
+		logging.UnexpectedError("ConfirmAccountV1: failed to confirm account: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 

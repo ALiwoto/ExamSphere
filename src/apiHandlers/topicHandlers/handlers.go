@@ -2,10 +2,12 @@ package topicHandlers
 
 import (
 	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5"
 )
 
 // CreateTopicV1 godoc
@@ -53,6 +55,7 @@ func CreateTopicV1(c *fiber.Ctx) error {
 		TopicName: data.TopicName,
 	})
 	if err != nil {
+		logging.UnexpectedError("CreateNewTopic: failed to create new topic: CreateNewTopic:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -94,8 +97,13 @@ func SearchTopicV1(c *fiber.Ctx) error {
 	}
 
 	topicsInfo, err := database.SearchTopics(data.TopicName)
-	if err != nil {
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("SearchTopics: failed to search topics: SearchTopicV1:", err)
 		return apiHandlers.SendErrInternalServerError(c)
+	} else if len(topicsInfo) == 0 {
+		return apiHandlers.SendResult(c, &SearchTopicResult{
+			Topics: nil,
+		})
 	}
 
 	sTopics := make([]*SearchedTopicInfo, 0, len(topicsInfo))
@@ -144,6 +152,7 @@ func GetTopicInfoV1(c *fiber.Ctx) error {
 
 	topicInfo, err := database.GetTopicInfo(topicId)
 	if err != nil {
+		logging.UnexpectedError("GetTopicInfo: failed to get topic info: GetTopicInfoV1:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
@@ -188,6 +197,11 @@ func GetUserTopicStatV1(c *fiber.Ctx) error {
 
 	stat, err := database.GetUserTopicStat(data.UserId, data.TopicId)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return apiHandlers.SendResult(c, nil)
+		}
+
+		logging.UnexpectedError("GetUserTopicStat: failed to get user topic stat: GetUserTopicStatV1:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 

@@ -834,6 +834,10 @@ func GetUserOngoingExams(userId string) ([]*UserOngoingExamInfo, error) {
 		userId,
 	)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, ErrExamNotFound
+		}
+
 		return nil, err
 	}
 	defer rows.Close()
@@ -859,7 +863,7 @@ func GetUserOngoingExams(userId string) ([]*UserOngoingExamInfo, error) {
 // GetUserOngoingExamsOrNil gets the ongoing exams of a user or nil if not found.
 func GetUserOngoingExamsOrNil(userId string) []*UserOngoingExamInfo {
 	exams, err := GetUserOngoingExams(userId)
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && err != pgx.ErrNoRows && err != ErrExamNotFound {
 		logging.UnexpectedError("GetUserOngoingExamsOrNil: failed to get ongoing exams:", err)
 		return nil
 	}

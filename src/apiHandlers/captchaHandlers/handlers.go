@@ -61,7 +61,7 @@ func GenerateCaptchaV1(c *fiber.Ctx) error {
 	captcha := base64Captcha.NewCaptcha(driver, captchaStore)
 	id, b64s, _, err := captcha.Generate()
 	if err != nil {
-		logging.Error("GetCaptchaV1: failed to generate captcha: ", err)
+		logging.UnexpectedError("GetCaptchaV1: failed to generate captcha: ", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
