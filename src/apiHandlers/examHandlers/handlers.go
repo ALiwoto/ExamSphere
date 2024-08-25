@@ -367,6 +367,77 @@ func ParticipateExamV1(c *fiber.Ctx) error {
 	})
 }
 
+// CreateExamQuestionV1 godoc
+// @Summary Create a new question for an exam
+// @Description Allows the user to create a new question for an exam.
+// @ID createExamQuestionV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param data body CreateExamQuestionData true "Data needed to create a new question for an exam"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=CreateExamQuestionResult}
+// @Router /api/v1/exam/createQuestion [post]
+func CreateExamQuestionV1(c *fiber.Ctx) error {
+	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
+	if claimInfo == nil {
+		return apiHandlers.SendErrInvalidJWT(c)
+	}
+
+	userInfo := database.GetUserInfoByAuthHash(
+		claimInfo.UserId, claimInfo.AuthHash,
+	)
+	if userInfo == nil {
+		return apiHandlers.SendErrInvalidAuth(c)
+	}
+
+	data := &CreateExamQuestionData{}
+	if err := c.BodyParser(data); err != nil {
+		return apiHandlers.SendErrInvalidBodyData(c)
+	}
+
+	if data.ExamId == 0 {
+		return apiHandlers.SendErrParameterRequired(c, "exam_id")
+	} else if data.QuestionTitle == "" {
+		return apiHandlers.SendErrParameterRequired(c, "question_title")
+	}
+
+	examInfo := database.GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return apiHandlers.SendErrExamNotFound(c)
+	}
+
+	if !userInfo.CanCreateExamQuestion(examInfo) {
+		return apiHandlers.SendErrPermissionDenied(c)
+	}
+
+	questionInfo, err := database.CreateNewExamQuestion(&database.NewExamQuestionData{
+		ExamId:        data.ExamId,
+		QuestionTitle: data.QuestionTitle,
+		Description:   data.Description,
+		Option1:       data.Option1,
+		Option2:       data.Option2,
+		Option3:       data.Option3,
+		Option4:       data.Option4,
+	})
+	if err != nil {
+		logging.UnexpectedError("CreateExamQuestion: Failed to create new exam question:", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	return apiHandlers.SendResult(c, &CreateExamQuestionResult{
+		QuestionId:    questionInfo.QuestionId,
+		ExamId:        questionInfo.ExamId,
+		QuestionTitle: questionInfo.QuestionTitle,
+		Description:   ssg.Clone(questionInfo.Description),
+		Option1:       ssg.Clone(questionInfo.Option1),
+		Option2:       ssg.Clone(questionInfo.Option2),
+		Option3:       ssg.Clone(questionInfo.Option3),
+		Option4:       ssg.Clone(questionInfo.Option4),
+		CreatedAt:     questionInfo.CreatedAt,
+	})
+}
+
 // GetExamQuestionsV1 godoc
 // @Summary Get questions of an exam
 // @Description Allows the user to get questions of an exam.

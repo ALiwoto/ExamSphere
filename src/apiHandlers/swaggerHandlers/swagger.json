@@ -533,6 +533,60 @@
                 }
             }
         },
+        "/api/v1/exam/createQuestion": {
+            "post": {
+                "description": "Allows the user to create a new question for an exam.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Create a new question for an exam",
+                "operationId": "createExamQuestionV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Data needed to create a new question for an exam",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateQuestionData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/CreateQuestionResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/edit": {
             "post": {
                 "description": "Allows the user to edit an exam.",
@@ -2293,6 +2347,64 @@
                     "type": "integer"
                 },
                 "topic_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateQuestionData": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateQuestionResult": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_title": {
                     "type": "string"
                 }
             }

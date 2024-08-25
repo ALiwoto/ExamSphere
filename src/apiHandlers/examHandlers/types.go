@@ -219,3 +219,25 @@ type UserExamHistoryInfo struct {
 	ExamTitle string    `json:"exam_title"`
 	StartedAt time.Time `json:"started_at"`
 } // @name UserExamHistoryInfo
+
+type CreateExamQuestionData struct {
+	ExamId        int     `json:"exam_id"`
+	QuestionTitle string  `json:"question_title"`
+	Description   *string `json:"description"`
+	Option1       *string `json:"option1"`
+	Option2       *string `json:"option2"`
+	Option3       *string `json:"option3"`
+	Option4       *string `json:"option4"`
+} // @name CreateQuestionData
+
+type CreateExamQuestionResult struct {
+	ExamId        int     `json:"exam_id"`
+	QuestionId    int     `json:"question_id"`
+	QuestionTitle string  `json:"question_title"`
+	Description   *string `json:"description"`
+	Option1       *string `json:"option1"`
+	Option2       *string `json:"option2"`
+	Option3       *string `json:"option3"`
+	Option4       *string `json:"option4"`
+	CreatedAt     string  `json:"created_at"`
+} // @name CreateQuestionResult

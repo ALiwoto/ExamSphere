@@ -317,6 +317,44 @@ definitions:
       topic_name:
         type: string
     type: object
+  CreateQuestionData:
+    properties:
+      description:
+        type: string
+      exam_id:
+        type: integer
+      option1:
+        type: string
+      option2:
+        type: string
+      option3:
+        type: string
+      option4:
+        type: string
+      question_title:
+        type: string
+    type: object
+  CreateQuestionResult:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      exam_id:
+        type: integer
+      option1:
+        type: string
+      option2:
+        type: string
+      option3:
+        type: string
+      option4:
+        type: string
+      question_id:
+        type: integer
+      question_title:
+        type: string
+    type: object
   CreateUserData:
     properties:
       email:
@@ -1299,6 +1337,39 @@ paths:
                   $ref: '#/definitions/CreateExamResult'
               type: object
       summary: Create a new exam
+      tags:
+      - Exam
+  /api/v1/exam/createQuestion:
+    post:
+      consumes:
+      - application/json
+      description: Allows the user to create a new question for an exam.
+      operationId: createExamQuestionV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Data needed to create a new question for an exam
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/CreateQuestionData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/CreateQuestionResult'
+              type: object
+      summary: Create a new question for an exam
       tags:
       - Exam
   /api/v1/exam/edit:
