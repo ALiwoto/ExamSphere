@@ -569,7 +569,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/CreateQuestionData"
+                            "$ref": "#/definitions/CreateExamQuestionData"
                         }
                     }
                 ],
@@ -585,7 +585,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/CreateQuestionResult"
+                                            "$ref": "#/definitions/CreateExamQuestionResult"
                                         }
                                     }
                                 }
@@ -2311,6 +2311,64 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateExamQuestionData": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateExamQuestionResult": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "option1": {
+                    "type": "string"
+                },
+                "option2": {
+                    "type": "string"
+                },
+                "option3": {
+                    "type": "string"
+                },
+                "option4": {
+                    "type": "string"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_title": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateExamResult": {
             "type": "object",
             "properties": {
@@ -2355,64 +2413,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "topic_name": {
-                    "type": "string"
-                }
-            }
-        },
-        "CreateQuestionData": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "exam_id": {
-                    "type": "integer"
-                },
-                "option1": {
-                    "type": "string"
-                },
-                "option2": {
-                    "type": "string"
-                },
-                "option3": {
-                    "type": "string"
-                },
-                "option4": {
-                    "type": "string"
-                },
-                "question_title": {
-                    "type": "string"
-                }
-            }
-        },
-        "CreateQuestionResult": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "exam_id": {
-                    "type": "integer"
-                },
-                "option1": {
-                    "type": "string"
-                },
-                "option2": {
-                    "type": "string"
-                },
-                "option3": {
-                    "type": "string"
-                },
-                "option4": {
-                    "type": "string"
-                },
-                "question_id": {
-                    "type": "integer"
-                },
-                "question_title": {
                     "type": "string"
                 }
             }

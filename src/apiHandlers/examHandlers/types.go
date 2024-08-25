@@ -228,7 +228,7 @@ type CreateExamQuestionData struct {
 	Option2       *string `json:"option2"`
 	Option3       *string `json:"option3"`
 	Option4       *string `json:"option4"`
-} // @name CreateQuestionData
+} // @name CreateExamQuestionData
 
 type CreateExamQuestionResult struct {
 	ExamId        int     `json:"exam_id"`
@@ -240,4 +240,4 @@ type CreateExamQuestionResult struct {
 	Option3       *string `json:"option3"`
 	Option4       *string `json:"option4"`
 	CreatedAt     string  `json:"created_at"`
-} // @name CreateQuestionResult
+} // @name CreateExamQuestionResult
