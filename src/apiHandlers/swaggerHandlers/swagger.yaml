@@ -1722,7 +1722,7 @@ paths:
       consumes:
       - application/json
       description: Allows the user to set score for a user in an exam.
-      operationId: setScoreV1
+      operationId: setExamScoreV1
       parameters:
       - description: Authorization token
         in: header

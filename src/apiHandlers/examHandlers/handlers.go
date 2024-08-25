@@ -773,10 +773,10 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 	})
 }
 
-// SetScoreV1 godoc
+// SetExamScoreV1 godoc
 // @Summary Set score for a user in an exam
 // @Description Allows the user to set score for a user in an exam.
-// @ID setScoreV1
+// @ID setExamScoreV1
 // @Tags Exam
 // @Accept json
 // @Produce json
@@ -784,7 +784,7 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 // @Param data body SetScoreData true "Data needed to set score for a user in an exam"
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SetScoreResult}
 // @Router /api/v1/exam/setScore [post]
-func SetScoreV1(c *fiber.Ctx) error {
+func SetExamScoreV1(c *fiber.Ctx) error {
 	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
 	if claimInfo == nil {
 		return apiHandlers.SendErrInvalidJWT(c)

@@ -110,7 +110,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/exam/createQuestion", authProtection, examHandlers.CreateExamQuestionV1)
 	v1.Post("/exam/editQuestion", authProtection, examHandlers.EditExamQuestionV1)
 	v1.Post("/exam/answer", authProtection, examHandlers.AnswerExamQuestionV1)
-	v1.Post("/exam/setScore", authProtection, examHandlers.SetScoreV1)
+	v1.Post("/exam/setScore", authProtection, examHandlers.SetExamScoreV1)
 	v1.Post("/exam/givenExam", authProtection, examHandlers.GetGivenExamV1)
 	v1.Get("/exam/userOngoingExams", authProtection, examHandlers.GetUserOngoingExamsV1)
 	v1.Post("/exam/userExamsHistory", authProtection, examHandlers.GetUserExamsHistoryV1)

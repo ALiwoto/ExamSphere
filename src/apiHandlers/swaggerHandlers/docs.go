@@ -1038,7 +1038,7 @@ const docTemplate = `{
                     "Exam"
                 ],
                 "summary": "Set score for a user in an exam",
-                "operationId": "setScoreV1",
+                "operationId": "setExamScoreV1",
                 "parameters": [
                     {
                         "type": "string",
