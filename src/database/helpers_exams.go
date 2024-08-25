@@ -788,7 +788,7 @@ func AnswerQuestion(data *AnswerQuestionData) (*GivenAnswerInfo, error) {
 		ssg.ToBase10(data.QuestionId) + KeySepChar +
 		data.AnsweredBy
 	info := givenAnswersMap.Get(uniqueId)
-	if info == nil {
+	if info == nil || info == valueGivenAnswerNotFound || info.ExamId != data.ExamId {
 		info = &GivenAnswerInfo{
 			ExamId:     data.ExamId,
 			QuestionId: data.QuestionId,
