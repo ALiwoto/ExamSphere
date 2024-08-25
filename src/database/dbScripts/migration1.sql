@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS "user_topic_stat" (
     topic_id INTEGER NOT NULL,
     current_exp INTEGER DEFAULT 0,
     total_exp INTEGER DEFAULT 0,
+    recent_exp INTEGER DEFAULT 0,
     current_level INTEGER DEFAULT 1,
     last_visited TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, topic_id),
