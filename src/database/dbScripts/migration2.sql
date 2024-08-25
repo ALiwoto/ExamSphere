@@ -109,7 +109,7 @@ DECLARE
     is_public BOOLEAN;
 BEGIN
     -- Just return true if the user already participated inside of this exam
-    IF has_participated_in(p_exam_id, p_user_id) THEN
+    IF has_participated_in_exam(p_exam_id, p_user_id) THEN
         RETURN TRUE;
     END IF;
 
