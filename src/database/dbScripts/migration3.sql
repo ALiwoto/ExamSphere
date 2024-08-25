@@ -118,7 +118,7 @@ COMMENT ON COLUMN given_answer.answered_at IS 'Timestamp when the answer was sub
 CREATE OR REPLACE FUNCTION give_answer_to_exam_question(
     p_exam_id INTEGER,
     p_question_id INTEGER,
-    p_answered_by INTEGER,
+    p_answered_by UserIdType,
     p_chosen_option TEXT DEFAULT NULL,
     p_seconds_taken INTEGER DEFAULT 0,
     p_answer_text TEXT DEFAULT NULL
