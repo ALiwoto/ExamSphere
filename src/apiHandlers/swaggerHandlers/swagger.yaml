@@ -1004,7 +1004,7 @@ definitions:
       user_id:
         type: string
     type: object
-  SetScoreData:
+  SetExamScoreData:
     properties:
       exam_id:
         description: ExamId is the exam we are trying to give this score to.
@@ -1016,7 +1016,7 @@ definitions:
         description: UserId is the person we are trying to give this score to.
         type: string
     type: object
-  SetScoreResult:
+  SetExamScoreResult:
     properties:
       exam_id:
         type: integer
@@ -1734,7 +1734,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/SetScoreData'
+          $ref: '#/definitions/SetExamScoreData'
       produces:
       - application/json
       responses:
@@ -1745,7 +1745,7 @@ paths:
             - $ref: '#/definitions/EndpointResponse'
             - properties:
                 result:
-                  $ref: '#/definitions/SetScoreResult'
+                  $ref: '#/definitions/SetExamScoreResult'
               type: object
       summary: Set score for a user in an exam
       tags:

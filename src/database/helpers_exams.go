@@ -575,7 +575,7 @@ func GetGivenExam(userId string, examId int) (*GivenExam, error) {
 			scored_by, 
 			created_at, 
 			final_score
-		FROM given_exams WHERE user_id = $1 AND exam_id = $2`,
+		FROM given_exam WHERE user_id = $1 AND exam_id = $2`,
 		userId,
 		examId,
 	).Scan(
@@ -936,7 +936,7 @@ func GetExamParticipants(opts *GetExamParticipantsOptions) ([]*GivenExam, error)
 			scored_by, 
 			created_at, 
 			final_score
-		FROM given_exams WHERE exam_id = $1
+		FROM given_exam WHERE exam_id = $1
 		ORDER BY created_at DESC
 		LIMIT $2 OFFSET $3`,
 		opts.ExamId,

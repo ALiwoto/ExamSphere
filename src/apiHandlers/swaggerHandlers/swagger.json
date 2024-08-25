@@ -1045,7 +1045,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/SetScoreData"
+                            "$ref": "#/definitions/SetExamScoreData"
                         }
                     }
                 ],
@@ -1061,7 +1061,7 @@
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/SetScoreResult"
+                                            "$ref": "#/definitions/SetExamScoreResult"
                                         }
                                     }
                                 }
@@ -3501,7 +3501,7 @@
                 }
             }
         },
-        "SetScoreData": {
+        "SetExamScoreData": {
             "type": "object",
             "properties": {
                 "exam_id": {
@@ -3518,7 +3518,7 @@
                 }
             }
         },
-        "SetScoreResult": {
+        "SetExamScoreResult": {
             "type": "object",
             "properties": {
                 "exam_id": {

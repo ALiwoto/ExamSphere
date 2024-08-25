@@ -1053,7 +1053,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/SetScoreData"
+                            "$ref": "#/definitions/SetExamScoreData"
                         }
                     }
                 ],
@@ -1069,7 +1069,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/SetScoreResult"
+                                            "$ref": "#/definitions/SetExamScoreResult"
                                         }
                                     }
                                 }
@@ -3509,7 +3509,7 @@ const docTemplate = `{
                 }
             }
         },
-        "SetScoreData": {
+        "SetExamScoreData": {
             "type": "object",
             "properties": {
                 "exam_id": {
@@ -3526,7 +3526,7 @@ const docTemplate = `{
                 }
             }
         },
-        "SetScoreResult": {
+        "SetExamScoreResult": {
             "type": "object",
             "properties": {
                 "exam_id": {

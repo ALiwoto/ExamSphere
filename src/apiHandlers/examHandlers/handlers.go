@@ -781,8 +781,8 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Authorization token"
-// @Param data body SetScoreData true "Data needed to set score for a user in an exam"
-// @Success 200 {object} apiHandlers.EndpointResponse{result=SetScoreResult}
+// @Param data body SetExamScoreData true "Data needed to set score for a user in an exam"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=SetExamScoreResult}
 // @Router /api/v1/exam/setScore [post]
 func SetExamScoreV1(c *fiber.Ctx) error {
 	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
