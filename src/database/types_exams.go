@@ -79,15 +79,15 @@ type EditExamInfoData struct {
 
 // ExamQuestion is a struct that represents the information of an exam question.
 type ExamQuestion struct {
-	QuestionId    int     `json:"question_id"`
-	ExamId        int     `json:"exam_id"`
-	QuestionTitle string  `json:"question_title"`
-	Description   *string `json:"description"`
-	Option1       *string `json:"option1"`
-	Option2       *string `json:"option2"`
-	Option3       *string `json:"option3"`
-	Option4       *string `json:"option4"`
-	CreatedAt     string  `json:"created_at"`
+	QuestionId    int       `json:"question_id"`
+	ExamId        int       `json:"exam_id"`
+	QuestionTitle string    `json:"question_title"`
+	Description   *string   `json:"description"`
+	Option1       *string   `json:"option1"`
+	Option2       *string   `json:"option2"`
+	Option3       *string   `json:"option3"`
+	Option4       *string   `json:"option4"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 // NewExamQuestionData is a struct that represents the data needed to create a new exam question.

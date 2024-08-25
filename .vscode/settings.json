@@ -5,6 +5,7 @@
         "gofiber",
         "jackc",
         "jwtware",
+        "mojocn",
         "roundcube"
     ]
 }
