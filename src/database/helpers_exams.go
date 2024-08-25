@@ -456,11 +456,11 @@ func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
 		return nil, ErrExamNotFound
 	}
 
-	addedQuestions := examInfo.GetQuestions()
-	if len(addedQuestions) > 0 {
-		// just use the cached questions
-		return addedQuestions, nil
-	}
+	// addedQuestions := examInfo.GetQuestions()
+	// if len(addedQuestions) > 0 {
+	// 	// just use the cached questions
+	// 	return addedQuestions, nil
+	// }
 
 	rows, err := DefaultContainer.db.Query(context.Background(),
 		`SELECT question_id, 
