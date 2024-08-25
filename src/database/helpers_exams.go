@@ -4,7 +4,6 @@ import (
 	"ExamSphere/src/core/utils/logging"
 	"context"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/ALiwoto/ssg/ssg"
@@ -30,7 +29,6 @@ func CreateNewExam(data *NewExamData) (*ExamInfo, error) {
 		Duration:        data.Duration,
 		ExamDate:        data.ExamDate,
 		CreatedAt:       time.Now(),
-		mut:             &sync.RWMutex{},
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
@@ -70,7 +68,6 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 
 	info = &ExamInfo{
 		ExamId: examId,
-		mut:    &sync.RWMutex{},
 	}
 	err := DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT exam_id,
@@ -334,7 +331,6 @@ func CreateNewExamQuestion(data *NewExamQuestionData) (*ExamQuestion, error) {
 		return nil, err
 	}
 
-	examInfo.AddQuestion(info)
 	examQuestionsMap.Add(info.QuestionId, info)
 
 	return info, nil
@@ -381,12 +377,6 @@ func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// if the question is cached, update the cached question
-	if len(examInfo.GetQuestions()) > 0 {
-		examInfo.AddQuestion(info)
-	}
-
 	return info, nil
 }
 
@@ -440,9 +430,6 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 		return nil, err
 	}
 
-	// AddQuestion is safe to be used multiple times even if the question is
-	// already added, because it has a check to prevent duplicates.
-	examInfo.AddQuestion(info)
 	examQuestionsMap.Add(info.QuestionId, info)
 	return info, nil
 }
@@ -502,7 +489,6 @@ func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
 			return nil, err
 		}
 
-		examInfo.AddQuestion(info)
 		examQuestionsMap.Add(info.QuestionId, info)
 		questions = append(questions, info)
 	}

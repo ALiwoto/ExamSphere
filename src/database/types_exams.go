@@ -1,7 +1,6 @@
 package database
 
 import (
-	"sync"
 	"time"
 )
 
@@ -17,10 +16,6 @@ type ExamInfo struct {
 	Duration        int       `json:"duration"`
 	CreatedBy       string    `json:"created_by"`
 	IsPublic        bool      `json:"is_public"`
-
-	mut *sync.RWMutex `json:"-"`
-	// Questions is a slice of exam questions.
-	Questions []*ExamQuestion `json:"-"`
 }
 
 // SearchExamsData is a struct that represents the data needed to search for exams.
