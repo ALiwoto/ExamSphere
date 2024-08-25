@@ -120,6 +120,16 @@ func GetUserByUserId(userId string) (*UserInfo, error) {
 	return info, nil
 }
 
+// GetUserFullNameOrEmpty returns the full name of a user or an empty string if the user is not found.
+func GetUserFullNameOrEmpty(userId string) string {
+	info, err := GetUserByUserId(userId)
+	if err != nil {
+		return ""
+	}
+
+	return info.FullName
+}
+
 // createArtificialOwnerUser creates an artificial owner user.
 func createArtificialOwnerUser(userId string) *UserInfo {
 	info := &UserInfo{

@@ -2820,6 +2820,9 @@ const docTemplate = `{
                 "final_score": {
                     "type": "string"
                 },
+                "full_name": {
+                    "type": "string"
+                },
                 "price": {
                     "type": "string"
                 },

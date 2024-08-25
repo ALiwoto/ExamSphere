@@ -426,6 +426,7 @@ func GetExamParticipantsV1(c *fiber.Ctx) error {
 	for _, p := range participants {
 		participantsInfo = append(participantsInfo, &ExamParticipantInfo{
 			UserId:     p.UserId,
+			FullName:   database.GetUserFullNameOrEmpty(p.UserId),
 			ExamId:     p.ExamId,
 			Price:      p.Price,
 			AddedBy:    ssg.Clone(p.AddedBy),

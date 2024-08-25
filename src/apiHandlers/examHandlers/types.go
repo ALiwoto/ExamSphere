@@ -279,6 +279,7 @@ type GetExamParticipantsResult struct {
 
 type ExamParticipantInfo struct {
 	UserId     string    `json:"user_id"`
+	FullName   string    `json:"full_name"`
 	ExamId     int       `json:"exam_id"`
 	Price      string    `json:"price"`
 	FinalScore *string   `json:"final_score"`
