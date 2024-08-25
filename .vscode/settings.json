@@ -6,6 +6,7 @@
         "jackc",
         "jwtware",
         "mojocn",
-        "roundcube"
+        "roundcube",
+        "SQLERRM"
     ]
 }

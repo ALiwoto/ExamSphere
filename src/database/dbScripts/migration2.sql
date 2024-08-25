@@ -200,11 +200,12 @@ BEGIN
         INSERT INTO "given_exam" (user_id, exam_id, price, added_by)
         VALUES (p_user_id, p_exam_id, p_price, p_added_by);
 
-        -- If we get here, the insertion was successful, so commit the transaction
-        COMMIT;
+        -- The procedure will automatically commit if no exception is raised
+        -- COMMIT;
     EXCEPTION
         WHEN OTHERS THEN
-            ROLLBACK; -- rollback all the changes
+            -- The procedure will automatically rollback if an exception is raised
+            -- ROLLBACK;
             -- Re-raise the exception
             RAISE;
     END;

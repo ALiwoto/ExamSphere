@@ -43,11 +43,17 @@ func CreateNewCourse(data *NewCourseData) (*CourseInfo, error) {
 // EditCourseInfo edits a course in the database.
 func EditCourseInfo(data *EditCourseInfoData) (*CourseInfo, error) {
 	_, err := DefaultContainer.db.Exec(context.Background(),
-		`UPDATE course_info
-		SET course_name = $1,
-			course_description = $2,
-			topic_id = $3
-		WHERE course_id = $4`,
+		`
+		BEGIN;
+			
+			UPDATE course_info
+			SET course_name = $1,
+				course_description = $2,
+				topic_id = $3
+			WHERE course_id = $d;
+			
+		COMMIT;
+		`,
 		data.CourseName,
 		data.CourseDescription,
 		data.TopicId,
