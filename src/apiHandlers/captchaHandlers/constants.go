@@ -25,5 +25,5 @@ const (
 	// CaptchaCharsLength is the number of characters in the captcha.
 	CaptchaCharsLength = 6
 
-	CaptchaNoiseCount = 7
+	CaptchaNoiseCount = 5
 )
