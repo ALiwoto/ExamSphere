@@ -16,4 +16,7 @@ var (
 
 	//go:embed migration4.sql
 	Migration4Str string
+
+	//go:embed migration5.sql
+	Migration5Str string
 )

@@ -23,7 +23,13 @@ const (
 	CaptchaSizeWidth = 240
 
 	// CaptchaCharsLength is the number of characters in the captcha.
-	CaptchaCharsLength = 6
+	CaptchaCharsLength = 4
 
-	CaptchaNoiseCount = 5
+	CaptchaNoiseCount = 1
+
+	CaptchaShowLineOptions = 0
+
+	CaptchaDotCount = 4
+
+	CaptchaMaxSkew = 0.3
 )

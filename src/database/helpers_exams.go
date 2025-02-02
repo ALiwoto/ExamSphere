@@ -20,15 +20,20 @@ func CreateNewExam(data *NewExamData) (*ExamInfo, error) {
 	data.ExamDescription = strings.TrimSpace(data.ExamDescription)
 
 	info := &ExamInfo{
-		CourseId:        data.CourseId,
-		ExamTitle:       data.ExamTitle,
-		ExamDescription: data.ExamDescription,
-		Price:           data.Price,
-		CreatedBy:       data.CreatedBy,
-		IsPublic:        data.IsPublic,
-		Duration:        data.Duration,
-		ExamDate:        data.ExamDate,
-		CreatedAt:       time.Now(),
+		CourseId:            data.CourseId,
+		ExamTitle:           data.ExamTitle,
+		ExamDescription:     data.ExamDescription,
+		Price:               data.Price,
+		CreatedBy:           data.CreatedBy,
+		IsPublic:            data.IsPublic,
+		Duration:            data.Duration,
+		ExamDate:            data.ExamDate,
+		CreatedAt:           time.Now(),
+		IsStrict:            data.IsStrict,
+		IsSampleExam:        data.IsSampleExam,
+		MaxQuestionsSeconds: data.MaxQuestionsSeconds,
+		NeedsVideoCall:      data.NeedsVideoCall,
+		NeedsVoiceCall:      data.NeedsVoiceCall,
 	}
 
 	err := DefaultContainer.db.QueryRow(context.Background(),
@@ -40,16 +45,26 @@ func CreateNewExam(data *NewExamData) (*ExamInfo, error) {
 			p_created_by := $5,
 			p_is_public := $6,
 			p_duration := $7,
-			p_exam_date := $8
+			p_exam_date := $8,
+			p_is_strict := $9,
+			p_is_sample_exam := $10,
+			p_max_questions_seconds := $11,
+			p_needs_video_call := $12,
+			p_needs_voice_call := $13
 		)`,
-		info.CourseId,
-		info.ExamTitle,
-		info.ExamDescription,
-		info.Price,
-		info.CreatedBy,
-		info.IsPublic,
-		info.Duration,
-		data.ExamDate.Format(ExamDateLayout),
+		info.CourseId,                        // 1
+		info.ExamTitle,                       // 2
+		info.ExamDescription,                 // 3
+		info.Price,                           // 4
+		info.CreatedBy,                       // 5
+		info.IsPublic,                        // 6
+		info.Duration,                        // 7
+		info.ExamDate.Format(ExamDateLayout), // 8
+		info.IsStrict,                        // 9
+		info.IsSampleExam,                    // 10
+		info.MaxQuestionsSeconds,             // 11
+		info.NeedsVideoCall,                  // 12
+		info.NeedsVoiceCall,                  // 13
 	).Scan(&info.ExamId)
 	if err != nil {
 		return nil, err
@@ -79,7 +94,12 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 			exam_date, 
 			duration, 
 			created_by, 
-			is_public
+			is_public,
+			is_strict,
+			is_sample_exam,
+			max_questions_seconds,
+			needs_video_call,
+			needs_voice_call
 		FROM exam_info WHERE exam_id = $1`,
 		examId,
 	).Scan(
@@ -93,6 +113,11 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 		&info.Duration,
 		&info.CreatedBy,
 		&info.IsPublic,
+		&info.IsStrict,
+		&info.IsSampleExam,
+		&info.MaxQuestionsSeconds,
+		&info.NeedsVideoCall,
+		&info.NeedsVoiceCall,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -109,9 +134,14 @@ func GetExamInfo(examId int) (*ExamInfo, error) {
 
 // SearchExam searches for exams in the database.
 func SearchExam(data *SearchExamsData) (*SearchExamResult, error) {
-	publicWhere := ""
+	extraWhereClause := ""
 	if data.PublicOnly {
-		publicWhere = " AND is_public = true "
+		extraWhereClause = " AND is_public = TRUE "
+	}
+	if data.SampleExams {
+		extraWhereClause = " AND is_sample_exam = TRUE "
+	} else {
+		extraWhereClause = " AND is_sample_exam = FALSE "
 	}
 	rows, err := DefaultContainer.db.Query(context.Background(),
 		`SELECT exam_id, 
@@ -123,9 +153,14 @@ func SearchExam(data *SearchExamsData) (*SearchExamResult, error) {
 			exam_date, 
 			duration, 
 			created_by, 
-			is_public
+			is_public,
+			is_strict,
+			is_sample_exam,
+			max_questions_seconds,
+			needs_video_call,
+			needs_voice_call
 		FROM exam_info
-		WHERE exam_title ILIKE '%' || $1 || '%'`+publicWhere+`
+		WHERE exam_title ILIKE '%' || $1 || '%'`+extraWhereClause+`
 		ORDER BY exam_date DESC
 		LIMIT $2 OFFSET $3`,
 		"%"+data.SearchQuery+"%",
@@ -151,6 +186,11 @@ func SearchExam(data *SearchExamsData) (*SearchExamResult, error) {
 			&info.Duration,
 			&info.CreatedBy,
 			&info.IsPublic,
+			&info.IsStrict,
+			&info.IsSampleExam,
+			&info.MaxQuestionsSeconds,
+			&info.NeedsVideoCall,
+			&info.NeedsVoiceCall,
 		)
 		if err != nil {
 			return nil, err
@@ -182,6 +222,9 @@ func EditExamInfo(data *EditExamInfoData) (*ExamInfo, error) {
 	info.IsPublic = data.IsPublic
 	info.Duration = data.Duration
 	info.ExamDate = data.ExamDate
+	info.IsStrict = data.IsStrict
+	info.NeedsVideoCall = data.NeedsVideoCall
+	info.NeedsVoiceCall = data.NeedsVoiceCall
 
 	_, err = DefaultContainer.db.Exec(context.Background(),
 		`UPDATE exam_info SET
@@ -191,14 +234,20 @@ func EditExamInfo(data *EditExamInfoData) (*ExamInfo, error) {
 			is_public = $4,
 			duration = $5,
 			exam_date = $6
-		WHERE exam_id = $7`,
-		info.ExamTitle,
-		info.ExamDescription,
-		info.Price,
-		info.IsPublic,
-		info.Duration,
-		info.ExamDate,
-		info.ExamId,
+			is_strict = $7,
+			needs_video_call = $8,
+			needs_voice_call = $9
+		WHERE exam_id = $10`,
+		info.ExamTitle,       // 1
+		info.ExamDescription, // 2
+		info.Price,           // 3
+		info.IsPublic,        // 4
+		info.Duration,        // 5
+		info.ExamDate,        // 6
+		info.IsStrict,        // 7
+		info.NeedsVideoCall,  // 8
+		info.NeedsVoiceCall,  // 9
+		info.ExamId,          // 10
 	)
 	if err != nil {
 		return nil, err
@@ -278,7 +327,15 @@ func GetExamFinishesIn(examId int) (int, error) {
 func GetExamQuestionsCount(examId int) int {
 	var count int
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT COUNT(*) FROM exam_question WHERE exam_id = $1`,
+		`SELECT SUM(
+            CASE 
+                WHEN is_pointer = false THEN 1 
+                WHEN is_pointer = true THEN pointer_count 
+                ELSE 0 
+            END
+        ) AS total_count
+        FROM exam_question 
+        WHERE exam_id = $1`,
 		examId,
 	).Scan(&count)
 	if err != nil && err != pgx.ErrNoRows {
@@ -299,14 +356,43 @@ func CreateNewExamQuestion(data *NewExamQuestionData) (*ExamQuestion, error) {
 		return nil, ErrExamNotFound
 	}
 
+	// if the current exam itself is a sample exam, it cannot have
+	// pointer to other exams.
+	if examInfo.IsSampleExam && data.IsPointer {
+		return nil, ErrSampleExamCannotHavePointer
+	}
+
+	if data.IsPointer {
+		if data.PointerToExamId == nil || *data.PointerToExamId == 0 {
+			return nil, ErrInvalidPointerToExamId
+		}
+
+		pointedToExamInfo, err := GetExamInfo(*data.PointerToExamId)
+		if err != nil && err != ErrExamNotFound {
+			logging.UnexpectedError("CreateNewExamQuestion: failed to get pointed to exam info:", err)
+			return nil, err
+		} else if pointedToExamInfo == nil {
+			return nil, ErrInvalidPointerToExamId
+		}
+
+		// the exam that we are pointing to, must be a sample exam
+		// TODO: in the future, add accessibility check here
+		if !pointedToExamInfo.IsSampleExam {
+			return nil, ErrPointedExamMustBeSample
+		}
+	}
+
 	info := &ExamQuestion{
-		ExamId:        data.ExamId,
-		QuestionTitle: data.QuestionTitle,
-		Description:   data.Description,
-		Option1:       data.Option1,
-		Option2:       data.Option2,
-		Option3:       data.Option3,
-		Option4:       data.Option4,
+		ExamId:          data.ExamId,
+		QuestionTitle:   data.QuestionTitle,
+		Description:     data.Description,
+		Option1:         data.Option1,
+		Option2:         data.Option2,
+		Option3:         data.Option3,
+		Option4:         data.Option4,
+		IsPointer:       data.IsPointer,
+		PointerCount:    data.PointerCount,
+		PointerToExamId: ssg.Clone(data.PointerToExamId),
 	}
 
 	err = DefaultContainer.db.QueryRow(context.Background(),
@@ -317,15 +403,21 @@ func CreateNewExamQuestion(data *NewExamQuestionData) (*ExamQuestion, error) {
 			p_option1 := $4,
 			p_option2 := $5,
 			p_option3 := $6,
-			p_option4 := $7
+			p_option4 := $7,
+			p_is_pointer := $8,
+			p_pointer_count := $9,
+			p_pointer_to_exam_id := $10
 		)`,
-		info.ExamId,
-		info.QuestionTitle,
-		info.Description,
-		info.Option1,
-		info.Option2,
-		info.Option3,
-		info.Option4,
+		info.ExamId,          // 1
+		info.QuestionTitle,   // 2
+		info.Description,     // 3
+		info.Option1,         // 4
+		info.Option2,         // 5
+		info.Option3,         // 6
+		info.Option4,         // 7
+		info.IsPointer,       // 8
+		info.PointerCount,    // 9
+		info.PointerToExamId, // 10
 	).Scan(&info.QuestionId)
 	if err != nil {
 		return nil, err
@@ -350,12 +442,49 @@ func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
 		return nil, ErrExamQuestionNotFound
 	}
 
+	if !info.IsPointer {
+		if data.PointerCount > 0 {
+			return nil, ErrNonPointerQuestionCannotHavePointerCount
+		} else if data.PointerToExamId != nil {
+			if *data.PointerToExamId == 0 {
+				data.PointerToExamId = nil
+			} else {
+				return nil, ErrNonPointerQuestionCannotHavePointedToExam
+			}
+		}
+	} else {
+		// the question is a pointer question, it must have a pointer to exam
+		if data.PointerToExamId == nil || *data.PointerToExamId == 0 {
+			return nil, ErrInvalidPointerToExamId
+		}
+
+		if data.PointerCount <= 0 {
+			return nil, ErrInvalidPointerCount
+		}
+
+		pointedToExamInfo, err := GetExamInfo(*data.PointerToExamId)
+		if err != nil && err != ErrExamNotFound {
+			logging.UnexpectedError("CreateNewExamQuestion: failed to get pointed to exam info:", err)
+			return nil, err
+		} else if pointedToExamInfo == nil {
+			return nil, ErrInvalidPointerToExamId
+		}
+
+		// the exam that we are pointing to, must be a sample exam
+		// TODO: in the future, add accessibility check here
+		if !pointedToExamInfo.IsSampleExam {
+			return nil, ErrPointedExamMustBeSample
+		}
+	}
+
 	info.QuestionTitle = data.QuestionTitle
 	info.Description = data.Description
 	info.Option1 = data.Option1
 	info.Option2 = data.Option2
 	info.Option3 = data.Option3
 	info.Option4 = data.Option4
+	info.PointerCount = data.PointerCount
+	info.PointerToExamId = ssg.Clone(data.PointerToExamId)
 
 	_, err = DefaultContainer.db.Exec(context.Background(),
 		`UPDATE exam_question SET
@@ -365,14 +494,18 @@ func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
 			option2 = $4,
 			option3 = $5,
 			option4 = $6
-		WHERE question_id = $7`,
-		info.QuestionTitle,
-		info.Description,
-		info.Option1,
-		info.Option2,
-		info.Option3,
-		info.Option4,
-		info.QuestionId,
+			pointer_count = $7,
+			pointer_to_exam_id = $8
+		WHERE question_id = $9`,
+		info.QuestionTitle,   // 1
+		info.Description,     // 2
+		info.Option1,         // 3
+		info.Option2,         // 4
+		info.Option3,         // 5
+		info.Option4,         // 6
+		info.PointerCount,    // 7
+		info.PointerToExamId, // 8
+		info.QuestionId,      // 9
 	)
 	if err != nil {
 		return nil, err
@@ -381,7 +514,13 @@ func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
 }
 
 // GetExamQuestion gets an exam question from the database.
+// NOTE: The exam id you should be passing here should be the current
+// exam's id; if the question is actually a referenced question from a
+// sample exam, you should NOT pass exam id of that sample exam.
 func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
+	// this exam info shall not belong to the current question's exam if and
+	// only if the question's origin exam is a sample exam; otherwise we will
+	// be having a logical error here (and we should return an error).
 	examInfo, err := GetExamInfo(examId)
 	if err != nil {
 		return nil, err
@@ -396,7 +535,6 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 
 	info = &ExamQuestion{
 		QuestionId: questionId,
-		ExamId:     examId,
 	}
 	err = DefaultContainer.db.QueryRow(context.Background(),
 		`SELECT question_id, 
@@ -407,7 +545,10 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 			option2, 
 			option3, 
 			option4, 
-			created_at
+			created_at,
+			is_pointer,
+			pointer_count,
+			pointer_to_exam_id
 		FROM exam_question WHERE question_id = $1`,
 		questionId,
 	).Scan(
@@ -420,6 +561,9 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 		&info.Option3,
 		&info.Option4,
 		&info.CreatedAt,
+		&info.IsPointer,
+		&info.PointerCount,
+		&info.PointerToExamId,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -430,12 +574,71 @@ func GetExamQuestion(examId, questionId int) (*ExamQuestion, error) {
 		return nil, err
 	}
 
+	if info.IsPointer {
+		// then the exam id should match the current exam id
+		if info.ExamId != examId {
+			logging.UnexpectedError("GetExamQuestion: question is a pointer, but exam id does not match")
+			return nil, ErrExamQuestionNotFound
+		}
+	} else {
+		// then the origin exam, should be a sample exam if the exam id does
+		// not match
+		if info.ExamId != examId {
+			originExamInfo, err := GetExamInfo(info.ExamId)
+			if err != nil && err != ErrExamNotFound {
+				return nil, err
+			} else if originExamInfo == nil {
+				logging.UnexpectedError("GetExamQuestion: failed to get origin exam info")
+				return nil, ErrExamQuestionNotFound
+			}
+
+			if !originExamInfo.IsSampleExam {
+				logging.UnexpectedError("GetExamQuestion: question is not a pointer, but origin exam is not a sample exam")
+				return nil, ErrExamQuestionNotFound
+			}
+		}
+	}
+
 	examQuestionsMap.Add(info.QuestionId, info)
 	return info, nil
 }
 
+// MarkGivenAnswersAsSeen marks the given answers as seen.
+// the way to run the pg sql function is:
+// -- SELECT mark_given_answers_as_seen(
+// --     p_exam_id := 1,
+// --     p_question_ids := ARRAY[1, 2, 3, 4, 5],
+// --     p_answered_by := 'user123'
+// -- );
+func MarkGivenAnswersAsSeen(data *MarkGivenAnswersAsSeenData) error {
+	questionIds := "{"
+	for i, id := range data.QuestionIds {
+		questionIds += ssg.ToBase10(id)
+		if i < len(data.QuestionIds)-1 {
+			questionIds += ","
+		}
+	}
+	questionIds += "}"
+
+	_, err := DefaultContainer.db.Exec(context.Background(),
+		`SELECT mark_given_answers_as_seen(
+			p_exam_id := $1,
+			p_question_ids := $2::integer[],
+			p_answered_by := $3
+		)`,
+		data.ExamId,
+		questionIds,
+		data.AnsweredBy,
+	)
+	return err
+}
+
 // GetExamQuestions gets all questions of an exam from the database.
 func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
+	if data.UserId == "" {
+		return nil, ErrInvalidParticipantUserId
+	}
+
 	examInfo, err := GetExamInfo(data.ExamId)
 	if err != nil {
 		return nil, err
@@ -449,29 +652,60 @@ func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
 	// 	return addedQuestions, nil
 	// }
 
-	rows, err := DefaultContainer.db.Query(context.Background(),
-		`SELECT question_id, 
-			exam_id, 
-			question_title, 
-			description, 
-			option1, 
-			option2, 
-			option3, 
-			option4, 
-			created_at
-		FROM exam_question WHERE exam_id = $1
-		ORDER BY question_id
-		LIMIT $2 OFFSET $3`,
-		data.ExamId,
-		data.Limit,
-		data.Offset,
-	)
+	var rows pgx.Rows
+	if data.ResolvePointers {
+		rows, err = DefaultContainer.db.Query(context.Background(),
+			`SELECT question_id, 
+				exam_id, 
+				question_title, 
+				description, 
+				option1, 
+				option2, 
+				option3, 
+				option4, 
+				created_at,
+				is_pointer,
+				pointer_count,
+				pointer_to_exam_id
+			FROM get_exam_questions_for_participant(
+				p_exam_id := $1,
+				p_participant_id := $2
+			)
+			ORDER BY question_id
+			LIMIT $3 OFFSET $4`,
+			data.ExamId, // 1
+			data.UserId, // 2
+			data.Limit,  // 3
+			data.Offset, // 4
+		)
+	} else {
+		// the raw results (pointers are NOT resolved)
+		rows, err = DefaultContainer.db.Query(context.Background(),
+			`SELECT question_id, 
+				exam_id, 
+				question_title, 
+				description, 
+				option1, 
+				option2, 
+				option3, 
+				option4, 
+				created_at
+			FROM exam_question WHERE exam_id = $1
+			ORDER BY question_id
+			LIMIT $2 OFFSET $3`,
+			data.ExamId, // 1
+			data.Limit,  // 2
+			data.Offset, // 3
+		)
+	}
+
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var questions []*ExamQuestion
+	var questionIds []int
 	for rows.Next() {
 		info := &ExamQuestion{}
 		err = rows.Scan(
@@ -484,13 +718,33 @@ func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
 			&info.Option3,
 			&info.Option4,
 			&info.CreatedAt,
+			&info.IsPointer,
+			&info.PointerCount,
+			&info.PointerToExamId,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		examQuestionsMap.Add(info.QuestionId, info)
+		if !examQuestionsMap.Exists(info.QuestionId) {
+			examQuestionsMap.Add(info.QuestionId, info)
+		}
 		questions = append(questions, info)
+		questionIds = append(questionIds, info.QuestionId)
+	}
+
+	if data.MarkAsSeen {
+		// resolving the pointers mean actually getting the answers
+		// for someone who is participating in the exam.
+		err = MarkGivenAnswersAsSeen(&MarkGivenAnswersAsSeenData{
+			ExamId:      data.ExamId,
+			AnsweredBy:  data.UserId,
+			QuestionIds: questionIds,
+		})
+		if err != nil {
+			logging.UnexpectedError("GetExamQuestions: failed to mark answers as seen:", err)
+			return nil, err
+		}
 	}
 
 	return questions, nil
@@ -738,7 +992,8 @@ func GetGivenAnswer(data *GetGivenAnswerData) (*GivenAnswerInfo, error) {
 			chosen_option,
 			seconds_taken,
 			answer_text,
-			answered_at
+			answered_at,
+			seen_at
 		FROM given_answer WHERE exam_id = $1 AND question_id = $2 AND answered_by = $3`,
 		data.ExamId,
 		data.QuestionId,
@@ -751,6 +1006,7 @@ func GetGivenAnswer(data *GetGivenAnswerData) (*GivenAnswerInfo, error) {
 		&info.SecondsTaken,
 		&info.AnswerText,
 		&info.AnsweredAt,
+		&info.SeenAt,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -793,6 +1049,20 @@ func AnswerQuestion(data *AnswerQuestionData) (*GivenAnswerInfo, error) {
 			ExamId:     data.ExamId,
 			QuestionId: data.QuestionId,
 			AnsweredBy: data.AnsweredBy,
+		}
+	}
+
+	examInfo := GetExamInfoOrNil(data.ExamId)
+	if examInfo == nil {
+		return nil, ErrExamNotFound
+	}
+
+	if examInfo.IsStrict {
+		if examInfo.MaxQuestionsSeconds > 0 &&
+			info.SeenAt != nil && !(*info.SeenAt).IsZero() {
+			if time.Since(*info.SeenAt).Seconds() > float64(examInfo.MaxQuestionsSeconds) {
+				return nil, ErrExamQuestionTimeExceeded
+			}
 		}
 	}
 

@@ -221,82 +221,11 @@ COMMENT ON COLUMN "exam_info".exam_date IS 'Date when the exam is scheduled';
 COMMENT ON COLUMN "exam_info".created_by IS 'ID of the user who created this exam info';
 COMMENT ON COLUMN "exam_info".is_public IS 'Flag indicating if the exam is public';
 
--- functions for creating a single exam_info
--- examples for calling this function:
--- SELECT create_exam_info(
---     p_course_id := 2,
---     p_exam_title := 'Math Midterm Exam 1403',
---     p_exam_description := 'This is a midterm exam for the Math course.',
---     p_price := 149.99,
---     p_created_by := 101,
---     p_is_public := TRUE,
---     p_duration := 120,
---     p_exam_date := '2023-12-31 14:00:00+00'
--- );
-CREATE OR REPLACE FUNCTION create_exam_info(
-    p_course_id INTEGER,
-    p_exam_title VARCHAR(63),
-    p_exam_description VARCHAR(63),
-    p_created_by UserIdType,
-    p_price VARCHAR(16) DEFAULT '0T',
-    p_is_public BOOLEAN DEFAULT FALSE,
-    p_duration INTEGER DEFAULT 60,
-    p_exam_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-) RETURNS INTEGER AS $$
-DECLARE
-    new_exam_id INTEGER;
-BEGIN
-    INSERT INTO "exam_info" (
-        course_id,
-        exam_title,
-        exam_description,
-        price,
-        exam_date,
-        created_by,
-        is_public,
-        duration
-    )
-    VALUES (
-        p_course_id,
-        p_exam_title,
-        p_exam_description,
-        p_price,
-        p_exam_date, 
-        p_created_by, 
-        p_is_public, 
-        p_duration
-    )
-    RETURNING exam_id INTO new_exam_id;
-    
-    RETURN new_exam_id;
-END;
-$$ LANGUAGE plpgsql;
+-- create_exam_info function definition has been moved to migration5.sql
+-- please check it in there.
 
 
--- View to get the most recent exams.
--- The results this view returns are ordered by exam_date in ascending order,
--- meaning the exams that are going to happen soon will be shown first.
--- Example usage:
---   SELECT * FROM most_recent_exams_view LIMIT 10 OFFSET 0;
--- It is strongly recommended that you use pagination when querying this view.
-CREATE OR REPLACE VIEW most_recent_exams_view AS
-SELECT 
-    ei.exam_id,
-    ei.course_id,
-    ei.exam_title,
-    ei.exam_description,
-    ei.price,
-    ei.created_at,
-    ei.exam_date,
-    ei.duration,
-    ei.created_by,
-    ei.is_public
-FROM 
-    exam_info ei
-WHERE 
-    ei.exam_date >= CURRENT_TIMESTAMP AND ei.is_public = TRUE
-ORDER BY 
-    ei.exam_date DESC;
+-- the most_recent_exams_view is moved to migration5.sql
 
 -- is_started returns true if the exam is started and false otherwise
 CREATE OR REPLACE FUNCTION has_exam_started(p_exam_id INTEGER)

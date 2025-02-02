@@ -5,6 +5,7 @@ import (
 	"ExamSphere/src/apiHandlers/captchaHandlers"
 	"ExamSphere/src/apiHandlers/courseHandlers"
 	"ExamSphere/src/apiHandlers/examHandlers"
+	"ExamSphere/src/apiHandlers/platformHandlers"
 	"ExamSphere/src/apiHandlers/sudoHandlers"
 	"ExamSphere/src/apiHandlers/swaggerHandlers"
 	"ExamSphere/src/apiHandlers/topicHandlers"
@@ -31,8 +32,8 @@ func RunServer() error {
 		ProxyHeader:   appConfig.GetIPProxyHeader(),
 		CaseSensitive: CaseSensitive,
 
-		// set body limit to 2MB
-		BodyLimit: 2 * 1024 * 1024,
+		// set body limit to 20MB
+		BodyLimit: RequestBodyLimit,
 	})
 
 	if appConfig.IsDebug() {
@@ -114,6 +115,9 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/exam/givenExam", authProtection, examHandlers.GetGivenExamV1)
 	v1.Get("/exam/userOngoingExams", authProtection, examHandlers.GetUserOngoingExamsV1)
 	v1.Post("/exam/userExamsHistory", authProtection, examHandlers.GetUserExamsHistoryV1)
+
+	// platform handlers
+	v1.Get("/platform/logs", authProtection, platformHandlers.GetPlatformLogsV1)
 
 	// sudo handlers
 	v1.Post("/sudo/exit", sudoHandlers.ExitV1)

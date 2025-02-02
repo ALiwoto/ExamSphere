@@ -6,16 +6,21 @@ import (
 
 // ExamInfo is a struct that represents the information of an exam.
 type ExamInfo struct {
-	ExamId          int       `json:"exam_id"`
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedAt       time.Time `json:"created_at"`
-	ExamDate        time.Time `json:"exam_date"`
-	Duration        int       `json:"duration"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
+	ExamId              int       `json:"exam_id"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExamDate            time.Time `json:"exam_date"`
+	Duration            int       `json:"duration"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
 }
 
 // SearchExamsData is a struct that represents the data needed to search for exams.
@@ -24,6 +29,7 @@ type SearchExamsData struct {
 	Offset      int    `json:"offset"`
 	Limit       int    `json:"limit"`
 	PublicOnly  bool   `json:"public_only"`
+	SampleExams bool   `json:"sample_exams"`
 }
 
 type SearchExamResult struct {
@@ -31,34 +37,61 @@ type SearchExamResult struct {
 }
 
 type SearchedExamInfo struct {
-	ExamId          int       `json:"exam_id"`
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedAt       time.Time `json:"created_at"`
-	ExamDate        time.Time `json:"exam_date"`
-	Duration        int       `json:"duration"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
+	ExamId              int       `json:"exam_id"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExamDate            time.Time `json:"exam_date"`
+	Duration            int       `json:"duration"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
+}
+
+type MarkGivenAnswersAsSeenData struct {
+	ExamId      int    `json:"exam_id"`
+	AnsweredBy  string `json:"user_id"`
+	QuestionIds []int  `json:"question_ids"`
 }
 
 type GetExamQuestionsData struct {
-	ExamId int `json:"exam_id"`
-	Offset int `json:"offset"`
-	Limit  int `json:"limit"`
+	ExamId int    `json:"exam_id"`
+	UserId string `json:"user_id"`
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
+
+	// ResolvePointers is a boolean value that indicates whether the pointers
+	// in the exam questions should be resolved or not.
+	// If this is set to false, the results will basically be the raw results which
+	// are inside of the exam questions table;
+	// otherwise (if the user is participating inside of the exam), the pointers will be
+	// actually resolved and the returned exam questions might be different for each
+	// user.
+	ResolvePointers bool `json:"resolve_pointers"`
+	MarkAsSeen      bool `json:"mark_as_seen"`
 }
 
 // NewExamData is a struct that represents the data needed to create a new exam.
 type NewExamData struct {
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
-	Duration        int       `json:"duration"`
-	ExamDate        time.Time `json:"exam_date"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	Duration            int       `json:"duration"`
+	ExamDate            time.Time `json:"exam_date"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
 }
 
 type EditExamInfoData struct {
@@ -70,42 +103,53 @@ type EditExamInfoData struct {
 	IsPublic        bool      `json:"is_public"`
 	Duration        int       `json:"duration"`
 	ExamDate        time.Time `json:"exam_date"`
+	IsStrict        bool      `json:"is_strict"`
+	NeedsVideoCall  bool      `json:"needs_video_call"`
+	NeedsVoiceCall  bool      `json:"needs_voice_call"`
 }
 
 // ExamQuestion is a struct that represents the information of an exam question.
 type ExamQuestion struct {
-	QuestionId    int       `json:"question_id"`
-	ExamId        int       `json:"exam_id"`
-	QuestionTitle string    `json:"question_title"`
-	Description   *string   `json:"description"`
-	Option1       *string   `json:"option1"`
-	Option2       *string   `json:"option2"`
-	Option3       *string   `json:"option3"`
-	Option4       *string   `json:"option4"`
-	CreatedAt     time.Time `json:"created_at"`
+	QuestionId      int       `json:"question_id"`
+	ExamId          int       `json:"exam_id"`
+	QuestionTitle   string    `json:"question_title"`
+	Description     *string   `json:"description"`
+	Option1         *string   `json:"option1"`
+	Option2         *string   `json:"option2"`
+	Option3         *string   `json:"option3"`
+	Option4         *string   `json:"option4"`
+	CreatedAt       time.Time `json:"created_at"`
+	IsPointer       bool      `json:"is_pointer"`
+	PointerCount    int       `json:"pointer_count"`
+	PointerToExamId *int      `json:"pointer_to_exam_id"`
 }
 
 // NewExamQuestionData is a struct that represents the data needed to create a new exam question.
 type NewExamQuestionData struct {
-	ExamId        int     `json:"exam_id"`
-	QuestionTitle string  `json:"question_title"`
-	Description   *string `json:"description"`
-	Option1       *string `json:"option1"`
-	Option2       *string `json:"option2"`
-	Option3       *string `json:"option3"`
-	Option4       *string `json:"option4"`
+	ExamId          int     `json:"exam_id"`
+	QuestionTitle   string  `json:"question_title"`
+	Description     *string `json:"description"`
+	Option1         *string `json:"option1"`
+	Option2         *string `json:"option2"`
+	Option3         *string `json:"option3"`
+	Option4         *string `json:"option4"`
+	IsPointer       bool    `json:"is_pointer"`
+	PointerCount    int     `json:"pointer_count"`
+	PointerToExamId *int    `json:"pointer_to_exam_id"`
 }
 
 // EditExamQuestionData is a struct that represents the data needed to edit an exam question.
 type EditExamQuestionData struct {
-	QuestionId    int     `json:"question_id"`
-	ExamId        int     `json:"exam_id"`
-	QuestionTitle string  `json:"question_title"`
-	Description   *string `json:"description"`
-	Option1       *string `json:"option1"`
-	Option2       *string `json:"option2"`
-	Option3       *string `json:"option3"`
-	Option4       *string `json:"option4"`
+	QuestionId      int     `json:"question_id"`
+	ExamId          int     `json:"exam_id"`
+	QuestionTitle   string  `json:"question_title"`
+	Description     *string `json:"description"`
+	Option1         *string `json:"option1"`
+	Option2         *string `json:"option2"`
+	Option3         *string `json:"option3"`
+	Option4         *string `json:"option4"`
+	PointerCount    int     `json:"pointer_count"`
+	PointerToExamId *int    `json:"pointer_to_exam_id"`
 }
 
 // NewScoreData is a struct that represents the data needed to create
@@ -167,13 +211,14 @@ type GetGivenAnswerData struct {
 }
 
 type GivenAnswerInfo struct {
-	ExamId       int       `json:"exam_id"`
-	QuestionId   int       `json:"question_id"`
-	AnsweredBy   string    `json:"answered_by"`
-	ChosenOption *string   `json:"chosen_option"`
-	SecondsTaken int       `json:"seconds_taken"`
-	AnswerText   *string   `json:"answer_text"`
-	AnsweredAt   time.Time `json:"answered_at"`
+	ExamId       int        `json:"exam_id"`
+	QuestionId   int        `json:"question_id"`
+	AnsweredBy   string     `json:"answered_by"`
+	ChosenOption *string    `json:"chosen_option"`
+	SecondsTaken int        `json:"seconds_taken"`
+	AnswerText   *string    `json:"answer_text"`
+	AnsweredAt   time.Time  `json:"answered_at"`
+	SeenAt       *time.Time `json:"seen_at"`
 }
 
 type AnswerQuestionData struct {

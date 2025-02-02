@@ -65,7 +65,7 @@ func (d *DatabaseContainer) DoMigrations() error {
 
 	for ; version < len(Migrations); version++ {
 		var tx pgx.Tx
-		tx, err = d.db.Begin(context.Background())
+		tx, err = d.db.Begin(d.MigrationCtx)
 		if err != nil {
 			return err
 		}

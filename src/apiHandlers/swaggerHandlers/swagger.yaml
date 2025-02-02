@@ -58,6 +58,7 @@ definitions:
     - 2154
     - 2155
     - 2156
+    - 2157
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -117,6 +118,7 @@ definitions:
     - ErrCodeTopicNameExists
     - ErrCodeTopicNotFound
     - ErrCodeBodyTooLong
+    - ErrCodeStrictExamViolation
   AnswerQuestionData:
     properties:
       answer_text:
@@ -132,14 +134,22 @@ definitions:
     type: object
   AnswerQuestionResult:
     properties:
+      answer_text:
+        type: string
       answered_at:
         type: string
       answered_by:
+        type: string
+      chosen_option:
         type: string
       exam_id:
         type: integer
       question_id:
         type: integer
+      seconds_taken:
+        type: integer
+      seen_at:
+        type: string
     type: object
   AnsweredQuestionInfo:
     properties:
@@ -151,6 +161,8 @@ definitions:
         type: integer
       seconds_taken:
         type: integer
+      seen_at:
+        type: string
       user_id:
         type: string
     type: object
@@ -280,6 +292,21 @@ definitions:
       is_public:
         default: false
         type: boolean
+      is_sample_exam:
+        default: false
+        type: boolean
+      is_strict:
+        default: false
+        type: boolean
+      max_questions_seconds:
+        default: 0
+        type: integer
+      needs_video_call:
+        default: false
+        type: boolean
+      needs_voice_call:
+        default: false
+        type: boolean
       price:
         default: 0T
         type: string
@@ -294,6 +321,9 @@ definitions:
         type: string
       exam_id:
         type: integer
+      is_pointer:
+        default: false
+        type: boolean
       option1:
         type: string
       option2:
@@ -302,6 +332,11 @@ definitions:
         type: string
       option4:
         type: string
+      pointer_count:
+        default: 0
+        type: integer
+      pointer_to_exam_id:
+        type: integer
       question_title:
         type: string
     type: object
@@ -313,6 +348,9 @@ definitions:
         type: string
       exam_id:
         type: integer
+      is_pointer:
+        default: false
+        type: boolean
       option1:
         type: string
       option2:
@@ -321,6 +359,11 @@ definitions:
         type: string
       option4:
         type: string
+      pointer_count:
+        default: 0
+        type: integer
+      pointer_to_exam_id:
+        type: integer
       question_id:
         type: integer
       question_title:
@@ -431,6 +474,14 @@ definitions:
       is_public:
         default: false
         type: boolean
+      is_strict:
+        type: boolean
+      max_questions_seconds:
+        type: integer
+      needs_video_call:
+        type: boolean
+      needs_voice_call:
+        type: boolean
       price:
         default: 0T
         type: string
@@ -449,6 +500,11 @@ definitions:
         type: string
       option4:
         type: string
+      pointer_count:
+        default: 0
+        type: integer
+      pointer_to_exam_id:
+        type: integer
       question_id:
         type: integer
       question_title:
@@ -462,6 +518,9 @@ definitions:
         type: string
       exam_id:
         type: integer
+      is_pointer:
+        default: false
+        type: boolean
       option1:
         type: string
       option2:
@@ -470,6 +529,10 @@ definitions:
         type: string
       option4:
         type: string
+      pointer_count:
+        type: integer
+      pointer_to_exam_id:
+        type: integer
       question_id:
         type: integer
       question_title:
@@ -494,6 +557,16 @@ definitions:
       exam_title:
         type: string
       is_public:
+        type: boolean
+      is_sample:
+        type: boolean
+      is_strict:
+        type: boolean
+      max_questions_seconds:
+        type: integer
+      needs_video_call:
+        type: boolean
+      needs_voice_call:
         type: boolean
       price:
         type: string
@@ -566,6 +639,9 @@ definitions:
         type: string
       description:
         type: string
+      is_pointer:
+        default: false
+        type: boolean
       option1:
         type: string
       option2:
@@ -574,6 +650,11 @@ definitions:
         type: string
       option4:
         type: string
+      pointer_count:
+        default: 0
+        type: integer
+      pointer_to_exam_id:
+        type: integer
       question_id:
         type: integer
       question_title:
@@ -669,6 +750,16 @@ definitions:
         type: boolean
       is_public:
         type: boolean
+      is_sample:
+        type: boolean
+      is_strict:
+        type: boolean
+      max_questions_seconds:
+        type: integer
+      needs_video_call:
+        type: boolean
+      needs_voice_call:
+        type: boolean
       price:
         type: string
       question_count:
@@ -748,6 +839,13 @@ definitions:
         $ref: '#/definitions/UserRole'
       user_id:
         type: string
+    type: object
+  GetPlatformLogsResult:
+    properties:
+      logs:
+        items:
+          $ref: '#/definitions/logging.LogEntry'
+        type: array
     type: object
   GetTopicInfoResult:
     properties:
@@ -907,6 +1005,9 @@ definitions:
         type: integer
       offset:
         type: integer
+      sample_exams:
+        default: false
+        type: boolean
       search_query:
         type: string
     required:
@@ -984,6 +1085,16 @@ definitions:
       exam_title:
         type: string
       is_public:
+        type: boolean
+      is_sample:
+        type: boolean
+      is_strict:
+        type: boolean
+      max_questions_seconds:
+        type: integer
+      needs_video_call:
+        type: boolean
+      needs_voice_call:
         type: boolean
       price:
         type: string
@@ -1099,6 +1210,31 @@ definitions:
       client_r_id:
         type: string
     type: object
+  logging.LogEntry:
+    properties:
+      date:
+        type: string
+      details:
+        type: string
+      log_id:
+        type: string
+      log_type:
+        $ref: '#/definitions/logging.LogType'
+      message:
+        type: string
+    type: object
+  logging.LogType:
+    enum:
+    - debug
+    - info
+    - warning
+    - error
+    type: string
+    x-enum-varnames:
+    - LogTypeDebug
+    - LogTypeInfo
+    - LogTypeWarning
+    - LogTypeError
 info:
   contact: {}
   description: This is the API for the ExamSphere system
@@ -1822,6 +1958,35 @@ paths:
       summary: Get ongoing exams of a user
       tags:
       - Exam
+  /api/v1/platform/logs:
+    get:
+      description: Allows a client to get platform logs
+      operationId: GetPlatformLogsV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Storage name
+        in: query
+        name: storage
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetPlatformLogsResult'
+              type: object
+      summary: Get platform logs
+      tags:
+      - Platform
   /api/v1/topic/allUserTopicStats:
     get:
       consumes:

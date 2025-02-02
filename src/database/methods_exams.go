@@ -45,3 +45,12 @@ func (e *ExamQuestion) HasOption(option string) bool {
 func (g *GivenExam) GetUniqueId() string {
 	return g.UserId + KeySepChar + ssg.ToBase10(g.ExamId)
 }
+
+//-------------------------------------------------------------
+
+// HasContent checks if the given answer has any actual answer content
+// or not.
+func (g *GivenAnswerInfo) HasContent() bool {
+	return (g.AnswerText != nil && *g.AnswerText != "") ||
+		(g.ChosenOption != nil && *g.ChosenOption != "")
+}

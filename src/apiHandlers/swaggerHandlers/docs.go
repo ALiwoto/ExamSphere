@@ -1184,6 +1184,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/platform/logs": {
+            "get": {
+                "description": "Allows a client to get platform logs",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Platform"
+                ],
+                "summary": "Get platform logs",
+                "operationId": "GetPlatformLogsV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Storage name",
+                        "name": "storage",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetPlatformLogsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/topic/allUserTopicStats": {
             "get": {
                 "description": "Get all user topic stats",
@@ -2100,7 +2148,8 @@ const docTemplate = `{
                 2153,
                 2154,
                 2155,
-                2156
+                2156,
+                2157
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -2159,7 +2208,8 @@ const docTemplate = `{
                 "ErrCodeEmailAlreadyExists",
                 "ErrCodeTopicNameExists",
                 "ErrCodeTopicNotFound",
-                "ErrCodeBodyTooLong"
+                "ErrCodeBodyTooLong",
+                "ErrCodeStrictExamViolation"
             ]
         },
         "AnswerQuestionData": {
@@ -2185,10 +2235,16 @@ const docTemplate = `{
         "AnswerQuestionResult": {
             "type": "object",
             "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
                 "answered_at": {
                     "type": "string"
                 },
                 "answered_by": {
+                    "type": "string"
+                },
+                "chosen_option": {
                     "type": "string"
                 },
                 "exam_id": {
@@ -2196,6 +2252,12 @@ const docTemplate = `{
                 },
                 "question_id": {
                     "type": "integer"
+                },
+                "seconds_taken": {
+                    "type": "integer"
+                },
+                "seen_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2213,6 +2275,9 @@ const docTemplate = `{
                 },
                 "seconds_taken": {
                     "type": "integer"
+                },
+                "seen_at": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"
@@ -2416,6 +2481,26 @@ const docTemplate = `{
                     "type": "boolean",
                     "default": false
                 },
+                "is_sample_exam": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "is_strict": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "max_questions_seconds": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "needs_video_call": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "needs_voice_call": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "price": {
                     "type": "string",
                     "default": "0T"
@@ -2431,6 +2516,10 @@ const docTemplate = `{
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2442,6 +2531,13 @@ const docTemplate = `{
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_title": {
                     "type": "string"
@@ -2460,6 +2556,10 @@ const docTemplate = `{
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2471,6 +2571,13 @@ const docTemplate = `{
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -2640,6 +2747,18 @@ const docTemplate = `{
                     "type": "boolean",
                     "default": false
                 },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
+                    "type": "boolean"
+                },
                 "price": {
                     "type": "string",
                     "default": "0T"
@@ -2667,6 +2786,13 @@ const docTemplate = `{
                 "option4": {
                     "type": "string"
                 },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
+                },
                 "question_id": {
                     "type": "integer"
                 },
@@ -2687,6 +2813,10 @@ const docTemplate = `{
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2698,6 +2828,12 @@ const docTemplate = `{
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer"
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -2735,6 +2871,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "is_public": {
+                    "type": "boolean"
+                },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
                     "type": "boolean"
                 },
                 "price": {
@@ -2846,6 +2997,10 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2857,6 +3012,13 @@ const docTemplate = `{
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -3001,6 +3163,21 @@ const docTemplate = `{
                 "is_public": {
                     "type": "boolean"
                 },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
+                    "type": "boolean"
+                },
                 "price": {
                     "type": "string"
                 },
@@ -3119,6 +3296,17 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "GetPlatformLogsResult": {
+            "type": "object",
+            "properties": {
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/logging.LogEntry"
+                    }
                 }
             }
         },
@@ -3364,6 +3552,10 @@ const docTemplate = `{
                 "offset": {
                     "type": "integer"
                 },
+                "sample_exams": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "search_query": {
                     "type": "string"
                 }
@@ -3476,6 +3668,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "is_public": {
+                    "type": "boolean"
+                },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
                     "type": "boolean"
                 },
                 "price": {
@@ -3647,6 +3854,41 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "logging.LogEntry": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "log_id": {
+                    "type": "string"
+                },
+                "log_type": {
+                    "$ref": "#/definitions/logging.LogType"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "logging.LogType": {
+            "type": "string",
+            "enum": [
+                "debug",
+                "info",
+                "warning",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "LogTypeDebug",
+                "LogTypeInfo",
+                "LogTypeWarning",
+                "LogTypeError"
+            ]
         }
     }
 }`

@@ -201,6 +201,13 @@ func (i *UserInfo) CanCreateNewExam() bool {
 		i.Role == appValues.UserRoleTeacher
 }
 
+// CanGetPlatformLogs returns true if and only if the current user has
+// the permission to get platform logs.
+func (i *UserInfo) CanGetPlatformLogs() bool {
+	return i != nil && i.Role == appValues.UserRoleOwner ||
+		i.Role == appValues.UserRoleAdmin
+}
+
 // CanAddOthersToExam returns true if and only if the current user has
 // the permission to add others to the specified exam.
 // Owners, admins, can add others to exams.

@@ -579,3 +579,11 @@ func SendErrBodyTooLong(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrStrictExamViolation(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeStrictExamViolation,
+		Message:   ErrStrictExamViolation,
+		Origin:    c.Path(),
+	})
+}

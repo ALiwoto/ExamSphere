@@ -43,7 +43,9 @@ func GenerateCaptchaV1(c *fiber.Ctx) error {
 	case "string":
 		driver = base64Captcha.NewDriverString(
 			CaptchaSizeHeight, CaptchaSizeWidth,
-			CaptchaNoiseCount, 0, 6,
+			CaptchaNoiseCount,
+			CaptchaShowLineOptions,
+			CaptchaCharsLength,
 			StringCaptchaValues,
 			&color.RGBA{0, 0, 0, 0},
 			nil, []string{},
@@ -54,7 +56,8 @@ func GenerateCaptchaV1(c *fiber.Ctx) error {
 		driver = base64Captcha.NewDriverDigit(
 			CaptchaSizeHeight, CaptchaSizeWidth,
 			CaptchaCharsLength,
-			2, 6,
+			CaptchaMaxSkew,
+			CaptchaDotCount,
 		)
 	}
 

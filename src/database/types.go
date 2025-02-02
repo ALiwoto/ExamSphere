@@ -1,6 +1,8 @@
 package database
 
 import (
+	"context"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -18,8 +20,9 @@ type Scannable interface {
 // DatabaseContainer is a struct that holds a database connection
 // and the dialect of the database.
 type DatabaseContainer struct {
-	db      underlyingDbType
-	dialect string
+	db           underlyingDbType
+	dialect      string
+	MigrationCtx context.Context
 
 	DatabaseErrorHandler func(action string, attemptIndex int, err error) (retry bool)
 }

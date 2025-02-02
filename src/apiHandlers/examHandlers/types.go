@@ -3,13 +3,18 @@ package examHandlers
 import "time"
 
 type CreateExamData struct {
-	CourseId        int    `json:"course_id" validate:"required"`
-	ExamTitle       string `json:"exam_title" validate:"required"`
-	ExamDescription string `json:"exam_description" validate:"required"`
-	Price           string `json:"price" default:"0T"`
-	IsPublic        bool   `json:"is_public" default:"false"`
-	Duration        int    `json:"duration" default:"60"`
-	ExamDate        int64  `json:"exam_date"`
+	CourseId            int    `json:"course_id" validate:"required"`
+	ExamTitle           string `json:"exam_title" validate:"required"`
+	ExamDescription     string `json:"exam_description" validate:"required"`
+	Price               string `json:"price" default:"0T"`
+	IsPublic            bool   `json:"is_public" default:"false"`
+	Duration            int    `json:"duration" default:"60"`
+	ExamDate            int64  `json:"exam_date"`
+	IsStrict            bool   `json:"is_strict" default:"false"`
+	IsSampleExam        bool   `json:"is_sample_exam" default:"false"`
+	MaxQuestionsSeconds int    `json:"max_questions_seconds" default:"0"`
+	NeedsVideoCall      bool   `json:"needs_video_call" default:"false"`
+	NeedsVoiceCall      bool   `json:"needs_voice_call" default:"false"`
 } // @name CreateExamData
 
 type CreateExamResult struct {
@@ -27,6 +32,7 @@ type SearchExamData struct {
 	SearchQuery string `json:"search_query" validate:"required"`
 	Offset      int    `json:"offset" validate:"required"`
 	Limit       int    `json:"limit" validate:"required"`
+	SampleExams bool   `json:"sample_exams" default:"false"`
 } // @name SearchExamData
 
 type SearchExamResult struct {
@@ -34,62 +40,81 @@ type SearchExamResult struct {
 } // @name SearchExamResult
 
 type SearchedExamInfo struct {
-	ExamId          int       `json:"exam_id"`
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedAt       time.Time `json:"created_at"`
-	ExamDate        time.Time `json:"exam_date"`
-	Duration        int       `json:"duration"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
+	ExamId              int       `json:"exam_id"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExamDate            time.Time `json:"exam_date"`
+	Duration            int       `json:"duration"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
 } // @name SearchedExamInfo
 
 type EditExamData struct {
-	ExamId          int    `json:"exam_id"`
-	CourseId        int    `json:"course_id"`
-	ExamTitle       string `json:"exam_title"`
-	ExamDescription string `json:"exam_description"`
-	Price           string `json:"price" default:"0T"`
-	IsPublic        bool   `json:"is_public" default:"false"`
-	Duration        int    `json:"duration" default:"60"`
-	ExamDate        int64  `json:"exam_date"`
+	ExamId              int    `json:"exam_id"`
+	CourseId            int    `json:"course_id"`
+	ExamTitle           string `json:"exam_title"`
+	ExamDescription     string `json:"exam_description"`
+	Price               string `json:"price" default:"0T"`
+	IsPublic            bool   `json:"is_public" default:"false"`
+	Duration            int    `json:"duration" default:"60"`
+	ExamDate            int64  `json:"exam_date"`
+	IsStrict            bool   `json:"is_strict"`
+	MaxQuestionsSeconds int    `json:"max_questions_seconds"`
+	NeedsVideoCall      bool   `json:"needs_video_call"`
+	NeedsVoiceCall      bool   `json:"needs_voice_call"`
 } // @name EditExamData
 
 type EditExamResult struct {
-	ExamId          int       `json:"exam_id"`
-	CourseId        int       `json:"course_id"`
-	ExamTitle       string    `json:"exam_title"`
-	ExamDescription string    `json:"exam_description"`
-	Price           string    `json:"price"`
-	CreatedAt       time.Time `json:"created_at"`
-	ExamDate        time.Time `json:"exam_date"`
-	Duration        int       `json:"duration"`
-	CreatedBy       string    `json:"created_by"`
-	IsPublic        bool      `json:"is_public"`
+	ExamId              int       `json:"exam_id"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExamDate            time.Time `json:"exam_date"`
+	Duration            int       `json:"duration"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
 } // @name EditExamResult
 
 type GetExamInfoResult struct {
-	ExamId             int       `json:"exam_id"`
-	CourseId           int       `json:"course_id"`
-	ExamTitle          string    `json:"exam_title"`
-	ExamDescription    string    `json:"exam_description"`
-	Price              string    `json:"price"`
-	CreatedAt          time.Time `json:"created_at"`
-	ExamDate           time.Time `json:"exam_date"`
-	Duration           int       `json:"duration"`
-	CreatedBy          string    `json:"created_by"`
-	IsPublic           bool      `json:"is_public"`
-	HasStarted         bool      `json:"has_started"`
-	HasParticipated    bool      `json:"has_participated" default:"false"`
-	CanParticipate     bool      `json:"can_participate" default:"false"`
-	CanEditQuestion    bool      `json:"can_edit_question" default:"false"`
-	CanAddOthersToExam bool      `json:"can_add_others_to_exam" default:"false"`
-	HasFinished        bool      `json:"has_finished" default:"false"`
-	StartsIn           int       `json:"starts_in" default:"0"`
-	FinishesIn         int       `json:"finishes_in" default:"0"`
-	QuestionCount      int       `json:"question_count" default:"0"`
+	ExamId              int       `json:"exam_id"`
+	CourseId            int       `json:"course_id"`
+	ExamTitle           string    `json:"exam_title"`
+	ExamDescription     string    `json:"exam_description"`
+	Price               string    `json:"price"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExamDate            time.Time `json:"exam_date"`
+	Duration            int       `json:"duration"`
+	CreatedBy           string    `json:"created_by"`
+	IsPublic            bool      `json:"is_public"`
+	HasStarted          bool      `json:"has_started"`
+	HasParticipated     bool      `json:"has_participated" default:"false"`
+	CanParticipate      bool      `json:"can_participate" default:"false"`
+	CanEditQuestion     bool      `json:"can_edit_question" default:"false"`
+	CanAddOthersToExam  bool      `json:"can_add_others_to_exam" default:"false"`
+	HasFinished         bool      `json:"has_finished" default:"false"`
+	StartsIn            int       `json:"starts_in" default:"0"`
+	FinishesIn          int       `json:"finishes_in" default:"0"`
+	QuestionCount       int       `json:"question_count" default:"0"`
+	IsStrict            bool      `json:"is_strict"`
+	IsSampleExam        bool      `json:"is_sample"`
+	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
+	NeedsVideoCall      bool      `json:"needs_video_call"`
+	NeedsVoiceCall      bool      `json:"needs_voice_call"`
 } // @name GetExamInfoResult
 
 type GetExamQuestionsData struct {
@@ -106,23 +131,27 @@ type GetExamQuestionsResult struct {
 } // @name GetExamQuestionsResult
 
 type ExamQuestionInfo struct {
-	QuestionId    int                   `json:"question_id"`
-	QuestionTitle string                `json:"question_title"`
-	Description   *string               `json:"description"`
-	Option1       *string               `json:"option1"`
-	Option2       *string               `json:"option2"`
-	Option3       *string               `json:"option3"`
-	Option4       *string               `json:"option4"`
-	CreatedAt     time.Time             `json:"created_at"`
-	UserAnswer    *AnsweredQuestionInfo `json:"user_answer"`
+	QuestionId      int                   `json:"question_id"`
+	QuestionTitle   string                `json:"question_title"`
+	Description     *string               `json:"description"`
+	Option1         *string               `json:"option1"`
+	Option2         *string               `json:"option2"`
+	Option3         *string               `json:"option3"`
+	Option4         *string               `json:"option4"`
+	CreatedAt       time.Time             `json:"created_at"`
+	IsPointer       bool                  `json:"is_pointer" default:"false"`
+	PointerCount    int                   `json:"pointer_count" default:"0"`
+	PointerToExamId *int                  `json:"pointer_to_exam_id"`
+	UserAnswer      *AnsweredQuestionInfo `json:"user_answer"`
 } // @name ExamQuestionInfo
 
 type AnsweredQuestionInfo struct {
-	UserId       string  `json:"user_id"`
-	QuestionId   int     `json:"question_id"`
-	ChosenOption *string `json:"chosen_option"`
-	SecondsTaken int     `json:"seconds_taken"`
-	AnswerText   *string `json:"answer"`
+	UserId       string     `json:"user_id"`
+	QuestionId   int        `json:"question_id"`
+	ChosenOption *string    `json:"chosen_option"`
+	SecondsTaken int        `json:"seconds_taken"`
+	AnswerText   *string    `json:"answer"`
+	SeenAt       *time.Time `json:"seen_at"`
 } // @name AnsweredQuestionInfo
 
 type ParticipateExamData struct {
@@ -158,10 +187,14 @@ type AnswerQuestionData struct {
 } // @name AnswerQuestionData
 
 type AnswerQuestionResult struct {
-	ExamId     int       `json:"exam_id"`
-	QuestionId int       `json:"question_id"`
-	AnsweredBy string    `json:"answered_by"`
-	AnsweredAt time.Time `json:"answered_at"`
+	ExamId       int        `json:"exam_id"`
+	QuestionId   int        `json:"question_id"`
+	AnsweredBy   string     `json:"answered_by"`
+	AnsweredAt   time.Time  `json:"answered_at"`
+	SeenAt       *time.Time `json:"seen_at"`
+	ChosenOption *string    `json:"chosen_option"`
+	SecondsTaken int        `json:"seconds_taken"`
+	AnswerText   *string    `json:"answer_text"`
 } // @name AnswerQuestionResult
 
 type SetExamScoreData struct {
@@ -224,48 +257,59 @@ type UserExamHistoryInfo struct {
 } // @name UserExamHistoryInfo
 
 type CreateExamQuestionData struct {
-	ExamId        int     `json:"exam_id"`
-	QuestionTitle string  `json:"question_title"`
-	Description   *string `json:"description"`
-	Option1       *string `json:"option1"`
-	Option2       *string `json:"option2"`
-	Option3       *string `json:"option3"`
-	Option4       *string `json:"option4"`
+	ExamId          int     `json:"exam_id"`
+	QuestionTitle   string  `json:"question_title"`
+	Description     *string `json:"description"`
+	Option1         *string `json:"option1"`
+	Option2         *string `json:"option2"`
+	Option3         *string `json:"option3"`
+	Option4         *string `json:"option4"`
+	IsPointer       bool    `json:"is_pointer" default:"false"`
+	PointerCount    int     `json:"pointer_count" default:"0"`
+	PointerToExamId *int    `json:"pointer_to_exam_id"`
 } // @name CreateExamQuestionData
 
 type CreateExamQuestionResult struct {
-	ExamId        int       `json:"exam_id"`
-	QuestionId    int       `json:"question_id"`
-	QuestionTitle string    `json:"question_title"`
-	Description   *string   `json:"description"`
-	Option1       *string   `json:"option1"`
-	Option2       *string   `json:"option2"`
-	Option3       *string   `json:"option3"`
-	Option4       *string   `json:"option4"`
-	CreatedAt     time.Time `json:"created_at"`
+	ExamId          int       `json:"exam_id"`
+	QuestionId      int       `json:"question_id"`
+	QuestionTitle   string    `json:"question_title"`
+	Description     *string   `json:"description"`
+	Option1         *string   `json:"option1"`
+	Option2         *string   `json:"option2"`
+	Option3         *string   `json:"option3"`
+	Option4         *string   `json:"option4"`
+	CreatedAt       time.Time `json:"created_at"`
+	IsPointer       bool      `json:"is_pointer" default:"false"`
+	PointerCount    int       `json:"pointer_count" default:"0"`
+	PointerToExamId *int      `json:"pointer_to_exam_id"`
 } // @name CreateExamQuestionResult
 
 type EditExamQuestionData struct {
-	QuestionId    int     `json:"question_id"`
-	ExamId        int     `json:"exam_id"`
-	QuestionTitle string  `json:"question_title"`
-	Description   *string `json:"description"`
-	Option1       *string `json:"option1"`
-	Option2       *string `json:"option2"`
-	Option3       *string `json:"option3"`
-	Option4       *string `json:"option4"`
+	QuestionId      int     `json:"question_id"`
+	ExamId          int     `json:"exam_id"`
+	QuestionTitle   string  `json:"question_title"`
+	Description     *string `json:"description"`
+	Option1         *string `json:"option1"`
+	Option2         *string `json:"option2"`
+	Option3         *string `json:"option3"`
+	Option4         *string `json:"option4"`
+	PointerCount    int     `json:"pointer_count" default:"0"`
+	PointerToExamId *int    `json:"pointer_to_exam_id"`
 } // @name EditExamQuestionData
 
 type EditExamQuestionResult struct {
-	QuestionId    int       `json:"question_id"`
-	ExamId        int       `json:"exam_id"`
-	QuestionTitle string    `json:"question_title"`
-	Description   *string   `json:"description"`
-	Option1       *string   `json:"option1"`
-	Option2       *string   `json:"option2"`
-	Option3       *string   `json:"option3"`
-	Option4       *string   `json:"option4"`
-	CreatedAt     time.Time `json:"created_at"`
+	QuestionId      int       `json:"question_id"`
+	ExamId          int       `json:"exam_id"`
+	QuestionTitle   string    `json:"question_title"`
+	Description     *string   `json:"description"`
+	Option1         *string   `json:"option1"`
+	Option2         *string   `json:"option2"`
+	Option3         *string   `json:"option3"`
+	Option4         *string   `json:"option4"`
+	CreatedAt       time.Time `json:"created_at"`
+	IsPointer       bool      `json:"is_pointer" default:"false"`
+	PointerCount    int       `json:"pointer_count"`
+	PointerToExamId *int      `json:"pointer_to_exam_id"`
 } // @name EditExamQuestionResult
 
 type GetExamParticipantsData struct {

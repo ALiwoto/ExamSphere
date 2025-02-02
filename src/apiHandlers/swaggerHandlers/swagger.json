@@ -1176,6 +1176,54 @@
                 }
             }
         },
+        "/api/v1/platform/logs": {
+            "get": {
+                "description": "Allows a client to get platform logs",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Platform"
+                ],
+                "summary": "Get platform logs",
+                "operationId": "GetPlatformLogsV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Storage name",
+                        "name": "storage",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetPlatformLogsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/topic/allUserTopicStats": {
             "get": {
                 "description": "Get all user topic stats",
@@ -2092,7 +2140,8 @@
                 2153,
                 2154,
                 2155,
-                2156
+                2156,
+                2157
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -2151,7 +2200,8 @@
                 "ErrCodeEmailAlreadyExists",
                 "ErrCodeTopicNameExists",
                 "ErrCodeTopicNotFound",
-                "ErrCodeBodyTooLong"
+                "ErrCodeBodyTooLong",
+                "ErrCodeStrictExamViolation"
             ]
         },
         "AnswerQuestionData": {
@@ -2177,10 +2227,16 @@
         "AnswerQuestionResult": {
             "type": "object",
             "properties": {
+                "answer_text": {
+                    "type": "string"
+                },
                 "answered_at": {
                     "type": "string"
                 },
                 "answered_by": {
+                    "type": "string"
+                },
+                "chosen_option": {
                     "type": "string"
                 },
                 "exam_id": {
@@ -2188,6 +2244,12 @@
                 },
                 "question_id": {
                     "type": "integer"
+                },
+                "seconds_taken": {
+                    "type": "integer"
+                },
+                "seen_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2205,6 +2267,9 @@
                 },
                 "seconds_taken": {
                     "type": "integer"
+                },
+                "seen_at": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"
@@ -2408,6 +2473,26 @@
                     "type": "boolean",
                     "default": false
                 },
+                "is_sample_exam": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "is_strict": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "max_questions_seconds": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "needs_video_call": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "needs_voice_call": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "price": {
                     "type": "string",
                     "default": "0T"
@@ -2423,6 +2508,10 @@
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2434,6 +2523,13 @@
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_title": {
                     "type": "string"
@@ -2452,6 +2548,10 @@
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2463,6 +2563,13 @@
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -2632,6 +2739,18 @@
                     "type": "boolean",
                     "default": false
                 },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
+                    "type": "boolean"
+                },
                 "price": {
                     "type": "string",
                     "default": "0T"
@@ -2659,6 +2778,13 @@
                 "option4": {
                     "type": "string"
                 },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
+                },
                 "question_id": {
                     "type": "integer"
                 },
@@ -2679,6 +2805,10 @@
                 "exam_id": {
                     "type": "integer"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2690,6 +2820,12 @@
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer"
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -2727,6 +2863,21 @@
                     "type": "string"
                 },
                 "is_public": {
+                    "type": "boolean"
+                },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
                     "type": "boolean"
                 },
                 "price": {
@@ -2838,6 +2989,10 @@
                 "description": {
                     "type": "string"
                 },
+                "is_pointer": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "option1": {
                     "type": "string"
                 },
@@ -2849,6 +3004,13 @@
                 },
                 "option4": {
                     "type": "string"
+                },
+                "pointer_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "pointer_to_exam_id": {
+                    "type": "integer"
                 },
                 "question_id": {
                     "type": "integer"
@@ -2993,6 +3155,21 @@
                 "is_public": {
                     "type": "boolean"
                 },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
+                    "type": "boolean"
+                },
                 "price": {
                     "type": "string"
                 },
@@ -3111,6 +3288,17 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "GetPlatformLogsResult": {
+            "type": "object",
+            "properties": {
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/logging.LogEntry"
+                    }
                 }
             }
         },
@@ -3356,6 +3544,10 @@
                 "offset": {
                     "type": "integer"
                 },
+                "sample_exams": {
+                    "type": "boolean",
+                    "default": false
+                },
                 "search_query": {
                     "type": "string"
                 }
@@ -3468,6 +3660,21 @@
                     "type": "string"
                 },
                 "is_public": {
+                    "type": "boolean"
+                },
+                "is_sample": {
+                    "type": "boolean"
+                },
+                "is_strict": {
+                    "type": "boolean"
+                },
+                "max_questions_seconds": {
+                    "type": "integer"
+                },
+                "needs_video_call": {
+                    "type": "boolean"
+                },
+                "needs_voice_call": {
                     "type": "boolean"
                 },
                 "price": {
@@ -3639,6 +3846,41 @@
                     "type": "string"
                 }
             }
+        },
+        "logging.LogEntry": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "log_id": {
+                    "type": "string"
+                },
+                "log_type": {
+                    "$ref": "#/definitions/logging.LogType"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "logging.LogType": {
+            "type": "string",
+            "enum": [
+                "debug",
+                "info",
+                "warning",
+                "error"
+            ],
+            "x-enum-varnames": [
+                "LogTypeDebug",
+                "LogTypeInfo",
+                "LogTypeWarning",
+                "LogTypeError"
+            ]
         }
     }
 }

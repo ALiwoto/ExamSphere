@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"ExamSphere/src/core/utils/timeUtils"
@@ -13,8 +14,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-var AppLogger *zap.SugaredLogger
 
 func InitZapLog(debug bool) *zap.Logger {
 	var config zap.Config
@@ -36,13 +35,73 @@ func LoadLogger(debug bool) func() {
 	if AppLogger != nil {
 		return nil
 	}
+
 	loggerMgr := InitZapLog(debug)
 	zap.ReplaceGlobals(loggerMgr)
 	AppLogger = loggerMgr.Sugar()
 
+	LogStorages = append(LogStorages, GetMemoryLogStorage())
+
 	return func() {
 		_ = loggerMgr.Sync()
 	}
+}
+
+func GetMemoryLogStorage() LogStorage {
+	return &memoryLogStorage{
+		logs: make([]*LogEntry, 0),
+	}
+}
+
+func storeLog(theType LogType, args ...any) {
+	if len(LogStorages) == 0 {
+		return
+	}
+
+	logMessage := fmt.Sprint(args...)
+	doStoreLog(theType, logMessage)
+}
+
+func storeLogf(theType LogType, template string, args ...any) {
+	if len(LogStorages) == 0 {
+		return
+	}
+
+	logMessage := fmt.Sprintf(template, args...)
+	doStoreLog(theType, logMessage)
+}
+
+func doStoreLog(theType LogType, logMessage string) {
+	logDetails := ""
+	if len(logMessage) > MaxLogTitleLen {
+		logDetails = logMessage
+		logMessage = extractLogTitle(logMessage)
+	}
+
+	for _, storage := range LogStorages {
+		_ = storage.StoreLog(&LogEntry{
+			Type:    theType,
+			Date:    time.Now().Format(time.RFC3339),
+			Message: logMessage,
+			Details: logDetails,
+		})
+	}
+}
+
+func extractLogTitle(logMessage string) string {
+	if len(logMessage) < MaxLogTitleLen {
+		return logMessage
+	}
+
+	logMessage = strings.TrimSpace(strings.Split(logMessage, "\n")[0])
+	if len(logMessage) < MaxLogTitleLen {
+		return logMessage
+	}
+
+	if strings.Contains(logMessage, "]:") {
+		logMessage = strings.TrimSpace(strings.Split(logMessage, "]:")[1])
+	}
+	return logMessage
 }
 
 func Warn(args ...interface{}) {
@@ -51,6 +110,8 @@ func Warn(args ...interface{}) {
 	} else {
 		log.Println(args...)
 	}
+
+	storeLog(LogTypeWarning, args...)
 }
 
 func Error(args ...interface{}) {
@@ -59,6 +120,8 @@ func Error(args ...interface{}) {
 	} else {
 		log.Println(args...)
 	}
+
+	storeLog(LogTypeError, args...)
 }
 
 // UnexpectedError works like Error function and logs the error details to a
@@ -78,6 +141,8 @@ func UnexpectedError(args ...interface{}) {
 		debug.Stack(),
 	)
 	_ = os.WriteFile(GetErrorLogFilePath(), []byte(errorDetails), fs.ModePerm)
+
+	storeLog(LogTypeError, errorDetails)
 }
 
 // UnexpectedPanic works like Error function and logs the error details to a
@@ -97,6 +162,8 @@ func UnexpectedPanic(args ...interface{}) {
 		debug.Stack(),
 	)
 	_ = os.WriteFile(GetPanicLogPath(), []byte(panicDetails), fs.ModePerm)
+
+	storeLog(LogTypeError, panicDetails)
 }
 
 func Info(args ...interface{}) {
@@ -105,6 +172,8 @@ func Info(args ...interface{}) {
 	} else {
 		log.Println(args...)
 	}
+
+	storeLog(LogTypeInfo, args...)
 }
 
 func Infof(template string, args ...interface{}) {
@@ -113,6 +182,8 @@ func Infof(template string, args ...interface{}) {
 	} else {
 		log.Printf(template, args...)
 	}
+
+	storeLogf(LogTypeInfo, template, args...)
 }
 
 func Debug(args ...interface{}) {
@@ -121,6 +192,8 @@ func Debug(args ...interface{}) {
 	} else {
 		log.Println(args...)
 	}
+
+	storeLog(LogTypeDebug, args...)
 }
 
 func Debugf(template string, args ...interface{}) {
@@ -129,6 +202,8 @@ func Debugf(template string, args ...interface{}) {
 	} else {
 		log.Printf(template, args...)
 	}
+
+	storeLogf(LogTypeDebug, template, args...)
 }
 
 func Fatal(args ...interface{}) {
@@ -137,6 +212,18 @@ func Fatal(args ...interface{}) {
 	} else {
 		log.Fatal(args...)
 	}
+
+	storeLog(LogTypeError, args...)
+}
+
+func GetAllLogEntries(storageName string) ([]*LogEntry, error) {
+	for _, storage := range LogStorages {
+		if storageName == "" || storage.GetStorageName() == storageName {
+			return storage.GetAllLogEntries()
+		}
+	}
+
+	return nil, ErrLogStorageNotFound
 }
 
 func GetErrorLogFilePath() string {

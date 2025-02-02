@@ -59,6 +59,7 @@ const (
 	ErrTopicNameExists               = "A topic with this name already exists"
 	ErrTopicNotFound                 = "Topic not found"
 	ErrBodyTooLong                   = "The provided body is too long"
+	ErrStrictExamViolation           = "A strict exam violation occurred"
 )
 
 // error codes
@@ -120,4 +121,5 @@ const (
 	ErrCodeTopicNameExists
 	ErrCodeTopicNotFound
 	ErrCodeBodyTooLong
+	ErrCodeStrictExamViolation
 )

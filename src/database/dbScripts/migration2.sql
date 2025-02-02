@@ -24,37 +24,7 @@ COMMENT ON COLUMN exam_question.option3 IS 'Third answer option (optional)';
 COMMENT ON COLUMN exam_question.option4 IS 'Fourth answer option (optional)';
 COMMENT ON COLUMN exam_question.created_at IS 'Timestamp when the question was created';
 
--- Function to create a single exam question.
--- Returns the question_id of the newly created question.
--- Example usage:
---      SELECT create_exam_question(
---         p_exam_id := 1234,
---         p_question_title := 'What is the capital of France?',
---         p_description := 'Choose the correct option from the following.',
---         p_option1 := 'Paris',
---         p_option2 := 'London',
---         p_option3 := 'Berlin',
---         p_option4 := 'Madrid'
---      );
-CREATE OR REPLACE FUNCTION create_exam_question(
-    p_exam_id INTEGER,
-    p_question_title VARCHAR(2048),
-    p_description TEXT DEFAULT NULL,
-    p_option1 TEXT DEFAULT NULL,
-    p_option2 TEXT DEFAULT NULL,
-    p_option3 TEXT DEFAULT NULL,
-    p_option4 TEXT DEFAULT NULL
-) RETURNS INTEGER AS $$
-DECLARE
-    new_question_id INTEGER;
-BEGIN
-    INSERT INTO exam_question (exam_id, question_title, description, option1, option2, option3, option4)
-    VALUES (p_exam_id, p_question_title, p_description, p_option1, p_option2, p_option3, p_option4)
-    RETURNING question_id INTO new_question_id;
-    
-    RETURN new_question_id;
-END;
-$$ LANGUAGE plpgsql;
+-- The function create_exam_question has been moved to migration5.sql
 
 ---------------------------------------------------------------
 

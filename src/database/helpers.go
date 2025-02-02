@@ -39,7 +39,8 @@ func New(dialect, address string) (*DatabaseContainer, error) {
 
 func NewWithDB(db underlyingDbType, dialect string) *DatabaseContainer {
 	return &DatabaseContainer{
-		db:      db,
-		dialect: dialect,
+		db:           db,
+		dialect:      dialect,
+		MigrationCtx: context.Background(),
 	}
 }

@@ -2,6 +2,7 @@ package examHandlers
 
 import (
 	"ExamSphere/src/apiHandlers"
+	"ExamSphere/src/apiUtils"
 	"ExamSphere/src/core/utils/logging"
 	"ExamSphere/src/database"
 	"time"
@@ -48,14 +49,19 @@ func CreateExamV1(c *fiber.Ctx) error {
 	}
 
 	examInfo, err := database.CreateNewExam(&database.NewExamData{
-		CourseId:        data.CourseId,
-		ExamTitle:       data.ExamTitle,
-		ExamDescription: data.ExamDescription,
-		Price:           data.Price,
-		IsPublic:        data.IsPublic,
-		Duration:        data.Duration,
-		ExamDate:        time.Unix(data.ExamDate, 0),
-		CreatedBy:       userInfo.UserId,
+		CourseId:            data.CourseId,
+		ExamTitle:           data.ExamTitle,
+		ExamDescription:     data.ExamDescription,
+		Price:               data.Price,
+		IsPublic:            data.IsPublic,
+		Duration:            data.Duration,
+		ExamDate:            time.Unix(data.ExamDate, 0),
+		CreatedBy:           userInfo.UserId,
+		IsStrict:            data.IsStrict,
+		IsSampleExam:        data.IsSampleExam,
+		MaxQuestionsSeconds: data.MaxQuestionsSeconds,
+		NeedsVideoCall:      data.NeedsVideoCall,
+		NeedsVoiceCall:      data.NeedsVoiceCall,
 	})
 
 	if err != nil {
@@ -116,25 +122,30 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &GetExamInfoResult{
-		ExamId:             examInfo.ExamId,
-		CourseId:           examInfo.CourseId,
-		ExamTitle:          examInfo.ExamTitle,
-		ExamDescription:    examInfo.ExamDescription,
-		Price:              examInfo.Price,
-		CreatedAt:          examInfo.CreatedAt,
-		ExamDate:           examInfo.ExamDate,
-		Duration:           examInfo.Duration,
-		CreatedBy:          examInfo.CreatedBy,
-		IsPublic:           examInfo.IsPublic,
-		HasParticipated:    database.HasParticipatedInExam(userInfo.UserId, examId),
-		HasStarted:         examInfo.HasExamStarted(),
-		CanParticipate:     database.CanParticipateInExamOrFalse(userInfo.UserId, examId),
-		CanEditQuestion:    userInfo.CanEditExamQuestion(examInfo),
-		CanAddOthersToExam: userInfo.CanAddOthersToExam(examInfo),
-		HasFinished:        examInfo.HasExamFinished(),
-		StartsIn:           examInfo.ExamStartsIn(),
-		FinishesIn:         examInfo.ExamFinishesIn(),
-		QuestionCount:      database.GetExamQuestionsCount(examId),
+		ExamId:              examInfo.ExamId,
+		CourseId:            examInfo.CourseId,
+		ExamTitle:           examInfo.ExamTitle,
+		ExamDescription:     examInfo.ExamDescription,
+		Price:               examInfo.Price,
+		CreatedAt:           examInfo.CreatedAt,
+		ExamDate:            examInfo.ExamDate,
+		Duration:            examInfo.Duration,
+		CreatedBy:           examInfo.CreatedBy,
+		IsPublic:            examInfo.IsPublic,
+		IsStrict:            examInfo.IsStrict,
+		IsSampleExam:        examInfo.IsSampleExam,
+		MaxQuestionsSeconds: examInfo.MaxQuestionsSeconds,
+		NeedsVideoCall:      examInfo.NeedsVideoCall,
+		NeedsVoiceCall:      examInfo.NeedsVoiceCall,
+		HasParticipated:     database.HasParticipatedInExam(userInfo.UserId, examId),
+		HasStarted:          examInfo.HasExamStarted(),
+		CanParticipate:      database.CanParticipateInExamOrFalse(userInfo.UserId, examId),
+		CanEditQuestion:     userInfo.CanEditExamQuestion(examInfo),
+		CanAddOthersToExam:  userInfo.CanAddOthersToExam(examInfo),
+		HasFinished:         examInfo.HasExamFinished(),
+		StartsIn:            examInfo.ExamStartsIn(),
+		FinishesIn:          examInfo.ExamFinishesIn(),
+		QuestionCount:       database.GetExamQuestionsCount(examId),
 	})
 }
 
@@ -150,17 +161,12 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SearchExamResult}
 // @Router /api/v1/exam/search [post]
 func SearchExamV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
-	} else if !userInfo.CanGetExamInfo() {
+	if !userInfo.CanGetExamInfo() {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
@@ -178,6 +184,7 @@ func SearchExamV1(c *fiber.Ctx) error {
 		Offset:      data.Offset,
 		Limit:       data.Limit,
 		PublicOnly:  !userInfo.CanGetAllExams(),
+		SampleExams: data.SampleExams,
 	})
 	if err != nil {
 		logging.UnexpectedError("SearchExam: Failed to search exams:", err)
@@ -187,16 +194,21 @@ func SearchExamV1(c *fiber.Ctx) error {
 	examsInfo := make([]*SearchedExamInfo, 0, len(exams.Exams))
 	for _, exam := range exams.Exams {
 		examsInfo = append(examsInfo, &SearchedExamInfo{
-			ExamId:          exam.ExamId,
-			CourseId:        exam.CourseId,
-			ExamTitle:       exam.ExamTitle,
-			ExamDescription: exam.ExamDescription,
-			Price:           exam.Price,
-			CreatedAt:       exam.CreatedAt,
-			ExamDate:        exam.ExamDate,
-			Duration:        exam.Duration,
-			CreatedBy:       exam.CreatedBy,
-			IsPublic:        exam.IsPublic,
+			ExamId:              exam.ExamId,
+			CourseId:            exam.CourseId,
+			ExamTitle:           exam.ExamTitle,
+			ExamDescription:     exam.ExamDescription,
+			Price:               exam.Price,
+			CreatedAt:           exam.CreatedAt,
+			ExamDate:            exam.ExamDate,
+			Duration:            exam.Duration,
+			CreatedBy:           exam.CreatedBy,
+			IsPublic:            exam.IsPublic,
+			IsStrict:            exam.IsStrict,
+			IsSampleExam:        exam.IsSampleExam,
+			MaxQuestionsSeconds: exam.MaxQuestionsSeconds,
+			NeedsVideoCall:      exam.NeedsVideoCall,
+			NeedsVoiceCall:      exam.NeedsVoiceCall,
 		})
 	}
 
@@ -217,18 +229,12 @@ func SearchExamV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=EditExamResult}
 // @Router /api/v1/exam/edit [post]
 func EditExamV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
-	} else if !userInfo.CanTryToEditExam() {
+	if !userInfo.CanTryToEditExam() {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
@@ -250,7 +256,7 @@ func EditExamV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
-	examInfo, err := database.EditExamInfo(&database.EditExamInfoData{
+	examInfo, err = database.EditExamInfo(&database.EditExamInfoData{
 		ExamId:          data.ExamId,
 		CourseId:        data.CourseId,
 		ExamTitle:       data.ExamTitle,
@@ -259,6 +265,9 @@ func EditExamV1(c *fiber.Ctx) error {
 		IsPublic:        data.IsPublic,
 		Duration:        data.Duration,
 		ExamDate:        time.Unix(data.ExamDate, 0),
+		IsStrict:        data.IsStrict,
+		NeedsVideoCall:  data.NeedsVideoCall,
+		NeedsVoiceCall:  data.NeedsVoiceCall,
 	})
 
 	if err != nil {
@@ -267,16 +276,21 @@ func EditExamV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &EditExamResult{
-		ExamId:          examInfo.ExamId,
-		CourseId:        examInfo.CourseId,
-		ExamTitle:       examInfo.ExamTitle,
-		ExamDescription: examInfo.ExamDescription,
-		Price:           examInfo.Price,
-		CreatedAt:       examInfo.CreatedAt,
-		ExamDate:        examInfo.ExamDate,
-		Duration:        examInfo.Duration,
-		CreatedBy:       examInfo.CreatedBy,
-		IsPublic:        examInfo.IsPublic,
+		ExamId:              examInfo.ExamId,
+		CourseId:            examInfo.CourseId,
+		ExamTitle:           examInfo.ExamTitle,
+		ExamDescription:     examInfo.ExamDescription,
+		Price:               examInfo.Price,
+		CreatedAt:           examInfo.CreatedAt,
+		ExamDate:            examInfo.ExamDate,
+		Duration:            examInfo.Duration,
+		CreatedBy:           examInfo.CreatedBy,
+		IsPublic:            examInfo.IsPublic,
+		IsStrict:            examInfo.IsStrict,
+		IsSampleExam:        examInfo.IsSampleExam,
+		MaxQuestionsSeconds: examInfo.MaxQuestionsSeconds,
+		NeedsVideoCall:      examInfo.NeedsVideoCall,
+		NeedsVoiceCall:      examInfo.NeedsVoiceCall,
 	})
 }
 
@@ -292,16 +306,9 @@ func EditExamV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=ParticipateExamResult}
 // @Router /api/v1/exam/participate [post]
 func ParticipateExamV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &ParticipateExamData{}
@@ -382,16 +389,9 @@ func ParticipateExamV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetExamParticipantsResult}
 // @Router /api/v1/exam/participants [post]
 func GetExamParticipantsV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &GetExamParticipantsData{}
@@ -455,16 +455,9 @@ func GetExamParticipantsV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=CreateExamQuestionResult}
 // @Router /api/v1/exam/createQuestion [post]
 func CreateExamQuestionV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &CreateExamQuestionData{}
@@ -488,13 +481,16 @@ func CreateExamQuestionV1(c *fiber.Ctx) error {
 	}
 
 	questionInfo, err := database.CreateNewExamQuestion(&database.NewExamQuestionData{
-		ExamId:        data.ExamId,
-		QuestionTitle: data.QuestionTitle,
-		Description:   data.Description,
-		Option1:       data.Option1,
-		Option2:       data.Option2,
-		Option3:       data.Option3,
-		Option4:       data.Option4,
+		ExamId:          data.ExamId,
+		QuestionTitle:   data.QuestionTitle,
+		Description:     data.Description,
+		Option1:         data.Option1,
+		Option2:         data.Option2,
+		Option3:         data.Option3,
+		Option4:         data.Option4,
+		IsPointer:       data.IsPointer,
+		PointerCount:    data.PointerCount,
+		PointerToExamId: data.PointerToExamId,
 	})
 	if err != nil {
 		logging.UnexpectedError("CreateExamQuestion: Failed to create new exam question:", err)
@@ -502,15 +498,18 @@ func CreateExamQuestionV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &CreateExamQuestionResult{
-		QuestionId:    questionInfo.QuestionId,
-		ExamId:        questionInfo.ExamId,
-		QuestionTitle: questionInfo.QuestionTitle,
-		Description:   ssg.Clone(questionInfo.Description),
-		Option1:       ssg.Clone(questionInfo.Option1),
-		Option2:       ssg.Clone(questionInfo.Option2),
-		Option3:       ssg.Clone(questionInfo.Option3),
-		Option4:       ssg.Clone(questionInfo.Option4),
-		CreatedAt:     questionInfo.CreatedAt,
+		QuestionId:      questionInfo.QuestionId,
+		ExamId:          questionInfo.ExamId,
+		QuestionTitle:   questionInfo.QuestionTitle,
+		Description:     questionInfo.Description,
+		Option1:         questionInfo.Option1,
+		Option2:         questionInfo.Option2,
+		Option3:         questionInfo.Option3,
+		Option4:         questionInfo.Option4,
+		CreatedAt:       questionInfo.CreatedAt,
+		IsPointer:       questionInfo.IsPointer,
+		PointerCount:    questionInfo.PointerCount,
+		PointerToExamId: questionInfo.PointerToExamId,
 	})
 }
 
@@ -526,16 +525,9 @@ func CreateExamQuestionV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=EditExamQuestionResult}
 // @Router /api/v1/exam/editQuestion [post]
 func EditExamQuestionV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &EditExamQuestionData{}
@@ -561,14 +553,16 @@ func EditExamQuestionV1(c *fiber.Ctx) error {
 	}
 
 	questionInfo, err := database.EditExamQuestion(&database.EditExamQuestionData{
-		QuestionId:    data.QuestionId,
-		ExamId:        data.ExamId,
-		QuestionTitle: data.QuestionTitle,
-		Description:   data.Description,
-		Option1:       data.Option1,
-		Option2:       data.Option2,
-		Option3:       data.Option3,
-		Option4:       data.Option4,
+		QuestionId:      data.QuestionId,
+		ExamId:          data.ExamId,
+		QuestionTitle:   data.QuestionTitle,
+		Description:     ssg.Clone(data.Description),
+		Option1:         ssg.Clone(data.Option1),
+		Option2:         ssg.Clone(data.Option2),
+		Option3:         ssg.Clone(data.Option3),
+		Option4:         ssg.Clone(data.Option4),
+		PointerCount:    data.PointerCount,
+		PointerToExamId: ssg.Clone(data.PointerToExamId),
 	})
 	if err != nil {
 		logging.UnexpectedError("EditExamQuestion: Failed to edit exam question:", err)
@@ -576,15 +570,18 @@ func EditExamQuestionV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &EditExamQuestionResult{
-		QuestionId:    questionInfo.QuestionId,
-		ExamId:        questionInfo.ExamId,
-		QuestionTitle: questionInfo.QuestionTitle,
-		Description:   ssg.Clone(questionInfo.Description),
-		Option1:       ssg.Clone(questionInfo.Option1),
-		Option2:       ssg.Clone(questionInfo.Option2),
-		Option3:       ssg.Clone(questionInfo.Option3),
-		Option4:       ssg.Clone(questionInfo.Option4),
-		CreatedAt:     questionInfo.CreatedAt,
+		QuestionId:      questionInfo.QuestionId,
+		ExamId:          questionInfo.ExamId,
+		QuestionTitle:   questionInfo.QuestionTitle,
+		Description:     ssg.Clone(questionInfo.Description),
+		Option1:         ssg.Clone(questionInfo.Option1),
+		Option2:         ssg.Clone(questionInfo.Option2),
+		Option3:         ssg.Clone(questionInfo.Option3),
+		Option4:         ssg.Clone(questionInfo.Option4),
+		CreatedAt:       questionInfo.CreatedAt,
+		IsPointer:       questionInfo.IsPointer,
+		PointerCount:    questionInfo.PointerCount,
+		PointerToExamId: ssg.Clone(questionInfo.PointerToExamId),
 	})
 }
 
@@ -600,18 +597,12 @@ func EditExamQuestionV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetExamQuestionsResult}
 // @Router /api/v1/exam/questions [post]
 func GetExamQuestionsV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
-	} else if !userInfo.CanGetExamQuestions() {
+	if !userInfo.CanGetExamQuestions() {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
@@ -629,24 +620,37 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrExamNotFound(c)
 	}
 
+	canPeekExamQuestions := userInfo.CanPeekExamQuestions(examInfo.CreatedBy)
+	if examInfo.IsStrict {
+		// apply strict exam rules in here
+		if !canPeekExamQuestions && data.Limit > StrictExamQuestionsListLimit {
+			return apiHandlers.SendErrStrictExamViolation(c)
+		}
+	}
+
 	userPov := data.Pov
+	resolvePointers := true
+	hasParticipatedInExam := database.HasParticipatedInExam(userInfo.UserId, data.ExamId)
 	if (userPov != "" && data.Pov != userInfo.UserId) &&
 		!userInfo.CanSetScoreForExam(examInfo) {
 		return apiHandlers.SendErrPermissionDenied(c)
 	} else if userPov == "" {
 		userPov = userInfo.UserId
+		resolvePointers = hasParticipatedInExam
 	}
 
-	if !userInfo.CanPeekExamQuestions(examInfo.CreatedBy) &&
-		(!database.HasParticipatedInExam(userInfo.UserId, data.ExamId) ||
-			!examInfo.HasExamStarted()) {
+	if !canPeekExamQuestions &&
+		(!hasParticipatedInExam || !examInfo.HasExamStarted()) {
 		return apiHandlers.SendErrNotParticipatedInExam(c)
 	}
 
 	questions, err := database.GetExamQuestions(&database.GetExamQuestionsData{
-		ExamId: data.ExamId,
-		Offset: data.Offset,
-		Limit:  data.Limit,
+		ExamId:          data.ExamId,
+		UserId:          userPov,
+		Offset:          data.Offset,
+		Limit:           data.Limit,
+		ResolvePointers: resolvePointers,
+		MarkAsSeen:      !canPeekExamQuestions,
 	})
 	if err != nil && err != pgx.ErrNoRows {
 		logging.UnexpectedError("GetExamQuestions: Failed to get exam questions:", err)
@@ -656,14 +660,17 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 	questionsInfo := make([]*ExamQuestionInfo, 0, len(questions))
 	for _, q := range questions {
 		info := &ExamQuestionInfo{
-			QuestionId:    q.QuestionId,
-			QuestionTitle: q.QuestionTitle,
-			Description:   q.Description,
-			Option1:       q.Option1,
-			Option2:       q.Option2,
-			Option3:       q.Option3,
-			Option4:       q.Option4,
-			CreatedAt:     q.CreatedAt,
+			QuestionId:      q.QuestionId,
+			QuestionTitle:   q.QuestionTitle,
+			Description:     q.Description,
+			Option1:         q.Option1,
+			Option2:         q.Option2,
+			Option3:         q.Option3,
+			Option4:         q.Option4,
+			CreatedAt:       q.CreatedAt,
+			IsPointer:       q.IsPointer,
+			PointerCount:    q.PointerCount,
+			PointerToExamId: ssg.Clone(q.PointerToExamId),
 		}
 
 		givenAnswer := database.GetGivenAnswerOrNil(&database.GetGivenAnswerData{
@@ -671,13 +678,14 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 			QuestionId: q.QuestionId,
 			UserId:     userPov,
 		})
-		if givenAnswer != nil {
+		if givenAnswer != nil && givenAnswer.HasContent() {
 			info.UserAnswer = &AnsweredQuestionInfo{
 				UserId:       givenAnswer.AnsweredBy,
 				QuestionId:   q.QuestionId,
 				ChosenOption: ssg.Clone(givenAnswer.ChosenOption),
 				SecondsTaken: givenAnswer.SecondsTaken,
 				AnswerText:   ssg.Clone(givenAnswer.AnswerText),
+				SeenAt:       ssg.Clone(givenAnswer.SeenAt),
 			}
 		}
 		questionsInfo = append(questionsInfo, info)
@@ -702,17 +710,9 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=AnswerQuestionResult}
 // @Router /api/v1/exam/answer [post]
 func AnswerExamQuestionV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &AnswerQuestionData{}
@@ -776,10 +776,14 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &AnswerQuestionResult{
-		ExamId:     givenAnswer.ExamId,
-		QuestionId: givenAnswer.QuestionId,
-		AnsweredBy: givenAnswer.AnsweredBy,
-		AnsweredAt: givenAnswer.AnsweredAt,
+		ExamId:       givenAnswer.ExamId,
+		QuestionId:   givenAnswer.QuestionId,
+		AnsweredBy:   givenAnswer.AnsweredBy,
+		AnsweredAt:   givenAnswer.AnsweredAt,
+		SeenAt:       givenAnswer.SeenAt,
+		ChosenOption: givenAnswer.ChosenOption,
+		SecondsTaken: givenAnswer.SecondsTaken,
+		AnswerText:   givenAnswer.AnswerText,
 	})
 }
 
@@ -795,18 +799,12 @@ func AnswerExamQuestionV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=SetExamScoreResult}
 // @Router /api/v1/exam/setScore [post]
 func SetExamScoreV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
-	} else if !userInfo.CanTryToScoreExam() {
+	if !userInfo.CanTryToScoreExam() {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
@@ -871,16 +869,9 @@ func SetExamScoreV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetGivenExamResult}
 // @Router /api/v1/exam/givenExam [post]
 func GetGivenExamV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return err
 	}
 
 	data := &GetGivenExamData{}
@@ -906,10 +897,10 @@ func GetGivenExamV1(c *fiber.Ctx) error {
 		UserId:     examInfo.UserId,
 		ExamId:     examInfo.ExamId,
 		Price:      examInfo.Price,
-		AddedBy:    ssg.Clone(examInfo.AddedBy),
-		ScoredBy:   ssg.Clone(examInfo.ScoredBy),
+		AddedBy:    examInfo.AddedBy,
+		ScoredBy:   examInfo.ScoredBy,
 		CreatedAt:  examInfo.CreatedAt,
-		FinalScore: ssg.Clone(examInfo.FinalScore),
+		FinalScore: examInfo.FinalScore,
 	})
 }
 
