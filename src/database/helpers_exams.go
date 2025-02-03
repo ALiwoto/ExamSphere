@@ -689,7 +689,10 @@ func GetExamQuestions(data *GetExamQuestionsData) ([]*ExamQuestion, error) {
 				option2, 
 				option3, 
 				option4, 
-				created_at
+				created_at,
+				is_pointer,
+				pointer_count,
+				pointer_to_exam_id
 			FROM exam_question WHERE exam_id = $1
 			ORDER BY question_id
 			LIMIT $2 OFFSET $3`,
