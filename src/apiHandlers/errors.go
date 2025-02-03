@@ -60,7 +60,9 @@ const (
 	ErrTopicNotFound                 = "Topic not found"
 	ErrBodyTooLong                   = "The provided body is too long"
 	ErrStrictExamViolation           = "A strict exam violation occurred"
-	ErrOwnerCannotDoThis             = "Owner cannot do this action at this time"
+	ErrOwnerCannotDoThis             = "Owner account cannot do this action at this time"
+	ErrPointedExamMustBeSample       = "The pointed exam must be a sample exam"
+	ErrInvalidPointerToExamId        = "Invalid pointer to exam id provided"
 )
 
 // error codes
@@ -124,4 +126,6 @@ const (
 	ErrCodeBodyTooLong
 	ErrCodeStrictExamViolation
 	ErrCodeOwnerCannotDoThis
+	ErrCodePointedExamMustBeSample
+	ErrCodeInvalidPointerToExamId
 )

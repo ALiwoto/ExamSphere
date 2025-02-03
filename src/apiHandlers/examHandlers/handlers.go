@@ -494,6 +494,12 @@ func CreateExamQuestionV1(c *fiber.Ctx) error {
 		PointerToExamId: data.PointerToExamId,
 	})
 	if err != nil {
+		if err == database.ErrPointedExamMustBeSample {
+			return apiHandlers.SendErrPointedExamMustBeSample(c)
+		} else if err == database.ErrInvalidPointerToExamId {
+			return apiHandlers.SendErrInvalidPointerToExamId(c)
+		}
+
 		logging.UnexpectedError("CreateExamQuestion: Failed to create new exam question:", err)
 		return apiHandlers.SendErrInternalServerError(c)
 	}

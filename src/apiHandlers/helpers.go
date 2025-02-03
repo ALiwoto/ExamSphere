@@ -595,3 +595,19 @@ func SendErrOwnerCannotDoThis(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrPointedExamMustBeSample(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodePointedExamMustBeSample,
+		Message:   ErrPointedExamMustBeSample,
+		Origin:    c.Path(),
+	})
+}
+
+func SendErrInvalidPointerToExamId(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeInvalidPointerToExamId,
+		Message:   ErrInvalidPointerToExamId,
+		Origin:    c.Path(),
+	})
+}
