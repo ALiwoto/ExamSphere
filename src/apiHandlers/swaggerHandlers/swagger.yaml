@@ -59,6 +59,7 @@ definitions:
     - 2155
     - 2156
     - 2157
+    - 2158
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -119,6 +120,7 @@ definitions:
     - ErrCodeTopicNotFound
     - ErrCodeBodyTooLong
     - ErrCodeStrictExamViolation
+    - ErrCodeOwnerCannotDoThis
   AnswerQuestionData:
     properties:
       answer_text:

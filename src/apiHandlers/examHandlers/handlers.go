@@ -24,19 +24,15 @@ import (
 // @Success 200 {object} apiHandlers.EndpointResponse{result=CreateExamResult}
 // @Router /api/v1/exam/create [post]
 func CreateExamV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return nil
 	}
 
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
-	} else if !userInfo.CanCreateNewExam() {
+	if !userInfo.CanCreateNewExam() {
 		return apiHandlers.SendErrPermissionDenied(c)
+	} else if userInfo.IsOwner() {
+		return apiHandlers.SendErrOwnerCannotDoThis(c)
 	}
 
 	data := &CreateExamData{}

@@ -69,6 +69,11 @@ func (i *UserInfo) IsAdminOrOwner() bool {
 		i.Role == appValues.UserRoleOwner)
 }
 
+// IsOwner returns true if and only if the current user is an owner.
+func (i *UserInfo) IsOwner() bool {
+	return i != nil && i.Role == appValues.UserRoleOwner
+}
+
 // CanGetUserInfo returns true if and only if the current user has
 // the permission to get information about the specified user.
 func (i *UserInfo) CanGetUserInfo(targetUser *UserInfo) bool {

@@ -2149,7 +2149,8 @@ const docTemplate = `{
                 2154,
                 2155,
                 2156,
-                2157
+                2157,
+                2158
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -2209,7 +2210,8 @@ const docTemplate = `{
                 "ErrCodeTopicNameExists",
                 "ErrCodeTopicNotFound",
                 "ErrCodeBodyTooLong",
-                "ErrCodeStrictExamViolation"
+                "ErrCodeStrictExamViolation",
+                "ErrCodeOwnerCannotDoThis"
             ]
         },
         "AnswerQuestionData": {

@@ -587,3 +587,11 @@ func SendErrStrictExamViolation(c *fiber.Ctx) error {
 		Origin:    c.Path(),
 	})
 }
+
+func SendErrOwnerCannotDoThis(c *fiber.Ctx) error {
+	return SendError(fiber.StatusBadRequest, c, &EndpointError{
+		ErrorCode: ErrCodeOwnerCannotDoThis,
+		Message:   ErrOwnerCannotDoThis,
+		Origin:    c.Path(),
+	})
+}

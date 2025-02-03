@@ -60,6 +60,7 @@ const (
 	ErrTopicNotFound                 = "Topic not found"
 	ErrBodyTooLong                   = "The provided body is too long"
 	ErrStrictExamViolation           = "A strict exam violation occurred"
+	ErrOwnerCannotDoThis             = "Owner cannot do this action at this time"
 )
 
 // error codes
@@ -122,4 +123,5 @@ const (
 	ErrCodeTopicNotFound
 	ErrCodeBodyTooLong
 	ErrCodeStrictExamViolation
+	ErrCodeOwnerCannotDoThis
 )
