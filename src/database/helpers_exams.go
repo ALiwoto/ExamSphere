@@ -327,13 +327,13 @@ func GetExamFinishesIn(examId int) (int, error) {
 func GetExamQuestionsCount(examId int) int {
 	var count int
 	err := DefaultContainer.db.QueryRow(context.Background(),
-		`SELECT SUM(
+		`SELECT COALESCE(SUM(
             CASE 
                 WHEN is_pointer = false THEN 1 
                 WHEN is_pointer = true THEN pointer_count 
                 ELSE 0 
             END
-        ) AS total_count
+        ), 0) AS total_count
         FROM exam_question 
         WHERE exam_id = $1`,
 		examId,
