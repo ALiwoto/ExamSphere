@@ -117,6 +117,11 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrInternalServerError(c)
 	}
 
+	canParticipate := !examInfo.IsSampleExam &&
+		database.CanParticipateInExamOrFalse(userInfo.UserId, examId)
+	hasParticipated := !examInfo.IsSampleExam &&
+		database.HasParticipatedInExam(userInfo.UserId, examId)
+
 	return apiHandlers.SendResult(c, &GetExamInfoResult{
 		ExamId:              examInfo.ExamId,
 		CourseId:            examInfo.CourseId,
@@ -133,12 +138,12 @@ func GetExamInfoV1(c *fiber.Ctx) error {
 		MaxQuestionsSeconds: examInfo.MaxQuestionsSeconds,
 		NeedsVideoCall:      examInfo.NeedsVideoCall,
 		NeedsVoiceCall:      examInfo.NeedsVoiceCall,
-		HasParticipated:     database.HasParticipatedInExam(userInfo.UserId, examId),
-		HasStarted:          examInfo.HasExamStarted(),
-		CanParticipate:      database.CanParticipateInExamOrFalse(userInfo.UserId, examId),
+		HasParticipated:     hasParticipated,
+		HasStarted:          !examInfo.IsSampleExam && examInfo.HasExamStarted(),
+		CanParticipate:      canParticipate,
 		CanEditQuestion:     userInfo.CanEditExamQuestion(examInfo),
 		CanAddOthersToExam:  userInfo.CanAddOthersToExam(examInfo),
-		HasFinished:         examInfo.HasExamFinished(),
+		HasFinished:         !examInfo.IsSampleExam && examInfo.HasExamFinished(),
 		StartsIn:            examInfo.ExamStartsIn(),
 		FinishesIn:          examInfo.ExamFinishesIn(),
 		QuestionCount:       database.GetExamQuestionsCount(examId),
