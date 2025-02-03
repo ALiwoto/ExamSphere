@@ -48,7 +48,7 @@ func GetJWTClaimsInfoStr(token string, key []byte) *appValues.JWTClaimsInfo {
 
 	expF, ok := claims["exp"].(float64)
 	exp := int64(expF)
-	if !ok || exp == 0 || time.Unix(exp, 0).Before(time.Now()) {
+	if !ok || exp == 0 || time.Unix(exp, 0).UTC().Before(time.Now().UTC()) {
 		return nil
 	}
 
@@ -97,7 +97,7 @@ func GetJWTClaimsInfo(c *fiber.Ctx) *appValues.JWTClaimsInfo {
 
 	expF, ok := claims["exp"].(float64)
 	exp := int64(expF)
-	if !ok || exp == 0 || time.Unix(exp, 0).Before(time.Now()) {
+	if !ok || exp == 0 || time.Unix(exp, 0).UTC().Before(time.Now().UTC()) {
 		return nil
 	}
 

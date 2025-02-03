@@ -52,19 +52,19 @@ func CreateNewExam(data *NewExamData) (*ExamInfo, error) {
 			p_needs_video_call := $12,
 			p_needs_voice_call := $13
 		)`,
-		info.CourseId,                        // 1
-		info.ExamTitle,                       // 2
-		info.ExamDescription,                 // 3
-		info.Price,                           // 4
-		info.CreatedBy,                       // 5
-		info.IsPublic,                        // 6
-		info.Duration,                        // 7
-		info.ExamDate.Format(ExamDateLayout), // 8
-		info.IsStrict,                        // 9
-		info.IsSampleExam,                    // 10
-		info.MaxQuestionsSeconds,             // 11
-		info.NeedsVideoCall,                  // 12
-		info.NeedsVoiceCall,                  // 13
+		info.CourseId,            // 1
+		info.ExamTitle,           // 2
+		info.ExamDescription,     // 3
+		info.Price,               // 4
+		info.CreatedBy,           // 5
+		info.IsPublic,            // 6
+		info.Duration,            // 7
+		info.ExamDate,            // 8
+		info.IsStrict,            // 9
+		info.IsSampleExam,        // 10
+		info.MaxQuestionsSeconds, // 11
+		info.NeedsVideoCall,      // 12
+		info.NeedsVoiceCall,      // 13
 	).Scan(&info.ExamId)
 	if err != nil {
 		return nil, err
@@ -493,7 +493,7 @@ func EditExamQuestion(data *EditExamQuestionData) (*ExamQuestion, error) {
 			option1 = $3,
 			option2 = $4,
 			option3 = $5,
-			option4 = $6
+			option4 = $6,
 			pointer_count = $7,
 			pointer_to_exam_id = $8
 		WHERE question_id = $9`,
@@ -1083,15 +1083,15 @@ func AnswerQuestion(data *AnswerQuestionData) (*GivenAnswerInfo, error) {
 			p_seconds_taken := $5,
 			p_answer_text := $6
 		)`,
-		info.ExamId,
-		info.QuestionId,
-		info.AnsweredBy,
-		info.ChosenOption,
-		info.SecondsTaken,
-		info.AnswerText,
+		info.ExamId,       // 1
+		info.QuestionId,   // 2
+		info.AnsweredBy,   // 3
+		info.ChosenOption, // 4
+		info.SecondsTaken, // 5
+		info.AnswerText,   // 6
 	)
 	if err != nil {
-		logging.UnexpectedError("AnswerQuestion: failed to answer question:", err)
+		logging.UnexpectedError("AnswerQuestion: failed to answer question: ", err)
 		return nil, err
 	}
 

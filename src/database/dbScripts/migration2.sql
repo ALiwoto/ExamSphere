@@ -117,48 +117,6 @@ BEGIN
 END;
 $$;
 
--- Procedure to add a user to an exam.
--- Example usage:
---    CALL add_user_in_exam(
---        p_user_id := 'user123',
---        p_exam_id := 1001,
---        p_price := '0T',
---        p_added_by := 'admin'
---    );
-CREATE OR REPLACE PROCEDURE add_user_in_exam(
-    p_user_id UserIdType,
-    p_exam_id INTEGER,
-    p_price VARCHAR(16) DEFAULT '0T',
-    p_added_by VARCHAR(16) DEFAULT NULL
-)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    BEGIN
-        -- Check if the user already exists in the exam
-        IF EXISTS (
-            SELECT 1 FROM given_exam
-            WHERE user_id = p_user_id AND exam_id = p_exam_id
-        ) THEN
-            RAISE EXCEPTION 'User % is already registered for exam %', p_user_id, p_exam_id;
-        END IF;
-
-        -- Insert the new entry
-        INSERT INTO "given_exam" (user_id, exam_id, price, added_by)
-        VALUES (p_user_id, p_exam_id, p_price, p_added_by);
-
-        -- The procedure will automatically commit if no exception is raised
-        -- COMMIT;
-    EXCEPTION
-        WHEN OTHERS THEN
-            -- The procedure will automatically rollback if an exception is raised
-            -- ROLLBACK;
-            -- Re-raise the exception
-            RAISE;
-    END;
-END;
-$$;
-
 
 -- View to get all courses a user has ever enrolled in in their
 -- lifetime.
