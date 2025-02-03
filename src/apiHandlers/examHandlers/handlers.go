@@ -257,6 +257,15 @@ func EditExamV1(c *fiber.Ctx) error {
 		return apiHandlers.SendErrPermissionDenied(c)
 	}
 
+	if !examInfo.IsSampleExam && data.Duration <= 0 {
+		// sample exams can have their duration set to zero
+		return apiHandlers.SendErrInvalidBodyData(c)
+	} else if examInfo.IsSampleExam {
+		data.Duration = 0
+		data.NeedsVideoCall = false
+		data.NeedsVoiceCall = false
+	}
+
 	examInfo, err = database.EditExamInfo(&database.EditExamInfoData{
 		ExamId:          data.ExamId,
 		CourseId:        data.CourseId,

@@ -233,7 +233,7 @@ func EditExamInfo(data *EditExamInfoData) (*ExamInfo, error) {
 			price = $3,
 			is_public = $4,
 			duration = $5,
-			exam_date = $6
+			exam_date = $6,
 			is_strict = $7,
 			needs_video_call = $8,
 			needs_voice_call = $9

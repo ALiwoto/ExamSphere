@@ -17,4 +17,5 @@ var Migrations = [...]MigrationFunc{
 	migrateV3,
 	migrateV4,
 	migrateV5,
+	migrateV6,
 }

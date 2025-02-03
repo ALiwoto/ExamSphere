@@ -56,3 +56,13 @@ func migrateV5(tx pgx.Tx, container *DatabaseContainer) error {
 
 	return nil
 }
+
+func migrateV6(tx pgx.Tx, container *DatabaseContainer) error {
+	_, err := tx.Exec(container.MigrationCtx, dbScripts.Migration6Str)
+	if err != nil {
+		logging.Error("migrateV6: Failed to execute migration 6: ", err)
+		return err
+	}
+
+	return nil
+}

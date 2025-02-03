@@ -22,7 +22,5 @@ func (d *CreateExamData) IsValid() bool {
 
 func (d *EditExamData) IsValid() bool {
 	return d.ExamId != 0 &&
-		d.CourseId != 0 &&
-		d.Price != "" &&
-		d.Duration > 0
+		d.CourseId != 0
 }
