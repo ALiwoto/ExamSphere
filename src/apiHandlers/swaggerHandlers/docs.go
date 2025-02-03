@@ -2875,7 +2875,7 @@ const docTemplate = `{
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {
@@ -3165,7 +3165,7 @@ const docTemplate = `{
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {
@@ -3672,7 +3672,7 @@ const docTemplate = `{
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {

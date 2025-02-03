@@ -560,7 +560,7 @@ definitions:
         type: string
       is_public:
         type: boolean
-      is_sample:
+      is_sample_exam:
         type: boolean
       is_strict:
         type: boolean
@@ -752,7 +752,7 @@ definitions:
         type: boolean
       is_public:
         type: boolean
-      is_sample:
+      is_sample_exam:
         type: boolean
       is_strict:
         type: boolean
@@ -1088,7 +1088,7 @@ definitions:
         type: string
       is_public:
         type: boolean
-      is_sample:
+      is_sample_exam:
         type: boolean
       is_strict:
         type: boolean

@@ -51,7 +51,7 @@ type SearchedExamInfo struct {
 	CreatedBy           string    `json:"created_by"`
 	IsPublic            bool      `json:"is_public"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`
@@ -84,7 +84,7 @@ type EditExamResult struct {
 	CreatedBy           string    `json:"created_by"`
 	IsPublic            bool      `json:"is_public"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`
@@ -111,7 +111,7 @@ type GetExamInfoResult struct {
 	FinishesIn          int       `json:"finishes_in" default:"0"`
 	QuestionCount       int       `json:"question_count" default:"0"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`

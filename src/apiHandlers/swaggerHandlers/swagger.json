@@ -2867,7 +2867,7 @@
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {
@@ -3157,7 +3157,7 @@
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {
@@ -3664,7 +3664,7 @@
                 "is_public": {
                     "type": "boolean"
                 },
-                "is_sample": {
+                "is_sample_exam": {
                     "type": "boolean"
                 },
                 "is_strict": {

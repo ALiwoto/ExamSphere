@@ -17,7 +17,7 @@ type ExamInfo struct {
 	CreatedBy           string    `json:"created_by"`
 	IsPublic            bool      `json:"is_public"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`
@@ -48,7 +48,7 @@ type SearchedExamInfo struct {
 	CreatedBy           string    `json:"created_by"`
 	IsPublic            bool      `json:"is_public"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`
@@ -88,7 +88,7 @@ type NewExamData struct {
 	Duration            int       `json:"duration"`
 	ExamDate            time.Time `json:"exam_date"`
 	IsStrict            bool      `json:"is_strict"`
-	IsSampleExam        bool      `json:"is_sample"`
+	IsSampleExam        bool      `json:"is_sample_exam"`
 	MaxQuestionsSeconds int       `json:"max_questions_seconds"`
 	NeedsVideoCall      bool      `json:"needs_video_call"`
 	NeedsVoiceCall      bool      `json:"needs_voice_call"`
