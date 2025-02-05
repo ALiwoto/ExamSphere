@@ -236,7 +236,7 @@ type GetUserOngoingExamsResult struct {
 
 type UserOngoingExamInfo struct {
 	ExamId    int       `json:"exam_id"`
-	ExamTitle int       `json:"course_id"`
+	ExamTitle int       `json:"exam_title"`
 	StartTime time.Time `json:"start_time"`
 } // @name UserOngoingExamInfo
 
@@ -255,6 +255,16 @@ type UserExamHistoryInfo struct {
 	ExamTitle string    `json:"exam_title"`
 	StartedAt time.Time `json:"started_at"`
 } // @name UserExamHistoryInfo
+
+type UserFutureExamInfo struct {
+	ExamId    int       `json:"exam_id"`
+	ExamTitle string    `json:"exam_title"`
+	ExamDate  time.Time `json:"exam_date"`
+} // @name UserFutureExamInfo
+
+type GetUserFutureExamsResult struct {
+	Exams []*UserFutureExamInfo `json:"exams"`
+} // @name GetUserFutureExamsResult
 
 type CreateExamQuestionData struct {
 	ExamId          int     `json:"exam_id"`

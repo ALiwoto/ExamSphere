@@ -1133,6 +1133,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exam/userFutureExams": {
+            "get": {
+                "description": "Allows the user to get future exams of a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get future exams of a user",
+                "operationId": "getUserFutureExamsV1",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Target user id",
+                        "name": "targetId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/EndpointResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/GetUserFutureExamsResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/exam/userOngoingExams": {
             "get": {
                 "description": "Allows the user to get ongoing exams of a user.",
@@ -2150,7 +2201,9 @@ const docTemplate = `{
                 2155,
                 2156,
                 2157,
-                2158
+                2158,
+                2159,
+                2160
             ],
             "x-enum-varnames": [
                 "ErrCodeMalformedJWT",
@@ -2211,7 +2264,9 @@ const docTemplate = `{
                 "ErrCodeTopicNotFound",
                 "ErrCodeBodyTooLong",
                 "ErrCodeStrictExamViolation",
-                "ErrCodeOwnerCannotDoThis"
+                "ErrCodeOwnerCannotDoThis",
+                "ErrCodePointedExamMustBeSample",
+                "ErrCodeInvalidPointerToExamId"
             ]
         },
         "AnswerQuestionData": {
@@ -3342,6 +3397,17 @@ const docTemplate = `{
                 }
             }
         },
+        "GetUserFutureExamsResult": {
+            "type": "object",
+            "properties": {
+                "exams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UserFutureExamInfo"
+                    }
+                }
+            }
+        },
         "GetUserInfoResult": {
             "type": "object",
             "properties": {
@@ -3777,13 +3843,27 @@ const docTemplate = `{
                 }
             }
         },
+        "UserFutureExamInfo": {
+            "type": "object",
+            "properties": {
+                "exam_date": {
+                    "type": "string"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                }
+            }
+        },
         "UserOngoingExamInfo": {
             "type": "object",
             "properties": {
-                "course_id": {
+                "exam_id": {
                     "type": "integer"
                 },
-                "exam_id": {
+                "exam_title": {
                     "type": "integer"
                 },
                 "start_time": {

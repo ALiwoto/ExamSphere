@@ -248,6 +248,12 @@ type UserPastExamInfo struct {
 	StartedAt time.Time `json:"started_at"`
 }
 
+type UserFutureExamInfo struct {
+	ExamId    int       `json:"exam_id"`
+	ExamTitle string    `json:"exam_title"`
+	StartTime time.Time `json:"start_time"`
+}
+
 type GetExamParticipantsOptions struct {
 	ExamId int `json:"exam_id"`
 	Offset int `json:"offset"`

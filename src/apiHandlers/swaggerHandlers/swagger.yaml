@@ -60,6 +60,8 @@ definitions:
     - 2156
     - 2157
     - 2158
+    - 2159
+    - 2160
     type: integer
     x-enum-varnames:
     - ErrCodeMalformedJWT
@@ -121,6 +123,8 @@ definitions:
     - ErrCodeBodyTooLong
     - ErrCodeStrictExamViolation
     - ErrCodeOwnerCannotDoThis
+    - ErrCodePointedExamMustBeSample
+    - ErrCodeInvalidPointerToExamId
   AnswerQuestionData:
     properties:
       answer_text:
@@ -868,6 +872,13 @@ definitions:
           $ref: '#/definitions/UserParticipatedCourse'
         type: array
     type: object
+  GetUserFutureExamsResult:
+    properties:
+      exams:
+        items:
+          $ref: '#/definitions/UserFutureExamInfo'
+        type: array
+    type: object
   GetUserInfoResult:
     properties:
       ban_reason:
@@ -1157,11 +1168,20 @@ definitions:
       started_at:
         type: string
     type: object
+  UserFutureExamInfo:
+    properties:
+      exam_date:
+        type: string
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+    type: object
   UserOngoingExamInfo:
     properties:
-      course_id:
-        type: integer
       exam_id:
+        type: integer
+      exam_title:
         type: integer
       start_time:
         type: string
@@ -1927,6 +1947,37 @@ paths:
                   $ref: '#/definitions/GetUsersExamHistoryResult'
               type: object
       summary: Get history of exams of a user
+      tags:
+      - Exam
+  /api/v1/exam/userFutureExams:
+    get:
+      consumes:
+      - application/json
+      description: Allows the user to get future exams of a user.
+      operationId: getUserFutureExamsV1
+      parameters:
+      - description: Authorization token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Target user id
+        in: query
+        name: targetId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/EndpointResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/GetUserFutureExamsResult'
+              type: object
+      summary: Get future exams of a user
       tags:
       - Exam
   /api/v1/exam/userOngoingExams:

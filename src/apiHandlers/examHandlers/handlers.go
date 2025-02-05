@@ -690,7 +690,7 @@ func GetExamQuestionsV1(c *fiber.Ctx) error {
 		}
 
 		givenAnswer := database.GetGivenAnswerOrNil(&database.GetGivenAnswerData{
-			ExamId:     q.ExamId,
+			ExamId:     examInfo.ExamId,
 			QuestionId: q.QuestionId,
 			UserId:     userPov,
 		})
@@ -932,16 +932,9 @@ func GetGivenExamV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserOngoingExamsResult}
 // @Router /api/v1/exam/userOngoingExams [get]
 func GetUserOngoingExamsV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return nil
 	}
 
 	// optional: provide another user's id to see their ongoing exams
@@ -986,16 +979,9 @@ func GetUserOngoingExamsV1(c *fiber.Ctx) error {
 // @Success 200 {object} apiHandlers.EndpointResponse{result=GetUsersExamHistoryResult}
 // @Router /api/v1/exam/userExamsHistory [post]
 func GetUserExamsHistoryV1(c *fiber.Ctx) error {
-	claimInfo := apiHandlers.GetJWTClaimsInfo(c)
-	if claimInfo == nil {
-		return apiHandlers.SendErrInvalidJWT(c)
-	}
-
-	userInfo := database.GetUserInfoByAuthHash(
-		claimInfo.UserId, claimInfo.AuthHash,
-	)
-	if userInfo == nil {
-		return apiHandlers.SendErrInvalidAuth(c)
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return nil
 	}
 
 	data := &GetUsersExamHistoryData{}
@@ -1004,7 +990,7 @@ func GetUserExamsHistoryV1(c *fiber.Ctx) error {
 	}
 
 	if data.UserId == "" {
-		return apiHandlers.SendErrParameterRequired(c, "user_id")
+		data.UserId = userInfo.UserId
 	}
 
 	exams, err := database.GetUserExamsHistory(&database.GetUserExamsHistoryOptions{
@@ -1027,6 +1013,53 @@ func GetUserExamsHistoryV1(c *fiber.Ctx) error {
 	}
 
 	return apiHandlers.SendResult(c, &GetUsersExamHistoryResult{
+		Exams: examsInfo,
+	})
+}
+
+// GetUserFutureExamsV1 godoc
+// @Summary Get future exams of a user
+// @Description Allows the user to get future exams of a user.
+// @ID getUserFutureExamsV1
+// @Tags Exam
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Authorization token"
+// @Param targetId query string false "Target user id"
+// @Success 200 {object} apiHandlers.EndpointResponse{result=GetUserFutureExamsResult}
+// @Router /api/v1/exam/userFutureExams [get]
+func GetUserFutureExamsV1(c *fiber.Ctx) error {
+	userInfo, err := apiUtils.GetUserInfo(c)
+	if err != nil || userInfo == nil {
+		return nil
+	}
+
+	// optional: provide another user's id to see their future exams
+	targetUserId := c.Query("targetId")
+	if targetUserId == "" {
+		targetUserId = userInfo.UserId
+	}
+
+	exams, err := database.GetUserFutureExams(targetUserId)
+	if err != nil {
+		if err == database.ErrExamNotFound {
+			return apiHandlers.SendErrExamNotFound(c)
+		}
+
+		logging.UnexpectedError("GetUserFutureExams: Failed to get user future exams:", err)
+		return apiHandlers.SendErrInternalServerError(c)
+	}
+
+	examsInfo := make([]*UserFutureExamInfo, 0, len(exams))
+	for _, exam := range exams {
+		examsInfo = append(examsInfo, &UserFutureExamInfo{
+			ExamId:    exam.ExamId,
+			ExamTitle: exam.ExamTitle,
+			ExamDate:  exam.StartTime,
+		})
+	}
+
+	return apiHandlers.SendResult(c, &GetUserFutureExamsResult{
 		Exams: examsInfo,
 	})
 }

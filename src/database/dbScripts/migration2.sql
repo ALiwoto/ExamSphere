@@ -154,42 +154,7 @@ ORDER BY c.course_id, u.user_id;
 
 COMMENT ON VIEW course_participants IS 'View to get user_id and full_name of all users who have ever participated in any exam related to a certain course.';
 
-
--- View to get all exams (exam_id and exam_title and when it starts) that a user has ever participated in
--- and are not finished
--- An example of using this view would be:
---      SELECT exam_id, exam_title, exam_date
---          FROM user_ongoing_exams
---          WHERE user_id = '1234';
-CREATE OR REPLACE VIEW user_ongoing_exams AS
-SELECT DISTINCT
-    u.user_id,
-    e.exam_id,
-    e.exam_title,
-    e.exam_date
-FROM "exam_info" e
-JOIN "given_exam" g ON e.exam_id = g.exam_id
-JOIN "user_info" u ON g.user_id = u.user_id
-WHERE CURRENT_TIMESTAMP < (e.exam_date + (e.duration || ' minutes')::INTERVAL);
-
--- View to get all exams (exam_id and exam_title and when it starts) that a user
--- has participated in the past and now are finished.
--- An example of using this view would be:
---      SELECT exam_id, exam_title, exam_date
---          FROM user_exams_history
---          WHERE user_id = '1234';
-CREATE OR REPLACE VIEW user_exams_history AS
-SELECT DISTINCT
-    u.user_id,
-    e.exam_id,
-    e.exam_title,
-    e.exam_date
-FROM "exam_info" e
-JOIN "given_exam" g ON e.exam_id = g.exam_id
-JOIN "user_info" u ON g.user_id = u.user_id
-WHERE CURRENT_TIMESTAMP > (e.exam_date + (e.duration || ' minutes')::INTERVAL);
-
-COMMENT ON VIEW user_ongoing_exams IS 'View to get all exams (exam_id and exam_title and when it starts) that a user has ever participated in and are not finished';
+-- user_ongoing_exams and user_exams_history views have been moved to migration7.sql
 
 -- View to get all participants (user_id, full_name, etc) of an exam.
 -- An example of using this view would be:

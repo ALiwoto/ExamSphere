@@ -1185,6 +1185,45 @@ func GetUserExamsHistoryOrNil(opts *GetUserExamsHistoryOptions) []*UserPastExamI
 	return exams
 }
 
+func GetUserFutureExams(userId string) ([]*UserFutureExamInfo, error) {
+	rows, err := DefaultContainer.db.Query(context.Background(),
+		`SELECT exam_id, exam_title, exam_date
+		FROM user_future_exams WHERE user_id = $1`,
+		userId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var exams []*UserFutureExamInfo
+	for rows.Next() {
+		info := &UserFutureExamInfo{}
+		err = rows.Scan(
+			&info.ExamId,
+			&info.ExamTitle,
+			&info.StartTime,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		exams = append(exams, info)
+	}
+
+	return exams, nil
+}
+
+func GetUserFutureExamsOrNil(userId string) []*UserFutureExamInfo {
+	exams, err := GetUserFutureExams(userId)
+	if err != nil && err != pgx.ErrNoRows {
+		logging.UnexpectedError("GetUserFutureExamsOrNil: failed to get future exams:", err)
+		return nil
+	}
+
+	return exams
+}
+
 // GetExamParticipants gets all the participants of an exam.
 func GetExamParticipants(opts *GetExamParticipantsOptions) ([]*GivenExam, error) {
 	rows, err := DefaultContainer.db.Query(context.Background(),

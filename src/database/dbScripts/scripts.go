@@ -22,4 +22,7 @@ var (
 
 	//go:embed migration6.sql
 	Migration6Str string
+
+	//go:embed migration7.sql
+	Migration7Str string
 )

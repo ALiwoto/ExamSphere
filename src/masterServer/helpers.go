@@ -115,6 +115,7 @@ func LoadHandlersV1(app *fiber.App) {
 	v1.Post("/exam/givenExam", authProtection, examHandlers.GetGivenExamV1)
 	v1.Get("/exam/userOngoingExams", authProtection, examHandlers.GetUserOngoingExamsV1)
 	v1.Post("/exam/userExamsHistory", authProtection, examHandlers.GetUserExamsHistoryV1)
+	v1.Get("/exam/userFutureExams", authProtection, examHandlers.GetUserFutureExamsV1)
 
 	// platform handlers
 	v1.Get("/platform/logs", authProtection, platformHandlers.GetPlatformLogsV1)
