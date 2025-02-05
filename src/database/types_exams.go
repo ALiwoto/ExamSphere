@@ -238,7 +238,7 @@ type GetUserExamsHistoryOptions struct {
 
 type UserOngoingExamInfo struct {
 	ExamId    int       `json:"exam_id"`
-	ExamTitle int       `json:"course_id"`
+	ExamTitle string    `json:"exam_title"`
 	StartTime time.Time `json:"start_time"`
 }
 

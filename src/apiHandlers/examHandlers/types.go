@@ -236,7 +236,7 @@ type GetUserOngoingExamsResult struct {
 
 type UserOngoingExamInfo struct {
 	ExamId    int       `json:"exam_id"`
-	ExamTitle int       `json:"exam_title"`
+	ExamTitle string    `json:"exam_title"`
 	StartTime time.Time `json:"start_time"`
 } // @name UserOngoingExamInfo
 
